@@ -3,7 +3,7 @@ export default class VueModeler{
     static install;
     static version;
 
-    constructor(options: {}){
+    constructor(options={}){
         if(typeof options.instance === 'undefined'){
             throw new Error('Instance in VueModeler is a must');
         }
