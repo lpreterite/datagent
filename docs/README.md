@@ -1,37 +1,106 @@
-<template>
-<input type="text" :placeholder="$speak('placeholder', 'email', 'default')">
-<input type="text" :placeholder="$speak('placeholder','media', 'video')">
-</template>
-<script>
-export default {
-    // #in ViewModel
-    validation(group){
-        return {
-            name: [
-                { required: true, message: this.$speak('validation', 'media', 'video'), trigger: 'change' }
-            ]
-        }
-    }
+# example
 
-    words(){
-        return {
-            placeholder: {
-                email: { default: '请输入邮箱' },
-                password: { default: '请输入密码' },
+```js
+import Vue from 'vue';
+import VueModeler from 'vue-restful-model';
+import axios from 'axios';
+
+Vue.use(VueModeler);
+
+const modeler = new VueModeler({
+    instance: axios.create({
+        baseURL: 'https://some-domain.com/api/',
+        timeout: 1000,
+        headers: {'X-Custom-Header': 'foobar'}
+    }),
+    emulateIdKey: false,
+    models: {
+        'Article': {
+            fields: {
+                id: { type: Number, default: null },
+                title: { type: String, default: '' },
+                content: { type: String, default: '' },
+                type: { type: String, default: '' },
             },
-            validation: {
-                email: { default: '必须填入邮箱', email: '邮箱格式不正确' },
-                password: { default: '必须填入密码', 'Incorrect format': '密码必须包含数字及英文字符' }
+            methods: {
+                find: ['get'], // get is base method in axios
+                fetch: ['get'], // this funciton can set itself
+                save: ['save'],
+                destroy: ['delete'],
+                filter($model, query){
+                    return $model.instance.get('/select', { params: query });
+                },
+                success($model, data){
+                    return $mode.instance.post('/success', data);
+                },
+                // in $model
+                save($model, data){
+                    if($model.isNew(data)){
+                        return $model.instance.post('/', data);
+                    }else{
+                        return $model.instance.put('/', data);
+                    }
+                }
+            },
+            // 处理器， 根据方法调用前后钩子进行处理数据
+            hooks: {
+                get: {
+                    after: [
+                        function(json, xhr){
+                            if(data.code > 300){
+                                return Promise.resolve(json.data);
+                            }else{
+                                return Promise.reject(new Error('abc'));
+                            }
+                        }
+                    ]
+                },
+                save: {
+                    before: [
+                        filter(['id','title','content'])
+                    ]
+                },
+                fetch: {
+                    after: [
+                        filter(['id', 'title', 'content']),
+                        convert(['id', 'title', 'content']),
+                        convert({
+                            'id': Number,
+                            'title': String,
+                            'content': function(content){
+                                return content+'<p>123</p>';
+                            }
+                        })
+                    ]
+                }
             }
         }
     }
+});
 
-
-    // 保留，具体得看axios拦截请求时的处理进行决定
-    errors: {
-        'RequestError'(ctx){
-            
+const app = new Vue({
+    name: 'root',
+    el: '#app',
+    template: '<section></section>',
+    modeler,
+    created(){
+        this.$Article = this.$$model('Article');
+    },
+    data(){
+        return {
+            detail: this.$Article.schema();
+        }
+    },
+    methods: {
+        async save(data){
+            try{
+                this.$Article.save(data);
+            }catch(e){
+                alert(e.message);
+            }
         }
     }
-}
-</script>
+});
+
+export default app;
+```
