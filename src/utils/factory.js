@@ -1,4 +1,4 @@
-import Queue from './queue';
+import { Queue } from './queue';
 
 export function ModelFactory({ fields, methods, hooks }){
     
@@ -13,7 +13,7 @@ export function ModelFactory({ fields, methods, hooks }){
     return factory;
 }
 
-initMethods(prototype, methods, hooks){
+function initMethods(prototype, methods, hooks){
     Object.keys(methods).forEach(method => {
         prototype[method] = function(...arg){
             return Queue.run([

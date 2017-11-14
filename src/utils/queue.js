@@ -1,4 +1,4 @@
-class Queue{
+export class Queue{
     static run(queues){    
         return ()=>{
             return new Promise((resolve, reject) => {
@@ -13,5 +13,3 @@ class Queue{
         }
     }
 }
-
-module.exports = module.Queue = Queue;
