@@ -7,6 +7,7 @@ describe('utils/queue.js', function() {
         function(data){
           return new Promise((resolve, reject)=>{
             setTimeout(() => {
+              console.log(data, 1);
               resolve(data+'hollow');
             }, 600);
           });
@@ -14,6 +15,7 @@ describe('utils/queue.js', function() {
         function(data){
           return new Promise((resolve, reject)=>{
             setTimeout(() => {
+              console.log(data, 2);
               resolve(data+" ");
             }, 200);
           });
@@ -21,6 +23,7 @@ describe('utils/queue.js', function() {
         function(data){
           return new Promise((resolve, reject)=>{
             setTimeout(() => {
+              console.log(data, 3);
               resolve(data+"word!");
             }, 450);
           });
