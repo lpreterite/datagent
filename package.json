@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/lpreterite/vue-restful-model#readme",
   "devDependencies": {
+    "axios": "^0.17.1",
     "babel": "^6.23.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
@@ -41,9 +42,7 @@
     "vue": "^2.5.3",
     "vue-template-compiler": "^2.5.3",
     "vue-test-utils": "^1.0.0-beta.4",
-    "webpack": "^3.8.1"
-  },
-  "dependencies": {
+    "webpack": "^3.8.1",
     "webpack-node-externals": "^1.6.0"
   }
 }

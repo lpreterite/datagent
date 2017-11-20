@@ -23,10 +23,10 @@ const modeler = new VueModeler({
                 type: { type: String, default: '' },
             },
             methods: {
-                find: ['get'], // get is base method in axios
-                fetch: ['get'], // this funciton can set itself
-                save: ['save'],
-                destroy: ['delete'],
+                // find: ['get'], // get is base method in axios
+                // fetch: ['get'], // this funciton can set itself
+                // save: ['save'],
+                // destroy: ['delete'],
                 filter($model, query){
                     return $model.instance.get('/select', { params: query });
                 },
@@ -42,10 +42,13 @@ const modeler = new VueModeler({
                     }
                 }
             },
-            // 处理器， 根据方法调用前后钩子进行处理数据
+            // 钩子， 根据方法调用前后钩子进行处理数据
             hooks: {
-                get: {
-                    after: [
+                before: {
+                    save: [filter(['id','title','content'])]
+                },
+                after: {
+                    get: [
                         function(json, xhr){
                             if(data.code > 300){
                                 return Promise.resolve(json.data);
@@ -53,15 +56,8 @@ const modeler = new VueModeler({
                                 return Promise.reject(new Error('abc'));
                             }
                         }
-                    ]
-                },
-                save: {
-                    before: [
-                        filter(['id','title','content'])
-                    ]
-                },
-                fetch: {
-                    after: [
+                    ],
+                    fetch: [
                         filter(['id', 'title', 'content']),
                         convert(['id', 'title', 'content']),
                         convert({
