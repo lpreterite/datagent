@@ -1,14 +1,33 @@
 {
-    "presets": [
-        ["env", {
-            "target": {
-                "browsers": [
-                    "> 5%"
+    "env":{
+        "development": {
+            "presets": [
+                [
+                    "env",
+                    {
+                        "modules": false,
+                        "target": {
+                            "browsers": [
+                                "> 5%"
+                            ]
+                        }
+                    }
                 ]
-            },
-            "useBuiltIns": true
-        }]
-    ],
+            ]
+        },
+        "test": {
+            "presets": [
+                [
+                    "env",
+                    {
+                        "targets": {
+                            "node": "current"
+                        }
+                    }
+                ]
+            ]
+        }
+    },
     "plugins": [
         "syntax-dynamic-import"
     ]

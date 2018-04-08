@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "node --harmony node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=test mocha-webpack --webpack-config webpack.config.js --require test/setup.js test/**/*.spec.js"
+    "test": "node --harmony --debug node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=test mocha-webpack --webpack-config webpack.config.js --require test/setup.js test/**/*.spec.js"
   },
   "repository": {
     "type": "git",

@@ -22,9 +22,9 @@ function convertSchame({ convert, schame }){
 
 function schame() {
     return ($model) => {
-        const defaultsData = {};
+        const defaultData = {};
         Object.keys($model._fields).forEach(fieldName => {
-            defaultsData[fieldName] = $model._fields[fieldName].default;
+            defaultData[fieldName] = $model._fields[fieldName].default;
         });
         return defaultData;
     }

@@ -42,17 +42,18 @@ class Modeler{
         const fields = options.fields;
         const methods = Object.assign(this._operations, options.methods);
 
-        const constructor = (options) => {
+        const constructor = function (options) {
             this._fields = fields;
             this._operations = methods;
             this.instance = options.instance;
+            this.options = options || {};
         };
 
         const prototype = {};
         Object.keys(methods).forEach(methodName=>{
             const method = methods[methodName];
             prototype[methodName] = function(...arg){
-                return method(this, ...arg);
+                return method(this.options)(this, ...arg);
             }
         })
         constructor.prototype = prototype;
@@ -61,4 +62,4 @@ class Modeler{
     }
 }
 
-module.exports = Modeler;
+export default Modeler;
