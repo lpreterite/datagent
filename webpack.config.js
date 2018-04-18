@@ -69,9 +69,10 @@ if (process.env.NODE_ENV === "production") {
 // test specific setups
 if (process.env.NODE_ENV === "test") {
   module.exports.output = Object.assign(module.exports.output, {
+    target: 'node',
     devtoolModuleFilenameTemplate: "[absolute-resource-path]",
     devtoolFallbackModuleFilenameTemplate: "[absolute-resource-path]?[hash]"
   });
   module.exports.externals = [require("webpack-node-externals")()];
-  module.exports.devtool = "inline-cheap-module-source-map";
+  module.exports.devtool = "inline-source-map";
 }
