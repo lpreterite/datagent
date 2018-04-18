@@ -28,8 +28,9 @@ class Queue {
     static run($model, args, queues) {
         return new Promise((resolve, reject) => {
             const queue = compose(queues);
+            let result;
             try {
-                queue({ $model, args, result: null }, ctx => resolve([null, ctx.result, ctx.$model]));
+                queue({ $model, args, result }, ctx => resolve([null, ctx.result, ctx.$model]));
             } catch (e) {
                 reject([e, ctx.$model]);
             }

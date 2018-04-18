@@ -7,21 +7,21 @@ describe('Queue Class Test', function() {
     it('should return "Packy, hollow word"', function() {
       var queues = [
         function (ctx, next) {
-          console.log(data, 1);
+          console.log(ctx.result, ctx.args , 1);
           setTimeout(() => {
-            ctx.result += 'hollow';
+            ctx.result = ctx.args + 'hollow';
             next();
           }, 400);
         },
         function (ctx, next) {
-          console.log(data, 2);
+          console.log(ctx.result, 2);
           setTimeout(() => {
             ctx.result += " ";
             next();
           }, 100);
         },
         function (ctx, next) {
-          console.log(data, 3);
+          console.log(ctx.result, 3);
           setTimeout(() => {
             ctx.result += "word!";
             next();
@@ -29,7 +29,7 @@ describe('Queue Class Test', function() {
         },
       ];
 
-      return assert.eventually.include(Queue.run(queues)("Packy, "),"Packy, hollow word!");
+      return assert.eventually.include(Queue.run({}, "Packy, ", queues),"Packy, hollow word!");
     });
   });
 });
