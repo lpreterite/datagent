@@ -1,36 +1,35 @@
-var Queue = require('../src/utils/queue.js');
+// var Queue = require('../src/classes/Queue.class.js');
 
-describe('utils/queue.js', function() {
+import Queue from "../src/classes/Queue.class.js";
+
+describe('Queue Class Test', function() {
   describe('#run', function() {
     it('should return "Packy, hollow word"', function() {
       var queues = [
-        function (data) {
+        function (ctx, next) {
           console.log(data, 1);
-          return new Promise((resolve, reject) => {
-            setTimeout(() => {
-              resolve(data + 'hollow');
-            }, 400);
-          });
+          setTimeout(() => {
+            ctx.result += 'hollow';
+            next();
+          }, 400);
         },
-        function (data) {
+        function (ctx, next) {
           console.log(data, 2);
-          return new Promise((resolve, reject) => {
-            setTimeout(() => {
-              resolve(data + " ");
-            }, 100);
-          });
+          setTimeout(() => {
+            ctx.result += " ";
+            next();
+          }, 100);
         },
-        function (data) {
+        function (ctx, next) {
           console.log(data, 3);
-          return new Promise((resolve, reject) => {
-            setTimeout(() => {
-              resolve(data + "word!");
-            }, 600);
-          });
+          setTimeout(() => {
+            ctx.result += "word!";
+            next();
+          }, 600);
         },
       ];
 
-      return assert.eventually.equal(Queue.run(queues)("Packy, "), "Packy, hollow word!");
+      return assert.eventually.include(Queue.run(queues)("Packy, "),"Packy, hollow word!");
     });
   });
 });
