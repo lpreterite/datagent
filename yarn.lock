@@ -1484,6 +1484,10 @@ fast-json-stable-stringify@^2.0.0:
   version "2.0.0"
   resolved "http://r.cnpmjs.org/fast-json-stable-stringify/download/fast-json-stable-stringify-2.0.0.tgz#d5142c0caee6b1189f87d3a76111064f86c8bbf2"
 
+fecha@^2.3.3:
+  version "2.3.3"
+  resolved "http://r.cnpmjs.org/fecha/download/fecha-2.3.3.tgz#948e74157df1a32fd1b12c3a3c3cdcb6ec9d96cd"
+
 filename-regex@^2.0.0:
   version "2.0.1"
   resolved "http://r.cnpmjs.org/filename-regex/download/filename-regex-2.0.1.tgz#c1c4b9bee3e09725ddb106b75c1e301fe2f18b26"

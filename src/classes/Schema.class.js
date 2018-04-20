@@ -1,10 +1,13 @@
-import { convert } from "utils/";
+import { convert } from "../utils/";
 
-class Schema {
+export default class Schema {
     constructor(fields) {
         this._fields = fields;
     }
     format(data) {
-        return this.convert(data, this._fields);
+        return convert(data, this._fields);
+    }
+    static format(data, fields){
+        return convert(data, fields);
     }
 }

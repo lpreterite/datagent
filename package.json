@@ -38,6 +38,7 @@
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "cross-env": "^5.1.1",
+    "fecha": "^2.3.3",
     "mocha": "^4.0.1",
     "mocha-webpack": "^1.0.1",
     "vue": "^2.5.3",
