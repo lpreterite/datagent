@@ -25,16 +25,18 @@ import compose from 'koa-compose';
  */
 
 class Queue {
-    static run($model, args, queues) {
-        return new Promise((resolve, reject) => {
-            const queue = compose(queues);
-            let result;
-            try {
-                queue({ $model, args, result }, ctx => resolve([null, ctx.result, ctx.$model]));
-            } catch (e) {
-                reject([e, ctx.$model]);
-            }
-        });
+    static run(queues) {
+        const queue = compose(queues);
+        return (args, ctx={}) => {
+            ctx = { ...ctx, args };
+            return new Promise((resolve, reject) => {
+                try {
+                    queue(ctx, ctx => resolve([null, ctx.result, ctx]));
+                } catch (e) {
+                    reject([e, ctx]);
+                }
+            });
+        }
     }
 }
 

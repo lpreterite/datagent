@@ -1,13 +1,29 @@
 import { convert } from "../utils/";
 
+export const format = (data, fields) => convert(data, fields);
+export const filter = (data, fields) => convert(data, fields, { fields: Object.keys(fields) });
+export const schema = fields => convert({}, fields, { fields: Object.keys(fields) });
+
 export default class Schema {
     constructor(fields) {
         this._fields = fields;
     }
     format(data) {
-        return convert(data, this._fields);
+        return format(data, this._fields);
+    }
+    filter(data){
+        return filter(data, this._fields);
+    }
+    schema(){
+        return schema(this._fields);
     }
     static format(data, fields){
-        return convert(data, fields);
+        return format(data, fields);
+    }
+    static filter(data, fields) {
+        return filter(data, fields);
+    }
+    static schema(fields) {
+        return schema(fields);
     }
 }

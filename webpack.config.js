@@ -73,5 +73,5 @@ if (process.env.NODE_ENV === "test") {
     devtoolFallbackModuleFilenameTemplate: "[absolute-resource-path]?[hash]"
   });
   module.exports.externals = [require("webpack-node-externals")()];
-  module.exports.devtool = "inline-cheap-module-source-map";
+  module.exports.devtool = "eval";
 }

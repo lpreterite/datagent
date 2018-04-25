@@ -48,13 +48,15 @@ export function ModelFactory(options) {
  * }
  * ```
  */
-export function convert(data, format) {
-    const result = { ...data };
-    const keys = Object.keys(result);
-    keys.forEach(fieldName => {
+export function convert(data, format, opts={}) {
+    let { fields } = opts;
+    fields = typeof fields === 'undefined' ? [].concat(Object.keys(data), Object.keys(format)) : fields;
+    
+    const result = {};
+    fields.forEach(fieldName => {
         const fieldSet = format[fieldName];
-        if (!fieldSet) return; // 找不到格式化设置的跳过
-        let fieldVal = result[fieldName];
+        if (!fieldSet) return result[fieldName] = data[fieldName];
+        let fieldVal = data[fieldName];
         if (fieldSet.type === Array){
             return result[fieldName] = fieldVal ? fieldVal : [];
         }
