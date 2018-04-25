@@ -5,39 +5,42 @@ describe('Queue Class Test', function() {
   var ctx = {};
   var data = [];
 
+  function asyncFun(fn, time){
+    return new Promise((resolve,reject)=>{
+      setTimeout(()=>{
+        try{
+          fn();
+          resolve();
+        }catch(e){
+          reject(e);
+        }
+      }, time);
+    });
+  }
+
   describe('#run', function() {
     it('应当输出内容顺序为[1,2,3]的数组', async function() {
       const operations = [
-        function (ctx, next) {
-          // console.log('first start');
-          setTimeout(() => {
+        async function (ctx, next) {
+          await asyncFun(()=>{
             ctx.result = [].concat(ctx.args, 1);
-            // console.log('first value:' + ctx.result);
-            next();
           }, 150);
-          // console.log('first end');
+          return next();
         },
-        function (ctx, next) {
-          // console.log('second start');
-          setTimeout(() => {
-            ctx.result = [].concat(ctx.result, 2);
-            // console.log('second value:' + ctx.result);
-            next();
+        async function (ctx, next) {
+          await asyncFun(() => {
+            ctx.result = [].concat(ctx.result || [], 2);
           }, 100);
-          // console.log('second end');
+          return next();
         },
-        function (ctx, next) {
-          // console.log('third start');
-          setTimeout(() => {
+        async function (ctx, next) {
+          await asyncFun(() => {
             ctx.result = [].concat(ctx.result, 3);
-            // console.log('third value:' + ctx.result);
-            next();
           }, 200);
-          // console.log('third start');
+          return next();
         },
       ];
 
-      let ctx={};
       [err, result, ctx] = await Queue.run(operations)(data, ctx);
       
       // console.log(result);

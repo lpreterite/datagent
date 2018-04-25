@@ -1,12 +1,13 @@
 # 使用场景
 
 ```js
-class Contact {
+
+class Remote { // 远端链接
     constructor(options){
-        this._instance = options.instance;
+        this._origin = options.origin;
     }
     get(){
-
+        return this.origin.get();
     }
     post(){
 
@@ -17,44 +18,76 @@ class Contact {
     delete(){
 
     }
+    get origin(){
+        return this._origin;
+    }
 }
 
-class Remotes {
-    
+class Contact { // 管理远端链接
+    constructor(){
+        this._remotes = {};
+        this._default_remote = "";
+    }
+    remote(...args){
+        let name = args[0],
+            remote = args[1],
+            opts = { default:false, ...args[2] };
+        if(args.length > 2){
+            // set remote
+            if(typeof name !== 'string') throw new Error('The first arguments must be String');
+            if(typeof remote === 'object' && remote.constructor === Remote) throw new Error('The second arguments must be Remote');
+            this._remotes[name] = remote;
+            if(opts.default || this.length == 1) this.default(remote);
+        }else{
+            // get remote
+            remote = this._remotes[name ? name : this._default_remote];
+            return remote;
+        }
+    }
+    default(name){
+        this._default_remote = name;
+    }
+    get lenght(){
+        return Object.keys(this._remotes).length;
+    }
 }
 
-const remotes = new Remotes({ contacts });
-
-const contacts = {
+const remotes = {
     'base': axios.create({ baseURL: '/' }),
     'test': axios.create({ baseURL: location.host+':8088/' }),
 };
 
+const testRemote = new Remote({ origin: remotes.test });
+
+const contact = new Contact();
+contact.remote('test', testRemote, {default:true});
+contact.remote('test'); // get Test Remote
+contact.remote(); // get default Remote, Test Remote is default
+
 export const isNew = data=>!data.id;
 export const getURL = (url, id, emulateIdKey) => emulateIdKey ? url : `${url}/${id}`;
-class Model {
+class Model { //支持多源操作
     // 包含fetch, find, save, delete方法的基础模型类
     constructor(options){
         this._url = options.url;
         this._name = options.name;
-        this._remote = 'base';
-        this._origins = options.remotes;
+        this._contact = options.contact;
         this._emulateIdKey = typeof options.emulateIdKey === 'undefined' ? false : options.emulateIdKey;
     }
-    fetch(query){
-        return this.contact.get(this._url, { params: query });
+    fetch(query, {origin}){
+        return this.remote(origin).get(this._url, { params: query });
     }
-    find(id){
-        return this.contact.get(getURL(this._url, id, this._emulateIdKey), { params: this._emulateIdKey ? { [this._emulateIdKey]: id } : undefined } });
+    find(id, {origin}){
+        return this.remote(origin).get(getURL(this._url, id, this._emulateIdKey), { params: this._emulateIdKey ? { [this._emulateIdKey]: id } : undefined } });
     }
-    save(data){
-        return this.contact({ url: this._url, method:isNew(data)?'post':'put', data });
+    save(data, {origin}){
+        return this.remote(origin)({ url: this._url, method:isNew(data)?'post':'put', data });
     }
-    delete(id){
-        return this.contact.delete(getURL(this._url, id, this._emulateIdKey), { params: this._emulateIdKey ? { [this._emulateIdKey]: id } : undefined } });
+    delete(id, {origin}){
+        return this.remote(origin).delete(getURL(this._url, id, this._emulateIdKey), { params: this._emulateIdKey ? { [this._emulateIdKey]: id } : undefined } });
     }
-    get contact(){
-        return this._origins.get(this._remote);
+    remote(name){
+        return this._contact.remote(name);
     }
 }
 

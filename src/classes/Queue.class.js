@@ -31,7 +31,7 @@ class Queue {
             ctx = { ...ctx, args };
             return new Promise((resolve, reject) => {
                 try {
-                    queue(ctx, ctx => resolve([null, ctx.result, ctx]));
+                    queue(ctx, ctx => resolve([null, ctx.result, ctx]))
                 } catch (e) {
                     reject([e, ctx]);
                 }
