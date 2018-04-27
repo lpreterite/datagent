@@ -10,3 +10,4 @@ var chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 
 global.assert = chai.assert;
+global.axios = require('axios');

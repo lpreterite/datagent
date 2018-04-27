@@ -1,3 +1,7 @@
+import Model from '../classes/Model.class';
+import Contact from '../classes/Contact.class';
+import Remote from '../classes/Remote.class';
+
 export const isNew = data => !data.id;
 export const getURL = (url, id, emulateIdKey) => emulateIdKey ? url : `${url}/${id}`;
 
@@ -35,6 +39,14 @@ export function ModelFactory(options) {
         };
     })
     return ProxyModel;
+}
+
+export function ContactFactory({ remotes={}, defaults='base' }){
+    const contact = new Contact();
+    Object.keys(remotes).forEach((remoteName, index)=>{
+        contact.remote(remoteName, new remote(remotes[remoteName], { default: index==0 }));
+    })
+    return contact;
 }
 
 /**

@@ -1,4 +1,4 @@
-import { isNew, getURL } from "utils/";
+import { isNew, getURL } from "../utils/";
 
 class Model {
     // 包含fetch, find, save, delete方法的基础模型类
