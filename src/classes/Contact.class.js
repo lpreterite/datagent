@@ -14,7 +14,7 @@ export default class Contact {
             if (typeof name !== 'string') throw new Error('The first arguments must be String');
             if (remote.constructor !== Remote) throw new Error('The second arguments must be Remote');
             this._remotes[name] = remote;
-            if (opts.default || this.length == 1) this.default(remote);
+            if (opts.default || this.length == 1) this.default(name);
         } else {
             // get remote
             remote = this._remotes[name ? name : this._default_remote];
@@ -22,6 +22,7 @@ export default class Contact {
         }
     }
     default(name) {
+        if(typeof name !== 'string') throw new Error('The name must be string in default()');
         this._default_remote = name;
     }
     get lenght() {

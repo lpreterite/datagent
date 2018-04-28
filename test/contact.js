@@ -22,5 +22,11 @@ describe('Contact Class Test', () => {
             contact.remote('base', new Remote({ origin: remotes.base }));
             assert.exists(contact.remote('base'), '没有添加至连接器中');
         })
+        it('应当支持默认设置', () => {
+            const testRemote = new Remote({ origin: remotes.test });
+            contact.remote('base', new Remote({ origin: remotes.base }));
+            contact.remote('test', testRemote, { default: true });
+            assert(contact.remote() === testRemote, "获得远端服务应为test");
+        })
     })
 });
