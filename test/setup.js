@@ -11,3 +11,4 @@ chai.use(chaiAsPromised);
 
 global.assert = chai.assert;
 global.axios = require('axios');
+global.MockAdapter = require('axios-mock-adapter');

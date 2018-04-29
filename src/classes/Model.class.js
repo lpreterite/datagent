@@ -1,9 +1,11 @@
 import { isNew, getURL } from "../utils/";
+import Contact from './Contact.class';
 
 class Model {
     constructor(options) {
         this._url = options.url;
         this._name = options.name;
+        if (typeof options.contact == 'undefined' || options.contact.constructor != Contact) throw new Error('options.contact must be Contact class in Model');
         this._contact = options.contact;
         this._emulateIdKey = typeof options.emulateIdKey === 'undefined' ? false : options.emulateIdKey;
     }
