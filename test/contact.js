@@ -17,8 +17,8 @@ describe('Contact Class Test', () => {
         contact = new Contact();
     });
 
-    describe('instance.remote()', ()=>{
-        it('应当根据名称记录远端服务', ()=>{
+    describe('instance.remote()', () => {
+        it('应当根据名称记录远端服务', () => {
             contact.remote('base', new Remote({ origin: remotes.base }));
             assert.exists(contact.remote('base'), '没有添加至连接器中');
         })
@@ -27,6 +27,10 @@ describe('Contact Class Test', () => {
             contact.remote('base', new Remote({ origin: remotes.base }));
             contact.remote('test', testRemote, { default: true });
             assert(contact.remote() === testRemote, "获得远端服务应为test");
+        })
+        it('当不传入名称时应当返回默认远程服务', () => {
+            contact.remote('base', new Remote({ origin: remotes.base }));
+            assert.exists(contact.remote(), '没有返回远程服务');
         })
     })
 });

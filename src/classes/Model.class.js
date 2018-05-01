@@ -1,7 +1,7 @@
 import { isNew, getURL } from "../utils/";
 import Contact from './Contact.class';
 
-class Model {
+export default class Model {
     constructor(options) {
         this._url = options.url;
         this._name = options.name;

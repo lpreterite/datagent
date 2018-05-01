@@ -25,7 +25,7 @@ export default class Contact {
         if(typeof name !== 'string') throw new Error('The name must be string in default()');
         this._default_remote = name;
     }
-    get lenght() {
+    get length() {
         return Object.keys(this._remotes).length;
     }
 }
