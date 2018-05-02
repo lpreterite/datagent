@@ -4,6 +4,7 @@ export default class Remote {
     }
     get(url, params) {
         return this.sync({
+            url,
             method: 'GET',
             params
         });
@@ -31,7 +32,7 @@ export default class Remote {
     }
     delete(url, data) {
         return this.sync({
-            method: 'PUT',
+            method: 'DELETE',
             url,
             data
         });

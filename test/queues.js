@@ -18,7 +18,7 @@ describe('Queue Class Test', function() {
     });
   }
 
-  describe('#run', function() {
+  describe('run()', function() {
     it('应当输出内容顺序为[1,2,3]的数组', async function() {
       const operations = [
         async function (ctx, next) {

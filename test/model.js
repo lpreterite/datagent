@@ -2,30 +2,35 @@ import Model from '../src/classes/Model.class';
 import Remote from '../src/classes/Remote.class';
 import Contact from '../src/classes/Contact.class';
 
-describe('mocking axios requests', function () {
-    let mock, contact, model, remotes;
+describe('Model Class Test', function () {
+    let mock, contact, model;
+    let baseURL = 'http://localhost/api';
     before(function () {
-        remotes = {
-            'base': axios.create({ baseURL: 'localhost/api' })
-        };
+        let remote = new Remote({ origin: axios.create({ baseURL }) });
         contact = new Contact();
-        contact.remote('base', new Remote({ origin: remotes.base }));
-
+        contact.remote('base', remote);
         model = new Model({ name: 'user', url: '/users', contact });
-        // console.log(model.remote().get('/'));
-
-        mock = new MockAdapter(remotes.base);
+        // init mock XHR
+        mock = new MockAdapter(remote.origin);
     })
     after(function(){
         mock.restore();
     })
-    describe('across entire suite', function () {
-        beforeEach(function () {
-            mock.onGet('/users', { params: { searchText: 'John' } }).reply(200, {
+
+    describe('The Remote Fetch Test', function () {
+        let data;
+
+        before(function(){
+            data = {
                 users: [
-                    { id: 1, name: 'John Smith' }
+                    { id: 1, name: 'John Smith' },
+                    { id: 2, name: 'Packy Tang' }
                 ]
-            });
+            };
+        })
+
+        beforeEach(function () {
+            mock.onGet(baseURL+'/users').reply(200, data);
         });
 
         afterEach(function () {
@@ -33,10 +38,8 @@ describe('mocking axios requests', function () {
         });
 
         it('just for a single spec', async ()=>{
-            const result = await model.remote().get('/users', { params: { searchText: 'John' } }).then(res=>res.data);
-            assert.sameDeepMembers(result.users, [
-                { id: 1, name: 'John Smith' }
-            ]);
+            const result = await model.remote().get('/users').then(res=>res.data);
+            assert.sameDeepMembers(result.users, data.users);
         })
 
     })
