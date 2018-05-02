@@ -20,6 +20,7 @@ describe('Contact Class Test', () => {
     describe('instance.remote()', () => {
         it('应当根据名称记录远端服务', () => {
             contact.remote('base', new Remote({ origin: remotes.base }));
+            contact.remote('test', new Remote({ origin: remotes.test }), { default: true });
             assert.exists(contact.remote('base'), '没有添加至连接器中');
         })
         it('应当支持默认设置', () => {

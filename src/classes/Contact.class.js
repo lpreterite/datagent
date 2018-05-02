@@ -1,4 +1,5 @@
 import Remote from './Remote.class';
+import { defaults } from '../utils/';
 
 export default class Contact {
     constructor() {
@@ -8,7 +9,7 @@ export default class Contact {
     remote(...args) {
         let name = args[0],
             remote = args[1],
-            opts = { default: false, ...args[2] };
+            opts = defaults(args[2], { default: false });
         if (args.length >= 2) {
             // set remote
             if (typeof name !== 'string') throw new Error('The first arguments must be String');

@@ -3,7 +3,9 @@ import Contact from '../classes/Contact.class';
 import Remote from '../classes/Remote.class';
 
 export const isNew = data => !data.id;
-export const getURL = (url, id, emulateIdKey) => emulateIdKey ? url : `${url}/${id}`;
+export const getURL = (url, id, emulateIdKey) => emulateIdKey ? url : (url + (isDef(id) ? `/${id}` : ''));
+export const isDef = val => typeof val !== 'undefined';
+export const defaults = (obj, defaults = {}) => isDef(obj) ? Object.assign(defaults, obj) : defaults;
 
 export function ModelFactory(options) {
     //产出含有模型类
@@ -41,10 +43,10 @@ export function ModelFactory(options) {
     return ProxyModel;
 }
 
-export function ContactFactory({ remotes={}, defaults='base' }){
+export function ContactFactory(remotes={}, defaults='base'){
     const contact = new Contact();
     Object.keys(remotes).forEach((remoteName, index)=>{
-        contact.remote(remoteName, new remote(remotes[remoteName], { default: index==0 }));
+        contact.remote(remoteName, new Remote({ origin: remotes[remoteName] }), { default: index == 0 });
     })
     return contact;
 }
