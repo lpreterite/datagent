@@ -64,7 +64,7 @@ describe('Schema Class Test', function(){
                 sex: { type: String, default: 0 },
                 nickname: { type: String, default: 'Packy' }
             };
-            const data = Schema.schema(format);
+            const data = Schema.default(format);
             assert.include(data, {id:1,sex:0,nickname:'Packy'});
         })
     })

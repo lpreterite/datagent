@@ -1,4 +1,4 @@
-import { convert } from "../utils/";
+import { convert } from "./utils/";
 
 export const format = (data, fields) => convert(data, fields);
 export const filter = (data, fields) => convert(data, fields, { fields: Object.keys(fields) });
@@ -14,7 +14,7 @@ export default class Schema {
     filter(data){
         return filter(data, this._fields);
     }
-    schema(){
+    default(){
         return schema(this._fields);
     }
     static format(data, fields){
@@ -23,7 +23,11 @@ export default class Schema {
     static filter(data, fields) {
         return filter(data, fields);
     }
-    static schema(fields) {
+    static default(fields) {
         return schema(fields);
+    }
+
+    get fields(){
+        return this._fields;
     }
 }

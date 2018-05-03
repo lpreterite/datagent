@@ -191,35 +191,80 @@ function ModelFactory(options){
     return ProxyModel;
 }
 
-const UserModel = ModelFactory({
+// const UserModel = ModelFactory({
+//     name: 'user',
+//     url: '/user',
+//     fields(Schema){
+//         return new Schema({
+//             id: { type: Number, defaults: 0 },
+//             nickname: { type: String, defaults: '' },
+//             sex: { type: Number, defaults: '1' },
+//             create_at: { type: String, defaults: Date.now() }
+//         });
+//     },
+//     hooks(hooks, $schema){
+//         // hooks: all, fethc, find, save, delete
+//         // hooks 可定义别名如：all:after
+//         // hooks 同时适用于下面的`methods`方法
+        
+//         // 获得数据后转换create_at字段类型
+//         hooks.addHooks(['fetch','find'], 'after', [convert({ field:'create_at', to: Fecha.parse })]);
+//         // 保存前保留定义字段，移除其他字段
+//         hooks.addHooks('save', 'before', [keep({ fields:$schema.fields() })]);
+//         return hooks;
+//     },
+//     methods: {
+//         //其他额外方法
+//     }
+// });
+
+// in UserModel.js
+export default {
     name: 'user',
     url: '/user',
-    fields(Schema){
-        return new Schema({
-            id: { type: Number, defaults: 0 },
-            nickname: { type: String, defaults: '' },
-            sex: { type: Number, defaults: '1' },
-            create_at: { type: String, defaults: Date.now() }
-        });
+    fields: {
+        id: { type: Number, defaults: 0 },
+        nickname: { type: String, defaults: '' },
+        sex: { type: Number, defaults: '1' },
+        create_at: { type: String, defaults: Date.now() }
     },
-    hooks(hooks, $schema){
-        // hooks: all, fethc, find, save, delete
-        // hooks 可定义别名如：all:after
-        // hooks 同时适用于下面的`methods`方法
-        
-        // 获得数据后转换create_at字段类型
-        hooks.addHooks(['fetch','find'], 'after', [convert({ field:'create_at', to: Fecha.parse })]);
-        // 保存前保留定义字段，移除其他字段
-        hooks.addHooks('save', 'before', [keep({ fields:$schema.fields() })]);
-        return hooks;
+    hooks: {
+        // 定义两种hook：receive接收数据, send发送数据
+        // get 属于接收数据，post put 属于发送数据。
+        "receive": {
+            "after": [convert({ field:'create_at', to: Fecha.parse })]
+        },
+        "send": {
+            "before": [keep(['id','nickname','sex','create_at'])]
+        }
+        //支持hooks包括：
+        // - 基础的请求：get, post, put, patch, delete
+        // - 基于模型的：fetch, find, save, delete
+        // - 基于处理的：receive, send
     },
     methods: {
-        //其他额外方法
+        ban(id){
+            return this.save({ id, disabled: true });
+        }
     }
-});
+};
+
+import userSet from 'UserModel';
+const UserModel = RichModel(userSet)(contact);
+
+UserModel._url;
+UserModel.contact; // Contact instance
+UserModel.contact.remote(); // Remote instance
+UserModel.schema; // Schema instance
+UserModel.schema.default();
+UserModel.hooks; // Hooks instance
+UserModel.fetch();
+UserModel.find();
+UserModel.save();
+UserModel.delete();
 
 /** 直接使用 */
-const $user = new UserModel({ remotes });
+const $user = new UserModel({ contact });
 
 //所有接口统一返回Promise
 

@@ -11,6 +11,9 @@ class Hooks {
         const key = `${method}::${about}`;
         return this.map.get(key);
     }
+    get length(){
+        return this.map.length;
+    }
 }
 
 export default Hooks;
