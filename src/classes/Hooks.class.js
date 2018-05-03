@@ -1,18 +1,41 @@
 class Hooks {
     constructor() {
-        this.map = new Map();
+        this._map = new Map();
     }
     addHooks(method, about, operations) {
         const key = `${method}::${about}`;
-        const hooks = [].concat(this.map.get(key), operations);
-        return this.map.set(key, hooks);
+        const hooks = [].concat(this._map.get(key), operations);
+        return this._map.set(key, hooks);
     }
     getHooks(method, about) {
         const key = `${method}::${about}`;
-        return this.map.get(key);
+        return this._map.get(key);
     }
-    get length(){
-        return this.map.length;
+    each(fn) {
+        return this._map.forEach(fn);
+    }
+    get length() {
+        return this._map.size;
+    }
+    static merge(methodName, method, hooks) {
+        const method = Hooks.wrapper(method);
+        return function (...args) {
+            return Queue.run(this, args, [
+                ...hooks.getHooks(methodName, 'before'),
+                method,
+                ...hooks.getHooks(methodName, 'after'),
+            ]);
+        }
+    }
+    static wrapper(method) {
+        return (ctx, next) => {
+            return method
+                .apply(ctx.$model, ctx.args)
+                .then(data => {
+                    ctx.result = data;
+                    next();
+                });
+        }
     }
 }
 

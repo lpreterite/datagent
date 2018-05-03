@@ -64,6 +64,18 @@ contact.remote('test', testRemote, {default:true});
 contact.remote('test'); // get Test Remote
 contact.remote(); // get default Remote, Test Remote is default
 
+// 实际创建 contact
+// in contact.js
+export default Dataflow.Contact({
+    'base': axios.create({ baseURL: '/' }),
+    'test': axios.create({ baseURL: location.host+':8088/' }),
+});
+// 使用 contact
+// 具体可看 UserModel
+import contact from 'contact';
+import UserModel from 'UserModel';
+const $user = new UserModel({ contact });
+
 export const isNew = data=>!data.id;
 export const getURL = (url, id, emulateIdKey) => emulateIdKey ? url : `${url}/${id}`;
 class Model { //支持多源操作
@@ -93,9 +105,6 @@ class Model { //支持多源操作
 
 class LocalStorageModel extends Model {
     constructor(options){
-        this._remoteModel = new Model(options);
-        this._remoteModel._url = this._url;
-        this._remoteModel._name = this._name;
     }
 
     fetch(){}
@@ -131,13 +140,36 @@ function convert(options){
 
 class Hooks {
     constructor(){
-        this.hooks = {};
+        this._map = new Map();
     }
-    addHooks(methods, about, operations){
+    addHooks(method, about, operations){
         
     }
     getHooks(method, about){
 
+    }
+    each(fn){
+        return this._map.forEach(fn);
+    }
+    static merge(methodName, method, hooks){
+        const method = Hooks.wrapper(method);
+        return function(...args){
+            return Queue.run(this, args, [
+                ...hooks.getHooks(methodName, 'before'),
+                method,
+                ...hooks.getHooks(methodName, 'after'),
+            ]);
+        }
+    }
+    static wrapper(method){
+        return (ctx, next)=>{
+            return method
+                .apply(ctx.$model, ctx.args)
+                .then(data=>{
+                    ctx.result = data;
+                    next();
+                });
+        }
     }
 }
 
@@ -155,41 +187,47 @@ class Queue{
     }
 }
 
-function ModelFactory(options){
-    //产出含有模型类
-    //包含 Model.schema 静态方法
-    const _schema = options.fields(Schema);
-    class ProxyModel extends Model{};
-    ProxyModel.prototype._name = options.name;
-    ProxyModel.prototype._url = options.url;
-    // 注册模型字段
-    ProxyModel.prototype._schema = _schema;
-    ProxyModel.schema = function(fields){
-        return _schema.format(fields);
-    }
-    const methods = {...Object.getOwnPropertyDescriptors(Model.prototype), ...options.methods};
-    // 注册方法
-    Object.keys(methods).forEach(methodName=>{
-        if(methodName === 'constructor') return;
-        const method = (ctx, next)=>{
-            methods[methodName]
-                .apply(ctx.$model, ctx.args)
-                .then(data=>{
-                    ctx.result = data;
-                    next();
-                });
-        };
-        const hooks = options.hooks(new Hooks(), _schema);
-        ProxyModel.prototype[methodName] = function(...args){
-            return Queue.run(this, args, [
-                ...hooks.getHooks(methodName, 'before'),
-                method,
-                ...hooks.getHooks(methodName, 'after'),
-            ]);
-        };
+export function ContactFactory(remotes={}, defaults='base'){
+    const contact = new Contact();
+    Object.keys(remotes).forEach((remoteName, index)=>{
+        contact.remote(remoteName, new Remote({ origin: remotes[remoteName] }), { default: index == 0 });
     })
+    return contact;
+}
+
+export function ModelFactory(name, options){
+    //产出含有模型类
+    class ProxyModel{};
+    ProxyModel.name = name;
+    ProxyModel.url = isDef(options.url) ? options.url : `/${name}`;
+    // 注册模型字段
+    const schema = ProxyModel.schema = ProxyModel.prototype.schema = new Schema(options.fields);
+    // model hooks ['fetch','find','save','delete'];
+    // remote hooks ['get', 'post', 'put', 'patch', 'delete']
+    // active hooks ['receive', 'send']
+    const hooks = ProxyModel.hooks = ProxyModel.prototype.hooks = new Hooks();
+    const special = ['receive', 'send'];
+    Object.keys(hooks)
+        .filter(methodName=>special.indexOf(methodName) > -1)
+        .forEach(methodName=>{
+            const { after, before } = hooks[methodName];
+            hooks.addHooks(methodName, 'before', before);
+            hooks.addHooks(methodName, 'after', after);
+        })
+    
+    const methods = ['fetch','find','save','delete'];
+    methods.forEach(methodName=>{
+        ProxyModel.prototype[methodName] = Hooks.merge(
+            methodName,
+            (params,opts) => Model.fetch(ProxyModel.url, params, opts),
+            hooks
+        );
+    });
+    
     return ProxyModel;
 }
+
+export default { Model: ModelFactory, Contact: ContactFactory };
 
 // const UserModel = ModelFactory({
 //     name: 'user',
@@ -219,8 +257,7 @@ function ModelFactory(options){
 // });
 
 // in UserModel.js
-export default {
-    name: 'user',
+export default Dataflow.Model('user', {
     url: '/user',
     fields: {
         id: { type: Number, defaults: 0 },
@@ -230,13 +267,9 @@ export default {
     },
     hooks: {
         // 定义两种hook：receive接收数据, send发送数据
-        // get 属于接收数据，post put 属于发送数据。
-        "receive": {
-            "after": [convert({ field:'create_at', to: Fecha.parse })]
-        },
-        "send": {
-            "before": [keep(['id','nickname','sex','create_at'])]
-        }
+        // 接收数据hook将会添加至fetch, find之后, 发送数据hook将会添加至save之前
+        "receive": [convert({ field:'create_at', to: Fecha.parse })],
+        "send": [keep(['id','nickname','sex','create_at'])]
         //支持hooks包括：
         // - 基础的请求：get, post, put, patch, delete
         // - 基于模型的：fetch, find, save, delete
@@ -247,24 +280,20 @@ export default {
             return this.save({ id, disabled: true });
         }
     }
-};
+});
 
-import userSet from 'UserModel';
-const UserModel = RichModel(userSet)(contact);
+import UserModel from 'UserModel';
 
-UserModel._url;
-UserModel.contact; // Contact instance
-UserModel.contact.remote(); // Remote instance
 UserModel.schema; // Schema instance
-UserModel.schema.default();
+UserModel.schema.default(); // Schema instance.default()
 UserModel.hooks; // Hooks instance
-UserModel.fetch();
-UserModel.find();
-UserModel.save();
-UserModel.delete();
+UserModel.name;
 
 /** 直接使用 */
 const $user = new UserModel({ contact });
+
+$user.remote() // Contact instance.remote()
+$user.contact // Contact instance
 
 //所有接口统一返回Promise
 
@@ -300,6 +329,7 @@ function ModelMixin(options){
     // options.storage //存储对象
     // options.modelPrefix //模型前缀
     // options.models //绑定的模型
+    // options.contact //远端链接
 
     // 给vue组件生成并绑定模型类实例
 }
@@ -307,7 +337,7 @@ function ModelMixin(options){
 export default {
     mixins: [
         StatusMixin('user')(['loading']),
-        ModelMixin({ remotes, models:{'user':UserModel} })
+        ModelMixin({ contact, models:{'user':UserModel} })
     ],
     mounted(){
         this.refresh();
