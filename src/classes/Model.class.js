@@ -3,9 +3,12 @@ import Contact from './Contact.class';
 
 export default class Model {
     constructor(options) {
-        this._url = options.url;
-        this._name = options.name;
-        if (typeof options.contact == 'undefined' || options.contact.constructor != Contact){
+        const name = this._name = options.name;
+        if(!isDef(name) || typeof name != 'string'){
+            throw new Error('options.name must be string in Model');
+        }
+        this._url = isDef(options.url) ? options.url : `/${name}`;
+        if (!isDef(options.contact) || options.contact.constructor != Contact){
             throw new Error('options.contact must be Contact class in Model');
         }
         this._contact = options.contact;

@@ -1,4 +1,4 @@
-import { convert } from "./utils/";
+import { convert } from "../utils/";
 
 export const format = (data, fields) => convert(data, fields);
 export const filter = (data, fields) => convert(data, fields, { fields: Object.keys(fields) });

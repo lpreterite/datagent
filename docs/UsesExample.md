@@ -195,11 +195,22 @@ export function ContactFactory(remotes={}, defaults='base'){
     return contact;
 }
 
+// 模型工厂需求
+// - 产出模型抽象的继承只存在两层关系（没有更深），避免实例原型（prototpye）的依赖问题（吃内存）
+
 export function ModelFactory(name, options){
     //产出含有模型类
-    class ProxyModel{};
-    ProxyModel.name = name;
-    ProxyModel.url = isDef(options.url) ? options.url : `/${name}`;
+    class ProxyModel{
+        constructor(options) {
+            if (typeof options.contact == 'undefined' || options.contact.constructor != Contact){
+                throw new Error('options.contact must be Contact class in Model');
+            }
+            this._contact = options.contact;
+            this._emulateIdKey = typeof options.emulateIdKey === 'undefined' ? false : options.emulateIdKey;
+        }
+    };
+    ProxyModel.prototype._name = ProxyModel.name = name;
+    ProxyModel.prototype._url = ProxyModel.url = isDef(options.url) ? options.url : `/${name}`;
     // 注册模型字段
     const schema = ProxyModel.schema = ProxyModel.prototype.schema = new Schema(options.fields);
     // model hooks ['fetch','find','save','delete'];
@@ -208,18 +219,36 @@ export function ModelFactory(name, options){
     const hooks = ProxyModel.hooks = ProxyModel.prototype.hooks = new Hooks();
     const special = ['receive', 'send'];
     Object.keys(hooks)
-        .filter(methodName=>special.indexOf(methodName) > -1)
+        // .filter(methodName=>special.indexOf(methodName) > -1)
         .forEach(methodName=>{
-            const { after, before } = hooks[methodName];
-            hooks.addHooks(methodName, 'before', before);
-            hooks.addHooks(methodName, 'after', after);
+            const { before,after } = hooks[methodName];
+            before = isDef(before) ? before : [];
+            after = isDef(after) ? after : [];
+            if(methodName == 'receive'){
+                after.unshift(hooks['receive']);
+                hooks.addHooks('fetch', 'before', before);
+                hooks.addHooks('fetch', 'after', after);
+                hooks.addHooks('find', 'before', before);
+                hooks.addHooks('find', 'after', after);
+            }else if(methodName == 'send'){
+                before.push(hooks['send']);
+                hooks.addHooks('save', 'before', before);
+                hooks.addHooks('save', 'after', after);
+            }else{
+                hooks.addHooks(methodName, 'before', before);
+                hooks.addHooks(methodName, 'after', after);
+            }
         })
     
-    const methods = ['fetch','find','save','delete'];
+    ProxyModel.prototype.remote = Model.prototype.remote;
+    const methods = options.methods;
+    ['fetch','find','save','delete'].forEach(methodName=>{
+        methods[methodName] = Model.prototype[methods];
+    });
     methods.forEach(methodName=>{
         ProxyModel.prototype[methodName] = Hooks.merge(
             methodName,
-            (params,opts) => Model.fetch(ProxyModel.url, params, opts),
+            (params, opts) => Model.fetch(ProxyModel.url, params, opts),
             hooks
         );
     });
@@ -256,6 +285,13 @@ export default { Model: ModelFactory, Contact: ContactFactory };
 //     }
 // });
 
+
+// 模型需求
+// - 包含基础实现[fetch,find,save,delete]，基础处理为远端请求
+// - 支持继承
+// - 支持重写方法
+// - 支持访问_url,contact成员
+
 // in UserModel.js
 export default Dataflow.Model('user', {
     url: '/user',
@@ -276,6 +312,10 @@ export default Dataflow.Model('user', {
         // - 基于处理的：receive, send
     },
     methods: {
+        filter(params, opts){
+            const { origin } = defaults(opts);
+            return this.remote(origin).get(this._url+'/filter', { params });
+        }
         ban(id){
             return this.save({ id, disabled: true });
         }

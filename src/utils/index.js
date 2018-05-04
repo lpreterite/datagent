@@ -5,51 +5,10 @@ import Remote from '../classes/Remote.class';
 export const isNew = data => !data.id;
 export const getURL = (url, id, emulateIdKey) => emulateIdKey ? url : (url + (isDef(id) ? `/${id}` : ''));
 export const isDef = val => typeof val !== 'undefined';
-export const defaults = (obj, defaults = {}) => isDef(obj) ? Object.assign(defaults, obj) : defaults;
-
-export function ModelFactory(options) {
-    //产出含有模型类
-    //包含 Model.schema 静态方法
-    const _schema = options.fields(Schema);
-    class ProxyModel extends Model { };
-    ProxyModel.prototype._name = options.name;
-    ProxyModel.prototype._url = options.url;
-    // 注册模型字段
-    ProxyModel.prototype._schema = _schema;
-    ProxyModel.schema = function (fields) {
-        return _schema.format(fields);
-    }
-    const methods = { ...Object.getOwnPropertyDescriptors(Model.prototype), ...options.methods };
-    // 注册方法
-    Object.keys(methods).forEach(methodName => {
-        if (methodName === 'constructor') return;
-        const method = (ctx, next) => {
-            methods[methodName]
-                .apply(ctx.$model, ctx.args)
-                .then(data => {
-                    ctx.result = data;
-                    next();
-                });
-        };
-        const hooks = options.hooks(new Hooks(), _schema);
-        ProxyModel.prototype[methodName] = function (...args) {
-            return Queue.run(this, args, [
-                ...hooks.getHooks(methodName, 'before'),
-                method,
-                ...hooks.getHooks(methodName, 'after'),
-            ]);
-        };
-    })
-    return ProxyModel;
-}
-
-export function ContactFactory(remotes={}, defaults='base'){
-    const contact = new Contact();
-    Object.keys(remotes).forEach((remoteName, index)=>{
-        contact.remote(remoteName, new Remote({ origin: remotes[remoteName] }), { default: index == 0 });
-    })
-    return contact;
-}
+export const defaults = (obj, defaults = {}) =>{
+    const merge = (defaults, obj) => defaults.constructor === Array ? defaults.concat(obj) : Object.assign(defaults, obj);
+    return isDef(obj) ? merge(defaults, obj) : defaults;
+};
 
 /**
  * format code like that:
