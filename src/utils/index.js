@@ -1,6 +1,4 @@
-import Model from '../classes/Model.class';
-import Contact from '../classes/Contact.class';
-import Remote from '../classes/Remote.class';
+import Queue from '../classes/Queue.class';
 
 export const isNew = data => !data.id;
 export const getURL = (url, id, emulateIdKey) => emulateIdKey ? url : (url + (isDef(id) ? `/${id}` : ''));
@@ -40,3 +38,46 @@ export function convert(data, format, opts={}) {
     });
     return result;
 }
+
+
+export const methods = {
+    merge: (methodName, method, hooks)=>{
+        return function (...args) {
+            const befores = hooks.getHooks(methodName + '::before') || [];
+            const afters = hooks.getHooks(methodName + '::after') || [];
+            return Queue.run([
+                ...befores,
+                method,
+                ...afters,
+            ])(args, { scope:this });
+        }
+    },
+    mergeHooks: (methodName, method, befores=[], afters=[])=>{
+        return function (...args) {
+            return Queue.run([
+                ...befores,
+                method,
+                ...afters,
+            ])(args, { scope: this });
+        }
+    },
+    wrapper: (method) => {
+        return (ctx, next) => {
+            return method
+                .apply(ctx.scope, ctx.args)
+                .then(data => {
+                    ctx.result = data;
+                    next();
+                });
+        }
+    }
+}
+
+export default {
+    isNew,
+    getURL,
+    isDef,
+    defaults,
+    convert,
+    methods
+};

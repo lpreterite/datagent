@@ -326,7 +326,7 @@ import UserModel from 'UserModel';
 
 UserModel.schema; // Schema instance
 UserModel.schema.default(); // Schema instance.default()
-UserModel.hooks; // Hooks instance
+// UserModel.hooks; // Hooks instance
 UserModel.name;
 
 /** 直接使用 */
@@ -341,6 +341,8 @@ $user.contact // Contact instance
 $user.fetch({sex:1});
 //异步获取多份数据
 $user.fetch({sex:1}, {async:true});
+//运行包含hooks处理的fetch
+$user.exec('fetch')({ sex:1 });
 
 //获取单份数据
 $user.find(1);

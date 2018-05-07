@@ -1,6 +1,9 @@
-import { defaults } from './utils/';
+import utils from './utils/';
 import Model from './classes/Model.class';
 import Hooks from './classes/Hooks.class';
+import Contact from './classes/Contact.class';
+import Remote from './classes/Remote.class';
+import Schema from './classes/Schema.class';
 
 const Dataflow = {};
 
@@ -15,30 +18,44 @@ export function ModelFactory(options) {
     //RichModel
     class ProxyModel extends Model{
         constructor(opts){
+            opts.name = options.name;
             super(opts);
-            this.initHooks(options.hooks);
+            this.resetHooks(options.hooks);
         }
-        initHooks(hooks){
-            this._hooks = HooksFactory(hooks);
+        resetHooks(options){
+            this._hooks = HooksFactory(options);
         }
-        get hooks(){
-            return this._hooks;
+        exec(methodName, opts){
+            let { before, after } = utils.defaults(opts, { before:[], after: [] });
+
+            before = [].concat(utils.defaults(this._hooks.getHooks(`${methodName}::before`), []), utils.defaults(before, []));
+            after = [].concat(utils.defaults(this._hooks.getHooks(`${methodName}::after`), []), utils.defaults(after, []));
+
+            const method = utils.methods.wrapper(this[methodName]);
+            console.log(methodName, method, before, after);
+            return (...arg)=>{
+                return utils.methods.mergeHooks(methodName, method, before, after)(...arg)
+            };
         }
     }
-    ProxyModel.name = options.name;
     ProxyModel.schema = ProxyModel.prototype.schema = new Schema(options.fields);
     
+    // const hooks = HooksFactory(options.hooks);
     Object
         .keys(methods)
         .forEach(methodName=>{
-            ProxyModel.prototype[methodName] = (...arg)=>{
-                return Hooks.merge(
-                    methodName,
-                    ProxyModel.prototype[methodName],
-                    this.hooks
-                )(...arg);
-            }
+            ProxyModel.prototype[methodName] = methods[methodName]
         });
+    // Object
+    //     .keys(methods)
+    //     .forEach(methodName=>{
+    //         const method = utils.methods.wrapper(methods[methodName]);
+    //         ProxyModel.prototype[methodName] = utils.methods.merge(
+    //             methodName,
+    //             method,
+    //             hooks
+    //         )
+    //     });
 
     return ProxyModel;
 }
@@ -54,10 +71,21 @@ export function ContactFactory(remotes = {}, defaults = 'base') {
 export function HooksFactory(options){
     const hooks = new Hooks();
     //解析hooks的逻辑，并添加hook记录
+    
+    Object
+        .keys(utils.defaults(options))
+        .forEach(hookName=>{
+            const hook = options[hook];
+            Object.keys(hook).forEach(aboutName=>{
+                hooks.addHooks(`${hookName}::${aboutName}`, hook[aboutName]);
+            })
+        });
+
     return hooks;
 }
 
 Dataflow.Contact = ContactFactory;
 Dataflow.Model = ModelFactory;
+Dataflow.Hooks = HooksFactory;
 
 export default Dataflow;
