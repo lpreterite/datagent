@@ -41,7 +41,7 @@ describe('Queue Class Test', function() {
         },
       ];
 
-      [err, result, ctx] = await Queue.run(operations)(data, ctx);
+      result = await Queue.run(operations)(data, ctx);
       
       // console.log(result);
       // console.log(ctx);

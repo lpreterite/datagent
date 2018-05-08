@@ -3,8 +3,7 @@ class Hooks {
         this._map = new Map();
     }
     addHooks(key, operations) {
-        const hooks = [].concat(this._map.get(key), operations);
-        return this._map.set(key, hooks);
+        return this._map.set(key, operations);
     }
     getHooks(key) {
         return this._map.get(key);

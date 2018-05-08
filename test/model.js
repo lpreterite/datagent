@@ -4,10 +4,10 @@ import Schema from '../src/classes/Schema.class';
 import Dataflow from '../src/Dataflow';
 import { defaults } from '../src/utils/';
 
-const handle = ([err, res]) => {
+const handle = (res) => {
     // console.log(res);
-    let result;
-    if (!err && res.data.code < 200) {
+    let result, err;
+    if (res.data.code < 200) {
         err = new Error(res.data.msg);
     }
     result = res.data.data;
@@ -112,7 +112,7 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data, msg: '' });
 
             let err, result;
-            [err, result] = await model.exec('fetch')().then(handle);
+            [err, result] = await model.fetch().then(handle);
             assert.sameDeepMembers(result, data);
         })
         it('当传入参数时，[GET]请求的路由应当带上传入参数', async function () {
@@ -122,7 +122,7 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data: { id: 1, name: 'John Smith' }, msg: '' });
 
             let err, result;
-            [err, result] = await model.exec('fetch')({ q: 'John' }).then(handle);
+            [err, result] = await model.fetch({ q: 'John' }).then(handle);
             assert.propertyVal(result, 'id', 1);
         })
         it('当传入origin参数时，应当切换至对应的远端服务', async function () {
@@ -132,7 +132,7 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data: { id: 1, name: 'John Smith' }, msg: '' });
 
             let err, result;
-            [err, result] = await model.exec('fetch')({ q: 'John' }, { origin: 'test' }).then(handle);
+            [err, result] = await model.fetch({ q: 'John' }, { origin: 'test' }).then(handle);
             assert.propertyVal(result, 'id', 1);
         })
     })
@@ -148,7 +148,7 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data: { id: 1, name: 'John Smith' }, msg: '' });
 
             let err, result;
-            [err, result] = await model.exec('find')(1).then(handle);
+            [err, result] = await model.find(1).then(handle);
             assert.propertyVal(result, 'id', 1);
         })
         it('当传入origin参数时，应当切换至对应的远端服务', async function () {
@@ -158,7 +158,7 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data: { id: 1, name: 'John Smith' }, msg: '' });
 
             let err, result;
-            [err, result] = await model.exec('find')(1, { origin: 'test' }).then(handle);
+            [err, result] = await model.find(1, { origin: 'test' }).then(handle);
             assert.propertyVal(result, 'id', 1);
         })
     })
@@ -174,7 +174,7 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data: { id: 3, name: 'John Smith' }, msg: '' });
 
             let err, result;
-            [err, result] = await model.exec('save')({ name: 'Cathy Yan' }).then(handle);
+            [err, result] = await model.save({ name: 'Cathy Yan' }).then(handle);
             assert.propertyVal(result, 'id', 3);
         })
         it('当数据包含id字段时，应当发送[PUT]请求更新对象', async function () {
@@ -184,7 +184,7 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data: { id: 3, name: 'John Smith' }, msg: '' });
 
             let err, result;
-            [err, result] = await model.exec('save')({ id: 3, name: 'Cathy Yan' }).then(handle);
+            [err, result] = await model.save({ id: 3, name: 'Cathy Yan' }).then(handle);
             assert.propertyVal(result, 'id', 3);
         })
     })
@@ -200,7 +200,7 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data: { id: 1, name: 'John Smith' }, msg: '' });
 
             let err, result;
-            [err, result] = await model.exec('delete')(1).then(handle);
+            [err, result] = await model.delete(1).then(handle);
             assert.propertyVal(result, 'id', 1);
         })
         it('当传入origin参数时，应当切换至对应的远端服务', async function () {
@@ -210,7 +210,7 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data: { id: 1, name: 'John Smith' }, msg: '' });
 
             let err, result;
-            [err, result] = await model.exec('delete')(1, { origin: 'test' }).then(handle);
+            [err, result] = await model.delete(1, { origin: 'test' }).then(handle);
             assert.propertyVal(result, 'id', 1);
         })
     })
@@ -233,6 +233,86 @@ describe('Model instace Test', function () {
             let err, result;
             [err, result] = await model.ban(1).then(handle);
             assert.propertyVal(result, 'disabled', 1);
+            mock.base.reset();
+        })
+        it('Model类方法钩子应当生效', async function () {
+            const UserModel = Dataflow.Model({
+                name: 'user',
+                fields: {
+                    id: { type: Number, defaults: 0 },
+                    nickname: { type: String, defaults: '' },
+                    sex: { type: Number, defaults: '1' },
+                    create_at: { type: String, defaults: Date.now() },
+                    disabled: { type: Number, defaults: 0 }
+                },
+                methods: {
+                    typeahead(q, opts) {
+                        return this.fetch({ q }, opts);
+                    }
+                },
+                hooks: {
+                    fetch: {
+                        after: (ctx, next) => {
+                            const result = ctx.result;
+                            if (result.data.code < 200) return;
+                            result.data.data = result.data.data.map((item, index)=>{
+                                item.order=index;
+                                return item;
+                            });
+                            next();
+                        }
+                    }
+                }
+            });
+            model = new UserModel({ name: 'user', url: '/users', contact });
+
+            mock
+                .base
+                .onGet(hosts.base + '/users', { params: { q: 'John' } })
+                .reply(200, { code: 200, data: [{ id: 1, name: 'John Smith' }], msg: '' });
+
+            let err, result;
+            [err, result] = await model.typeahead('John').then(handle);
+            assert.propertyVal(result[0], 'order', 0);
+            mock.base.reset();
+        })
+        it('自定义方法的钩子应当生效', async function(){
+            const UserModel = Dataflow.Model({
+                name: 'user',
+                fields: {
+                    id: { type: Number, defaults: 0 },
+                    nickname: { type: String, defaults: '' },
+                    sex: { type: Number, defaults: '1' },
+                    create_at: { type: String, defaults: Date.now() },
+                    disabled: { type: Number, defaults: 0 }
+                },
+                methods: {
+                    typeahead(q, opts) {
+                        console.log(q);
+                        return this.fetch({ q }, opts);
+                    }
+                },
+                hooks: {
+                    typeahead: {
+                        before: (ctx, next) => {
+                            let [query] = ctx.args;
+                            query = query.q ? query.q : query.keyword;
+                            ctx.args = [query];
+                            next();
+                        }
+                    }
+                }
+            });
+            model = new UserModel({ name: 'user', url: '/users', contact });
+
+            mock
+                .base
+                .onGet(hosts.base + '/users', { params: { q: 'John' } })
+                .reply(200, { code: 200, data: [{ id: 1, name: 'John Smith' }], msg: '' });
+
+            let err, result;
+            [err, result] = await model.typeahead({ keyword: 'John' }).then(handle);
+            assert.propertyVal(result[0], 'id', 1);
             mock.base.reset();
         })
     });

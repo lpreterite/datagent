@@ -316,8 +316,8 @@ export default Dataflow.Model('user', {
             const { origin } = defaults(opts);
             return this.remote(origin).get(this._url+'/filter', { params });
         }
-        ban(id){
-            return this.save({ id, disabled: true });
+        ban(id, opts){
+            return super.save({ id, disabled: true }, opts);
         }
     }
 });
@@ -341,8 +341,10 @@ $user.contact // Contact instance
 $user.fetch({sex:1});
 //异步获取多份数据
 $user.fetch({sex:1}, {async:true});
-//运行包含hooks处理的fetch
-$user.exec('fetch')({ sex:1 });
+//使用其他远程服务
+$user.fetch({sex:1}, {origin:'test'});
+//动态添加钩子——v1.0这个版本暂时不提供此功能实现
+// $user.fetch({sex:1}, {async:true, hooks:{ before:[], after:[] }});
 
 //获取单份数据
 $user.find(1);

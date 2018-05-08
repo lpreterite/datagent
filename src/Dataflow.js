@@ -4,8 +4,20 @@ import Hooks from './classes/Hooks.class';
 import Contact from './classes/Contact.class';
 import Remote from './classes/Remote.class';
 import Schema from './classes/Schema.class';
+import Queue from './classes/Queue.class';
 
 const Dataflow = {};
+
+function merge(opts={}) {
+    const { method, scope, before = [], after = [] } = opts;
+    return function (...args) {
+        return Queue.run([
+            ...before,
+            method,
+            ...after,
+        ])(args, { scope });
+    }
+}
 
 export function ModelFactory(options) {
     const methods = {
@@ -18,34 +30,49 @@ export function ModelFactory(options) {
     //RichModel
     class ProxyModel extends Model{
         constructor(opts){
+            opts = utils.defaults(opts);
             opts.name = options.name;
             super(opts);
-            this.resetHooks(options.hooks);
+            this.initHooks(options.hooks);
         }
-        resetHooks(options){
+        initHooks(options){
             this._hooks = HooksFactory(options);
         }
-        exec(methodName, opts){
-            let { before, after } = utils.defaults(opts, { before:[], after: [] });
+        // exec(methodName, opts){
+        //     let { before, after } = utils.defaults(opts, { before:[], after: [] });
 
-            before = [].concat(utils.defaults(this._hooks.getHooks(`${methodName}::before`), []), utils.defaults(before, []));
-            after = [].concat(utils.defaults(this._hooks.getHooks(`${methodName}::after`), []), utils.defaults(after, []));
+        //     before = [].concat(utils.defaults(this._hooks.getHooks(`${methodName}::before`), []), utils.defaults(before, []));
+        //     after = [].concat(utils.defaults(this._hooks.getHooks(`${methodName}::after`), []), utils.defaults(after, []));
 
-            const method = utils.methods.wrapper(this[methodName]);
-            console.log(methodName, method, before, after);
-            return (...arg)=>{
-                return utils.methods.mergeHooks(methodName, method, before, after)(...arg)
-            };
-        }
+        //     const method = utils.methods.wrapper(this[methodName]);
+        //     console.log(methodName, method, before, after);
+        //     return (...arg)=>{
+        //         return utils.methods.mergeHooks(methodName, method, before, after)(...arg)
+        //     };
+        // }
     }
     ProxyModel.schema = ProxyModel.prototype.schema = new Schema(options.fields);
     
     // const hooks = HooksFactory(options.hooks);
+
     Object
         .keys(methods)
-        .forEach(methodName=>{
-            ProxyModel.prototype[methodName] = methods[methodName]
+        .forEach(methodName => {
+            const method = utils.methods.wrapper(methods[methodName]);
+            ProxyModel.prototype[methodName] = function (...args){
+                let before = utils.defaults(this._hooks.getHooks(`${methodName}::before`), []);
+                let after = utils.defaults(this._hooks.getHooks(`${methodName}::after`), []);
+                return merge({ method, scope: this, before, after })(...args);
+            }
         });
+
+    // // 重写fetch,find,save,delete方法支持hook处理
+    // ['fetch', 'find', 'save', 'delete'].forEach(methodName => {
+    //     ProxyModel.prototype[methodName] = function (...args) {
+    //         return this.exec(methodName, args);
+    //     };
+    // })
+    
     // Object
     //     .keys(methods)
     //     .forEach(methodName=>{
@@ -75,7 +102,7 @@ export function HooksFactory(options){
     Object
         .keys(utils.defaults(options))
         .forEach(hookName=>{
-            const hook = options[hook];
+            const hook = options[hookName];
             Object.keys(hook).forEach(aboutName=>{
                 hooks.addHooks(`${hookName}::${aboutName}`, hook[aboutName]);
             })

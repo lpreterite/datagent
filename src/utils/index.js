@@ -52,17 +52,19 @@ export const methods = {
             ])(args, { scope:this });
         }
     },
-    mergeHooks: (methodName, method, befores=[], afters=[])=>{
+    mergeHooks: (opts)=>{
+        const { method, scope, befores = [], afters = [] } = opts;
         return function (...args) {
             return Queue.run([
                 ...befores,
                 method,
                 ...afters,
-            ])(args, { scope: this });
+            ])(args, { scope });
         }
     },
     wrapper: (method) => {
         return (ctx, next) => {
+            // console.log("wrapper:",ctx.args);
             return method
                 .apply(ctx.scope, ctx.args)
                 .then(data => {

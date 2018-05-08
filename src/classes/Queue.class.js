@@ -27,13 +27,14 @@ import compose from 'koa-compose';
 class Queue {
     static run(queues) {
         const queue = compose(queues);
-        return (args, ctx={}) => {
-            ctx = { ...ctx, args };
+        return (args, ctx={}) => { //must be change ctx out in the function
+            // console.log("queue:",args);
+            ctx = Object.assign(ctx, {args});
             return new Promise((resolve, reject) => {
                 try {
                     queue(
                         ctx,
-                        ctx => resolve([null, ctx.result, ctx])
+                        ctx => resolve(ctx.result)
                     ).catch(e=>reject(e));
                 } catch (e) {
                     reject(e);
