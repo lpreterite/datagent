@@ -315,5 +315,58 @@ describe('Model instace Test', function () {
             assert.propertyVal(result[0], 'id', 1);
             mock.base.reset();
         })
+        it('方法运行时应当支持添加钩子', async function () {
+            const UserModel = Dataflow.Model({
+                name: 'user',
+                fields: {
+                    id: { type: Number, defaults: 0 },
+                    nickname: { type: String, defaults: '' },
+                    sex: { type: Number, defaults: '1' },
+                    create_at: { type: String, defaults: Date.now() },
+                    disabled: { type: Number, defaults: 0 }
+                },
+                methods: {
+                    typeahead(q, opts) {
+                        console.log(q);
+                        return this.fetch({ q }, opts);
+                    }
+                },
+                hooks: {
+                    typeahead: {
+                        before: (ctx, next) => {
+                            let [query] = ctx.args;
+                            query = query.q ? query.q : query.keyword;
+                            ctx.args = [query];
+                            next();
+                        }
+                    }
+                }
+            });
+            model = new UserModel({ name: 'user', url: '/users', contact });
+
+            mock
+                .base
+                .onGet(hosts.base + '/users', { params: { q: 'John' } })
+                .reply(200, { code: 200, data: [{ id: 1, name: 'John Smith' }], msg: '' });
+
+            let err, result;
+            [err, result] = await model.typeahead({ keyword: 'John' }, {
+                hooks: {
+                    after: (ctx, next) => {
+                        let [query] = ctx.args;
+                        let res = ctx.result;
+                        if (res.data.code < 200) return;
+                        res.data.data = {
+                            keyword: query,
+                            typeahead: res.data.data
+                        };
+                        next();
+                    }
+                }
+            }).then(handle);
+            // console.log(result);
+            assert.propertyVal(result, 'keyword', 'John');
+            mock.base.reset();
+        })
     });
 });

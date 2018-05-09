@@ -60,8 +60,14 @@ export function ModelFactory(options) {
         .forEach(methodName => {
             const method = utils.methods.wrapper(methods[methodName]);
             ProxyModel.prototype[methodName] = function (...args){
+                const opts = utils.defaults(args[args.length-1]);
+                const hooks = utils.defaults(opts.hooks, { before: [], after: [] });
                 let before = utils.defaults(this._hooks.getHooks(`${methodName}::before`), []);
                 let after = utils.defaults(this._hooks.getHooks(`${methodName}::after`), []);
+                before = before.concat(hooks.before);
+                after = after.concat(hooks.after);
+
+                // console.log(before, after);
                 return merge({ method, scope: this, before, after })(...args);
             }
         });
