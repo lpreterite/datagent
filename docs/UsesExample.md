@@ -304,8 +304,8 @@ export default Dataflow.Model('user', {
     hooks: {
         // 定义两种hook：receive接收数据, send发送数据
         // 接收数据hook将会添加至fetch, find之后, 发送数据hook将会添加至save之前
-        "receive": [convert({ field:'create_at', to: Fecha.parse })],
-        "send": [keep(['id','nickname','sex','create_at'])]
+        ...receive([convert({ field:'create_at', to: Fecha.parse })]),
+        ...send([keep(['id','nickname','sex','create_at'])])
         //支持hooks包括：
         // - 基础的请求：get, post, put, patch, delete
         // - 基于模型的：fetch, find, save, delete

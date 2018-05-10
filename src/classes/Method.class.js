@@ -1,4 +1,5 @@
 import compose from 'koa-compose';
+import { defaults } from '../utils/';
 
 /**
  * queue call function like that:
@@ -24,11 +25,10 @@ import compose from 'koa-compose';
  * more detail look test file.
  */
 
-class Queue {
-    static run(queues) {
+class Method {
+    static generate(queues) {
         const queue = compose(queues);
-        return (args, ctx={}) => { //must be change ctx out in the function
-            // console.log("queue:",args);
+        return (args, ctx={}) => {
             ctx = Object.assign(ctx, {args});
             return new Promise((resolve, reject) => {
                 try {
@@ -42,6 +42,29 @@ class Queue {
             });
         }
     }
+    static merge(options){
+        const { method, scope, before = [], after = [] } = options;
+        return function (...args) {
+            return Method.generate([
+                ...before,
+                method,
+                ...after,
+            ])(args, { scope });
+        }
+    }
+    static concat(...args){
+        return args.map(arg => defaults(arg, [])).reduce((x,y)=>x.concat(y));
+    }
+    static wrapper(method) {
+        return (ctx, next) => {
+            return method
+                .apply(ctx.scope, ctx.args)
+                .then(data => {
+                    ctx.result = data;
+                    next();
+                });
+        }
+    }
 }
 
-export default Queue;
+export default Method;

@@ -4,22 +4,10 @@ import Hooks from './classes/Hooks.class';
 import Contact from './classes/Contact.class';
 import Remote from './classes/Remote.class';
 import Schema from './classes/Schema.class';
-import Queue from './classes/Queue.class';
-
-const Dataflow = {};
-
-function merge(opts={}) {
-    const { method, scope, before = [], after = [] } = opts;
-    return function (...args) {
-        return Queue.run([
-            ...before,
-            method,
-            ...after,
-        ])(args, { scope });
-    }
-}
+import Method from './classes/Method.class';
 
 export function ModelFactory(options) {
+    const schema = new Schema(options.fields);
     const methods = {
         'fetch': Model.prototype.fetch,
         'find': Model.prototype.find,
@@ -28,7 +16,7 @@ export function ModelFactory(options) {
         ...options.methods
     }
     //RichModel
-    class ProxyModel extends Model{
+    class RichModel extends Model{
         constructor(opts){
             opts = utils.defaults(opts);
             opts.name = options.name;
@@ -38,59 +26,29 @@ export function ModelFactory(options) {
         initHooks(options){
             this._hooks = HooksFactory(options);
         }
-        // exec(methodName, opts){
-        //     let { before, after } = utils.defaults(opts, { before:[], after: [] });
-
-        //     before = [].concat(utils.defaults(this._hooks.getHooks(`${methodName}::before`), []), utils.defaults(before, []));
-        //     after = [].concat(utils.defaults(this._hooks.getHooks(`${methodName}::after`), []), utils.defaults(after, []));
-
-        //     const method = utils.methods.wrapper(this[methodName]);
-        //     console.log(methodName, method, before, after);
-        //     return (...arg)=>{
-        //         return utils.methods.mergeHooks(methodName, method, before, after)(...arg)
-        //     };
-        // }
+        get schema(){
+            return schema;
+        }
+        static get schema(){
+            return schema;
+        }
     }
-    ProxyModel.schema = ProxyModel.prototype.schema = new Schema(options.fields);
-    
-    // const hooks = HooksFactory(options.hooks);
-
     Object
         .keys(methods)
         .forEach(methodName => {
-            const method = utils.methods.wrapper(methods[methodName]);
-            ProxyModel.prototype[methodName] = function (...args){
+            const method = Method.wrapper(methods[methodName]);
+            RichModel.prototype[methodName] = function (...args){
                 const opts = utils.defaults(args[args.length-1]);
                 const hooks = utils.defaults(opts.hooks, { before: [], after: [] });
-                let before = utils.defaults(this._hooks.getHooks(`${methodName}::before`), []);
-                let after = utils.defaults(this._hooks.getHooks(`${methodName}::after`), []);
-                before = before.concat(hooks.before);
-                after = after.concat(hooks.after);
 
-                // console.log(before, after);
-                return merge({ method, scope: this, before, after })(...args);
+                before = Method.concat(hooks.before, this._hooks.getHooks(`${methodName}::before`));
+                after = Method.concat(hooks.after, this._hooks.getHooks(`${methodName}::after`));
+
+                return Method.merge({ method, scope: this, before, after })(...args);
             }
         });
 
-    // // 重写fetch,find,save,delete方法支持hook处理
-    // ['fetch', 'find', 'save', 'delete'].forEach(methodName => {
-    //     ProxyModel.prototype[methodName] = function (...args) {
-    //         return this.exec(methodName, args);
-    //     };
-    // })
-    
-    // Object
-    //     .keys(methods)
-    //     .forEach(methodName=>{
-    //         const method = utils.methods.wrapper(methods[methodName]);
-    //         ProxyModel.prototype[methodName] = utils.methods.merge(
-    //             methodName,
-    //             method,
-    //             hooks
-    //         )
-    //     });
-
-    return ProxyModel;
+    return RichModel;
 }
 
 export function ContactFactory(remotes = {}, defaults = 'base') {
@@ -117,8 +75,10 @@ export function HooksFactory(options){
     return hooks;
 }
 
-Dataflow.Contact = ContactFactory;
-Dataflow.Model = ModelFactory;
-Dataflow.Hooks = HooksFactory;
+const Dataflow = {
+    Contact: ContactFactory,
+    Model: ModelFactory,
+    Hooks: HooksFactory,
+};
 
 export default Dataflow;

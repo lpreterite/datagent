@@ -1,4 +1,4 @@
-import Queue from '../classes/Queue.class';
+import Method from '../classes/Method.class';
 
 export const isNew = data => !data.id;
 export const getURL = (url, id, emulateIdKey) => emulateIdKey ? url : (url + (isDef(id) ? `/${id}` : ''));
@@ -39,47 +39,10 @@ export function convert(data, format, opts={}) {
     return result;
 }
 
-
-export const methods = {
-    merge: (methodName, method, hooks)=>{
-        return function (...args) {
-            const befores = hooks.getHooks(methodName + '::before') || [];
-            const afters = hooks.getHooks(methodName + '::after') || [];
-            return Queue.run([
-                ...befores,
-                method,
-                ...afters,
-            ])(args, { scope:this });
-        }
-    },
-    mergeHooks: (opts)=>{
-        const { method, scope, befores = [], afters = [] } = opts;
-        return function (...args) {
-            return Queue.run([
-                ...befores,
-                method,
-                ...afters,
-            ])(args, { scope });
-        }
-    },
-    wrapper: (method) => {
-        return (ctx, next) => {
-            // console.log("wrapper:",ctx.args);
-            return method
-                .apply(ctx.scope, ctx.args)
-                .then(data => {
-                    ctx.result = data;
-                    next();
-                });
-        }
-    }
-}
-
 export default {
     isNew,
     getURL,
     isDef,
     defaults,
-    convert,
-    methods
+    convert
 };

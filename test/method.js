@@ -1,6 +1,6 @@
-import Queue from "../src/classes/Queue.class.js";
+import Method from "../src/classes/Method.class.js";
 
-describe('Queue Class Test', function() {
+describe('Method Class Test', function() {
   var err, result;
   var ctx = {};
   var data = [];
@@ -18,7 +18,7 @@ describe('Queue Class Test', function() {
     });
   }
 
-  describe('run()', function() {
+  describe('generate()', function() {
     it('应当输出内容顺序为[1,2,3]的数组', async function() {
       const operations = [
         async function (ctx, next) {
@@ -41,7 +41,7 @@ describe('Queue Class Test', function() {
         },
       ];
 
-      result = await Queue.run(operations)(data, ctx);
+      result = await Method.generate(operations)(data, ctx);
       
       // console.log(result);
       // console.log(ctx);
