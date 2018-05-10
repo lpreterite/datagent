@@ -1,27 +1,27 @@
 # js-dataflow
 
-This is a simple front-end data flow application support
+这是一个简单的前端数据流的应用支持
 
-He has the following features
+他拥有以下特性
 
-- Support definition and processing fields
-- Support requests for different remote services
-- Provide pre- or post-processing for each method
-- Use axis for request processing
+- 支持定义及处理字段
+- 支持请求不同的远端服务
+- 为每个方法提供前置(或后置)处理
+- 使用axios进行请求处理
 
-## Quick Start
+## 快速入门
 
 ```js
-// import
+// 引入
 import axios from "axios";
 import { Model, Contact } from "lpreterite/js-dataflow";
 
-// Create link
+// 创建链接
 const contact = Contact({
     base: axios.create({ baseURL: '/api' })
 });
 
-// Define the model
+// 定义模型
 const UserModel = Model({
     name: 'user',
     fields: {
@@ -41,21 +41,21 @@ const UserModel = Model({
     }
 });
 
-// Create model
+// 创建模型
 model = new UserModel({ name: 'user', url: '/users', contact });
 
 async function(){
-    // Send GET request
+    // 发送GET请求
     const users = await model.fetch({ disabled: 0 });
-    // Send GET request with id
+    // 发送带id的GET请求
     const Tony = await model.find(233);
-    // Send POST request
+    // 发送POST请求
     const res = await model.save({ name:"Ben", disabled: 0 });
-    // With id, send PUT request with id
+    // 带id时，发送带id的PUT请求
     const res = await model.save({ id:233, name:"Tony", disabled: 1 });
-    // Send a DELETE request with id
+    // 发送带id的DELETE请求
     const res = await model.delete(233);
 }()
 ```
 
-Follow-up documents to be updated...
+后续文档待更新...
