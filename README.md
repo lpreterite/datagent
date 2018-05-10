@@ -2,7 +2,7 @@
 
 This is a simple front-end data flow application support
 
-He has the following features
+It has the following features
 
 - Support definition and processing fields
 - Support requests for different remote services
