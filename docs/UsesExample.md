@@ -304,10 +304,11 @@ export default Dataflow.Model('user', {
     hooks: {
         // 定义两种hook：receive接收数据, send发送数据
         // 接收数据hook将会添加至fetch, find之后, 发送数据hook将会添加至save之前
-        ...receive([convert({ field:'create_at', to: Fecha.parse })]),
-        ...send([keep(['id','nickname','sex','create_at'])])
+        ...mapReceiveHook([convert({ field:'create_at', to: Fecha.parse })]),
+        ...mapSendHook([keep(['id','nickname','sex','create_at'])]),
+        
         //支持hooks包括：
-        // - 基础的请求：get, post, put, patch, delete
+        // - 不支持基础的请求：get, post, put, patch, delete
         // - 基于模型的：fetch, find, save, delete
         // - 基于处理的：receive, send
     },
@@ -321,6 +322,12 @@ export default Dataflow.Model('user', {
         }
     }
 });
+
+/**
+ * 常用hooks：
+ * filter()：过滤字段，传入字段键值数组，默认为模型fields的键值
+ * format()：按设定处理字段值，设定未包含字段会添加默认值，同时保留数据原有字段
+ */
 
 import UserModel from 'UserModel';
 

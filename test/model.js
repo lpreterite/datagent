@@ -20,10 +20,10 @@ describe('Model Class Test', function () {
         Model = Dataflow.Model({
             name: 'user',
             fields: {
-                id: { type: Number, defaults: 0 },
-                nickname: { type: String, defaults: '' },
-                sex: { type: Number, defaults: '1' },
-                create_at: { type: String, defaults: Date.now() }
+                id: { type: Number, default: 0 },
+                nickname: { type: String, default: '' },
+                sex: { type: Number, default: '1' },
+                create_at: { type: String, default: Date.now() }
             },
             methods: {
                 test: (some)=>{
@@ -68,11 +68,11 @@ describe('Model instace Test', function () {
         const UserModel = Dataflow.Model({
             name: 'user',
             fields: {
-                id: { type: Number, defaults: 0 },
-                nickname: { type: String, defaults: '' },
-                sex: { type: Number, defaults: '1' },
-                create_at: { type: String, defaults: Date.now() },
-                disabled: { type: Number, defaults: 0 }
+                id: { type: Number, default: 0 },
+                nickname: { type: String, default: '' },
+                sex: { type: Number, default: '1' },
+                create_at: { type: String, default: Date.now() },
+                disabled: { type: Number, default: 0 }
             },
             methods: {
                 ban(id, opts) {
@@ -170,7 +170,7 @@ describe('Model instace Test', function () {
         it('当数据不存在id字段时，应当发送[POST]请求新增对象', async function () {
             mock
                 .base
-                .onPost(hosts.base + '/users')
+                .onPost(hosts.base + '/users', { name: 'Cathy Yan' })
                 .reply(200, { code: 200, data: { id: 3, name: 'John Smith' }, msg: '' });
 
             let err, result;
@@ -180,7 +180,7 @@ describe('Model instace Test', function () {
         it('当数据包含id字段时，应当发送[PUT]请求更新对象', async function () {
             mock
                 .base
-                .onPut(hosts.base + '/users/3')
+                .onPut(hosts.base + '/users/3', { id: 3, name: 'Cathy Yan' })
                 .reply(200, { code: 200, data: { id: 3, name: 'John Smith' }, msg: '' });
 
             let err, result;
@@ -239,11 +239,11 @@ describe('Model instace Test', function () {
             const UserModel = Dataflow.Model({
                 name: 'user',
                 fields: {
-                    id: { type: Number, defaults: 0 },
-                    nickname: { type: String, defaults: '' },
-                    sex: { type: Number, defaults: '1' },
-                    create_at: { type: String, defaults: Date.now() },
-                    disabled: { type: Number, defaults: 0 }
+                    id: { type: Number, default: 0 },
+                    nickname: { type: String, default: '' },
+                    sex: { type: Number, default: '1' },
+                    create_at: { type: String, default: Date.now() },
+                    disabled: { type: Number, default: 0 }
                 },
                 methods: {
                     typeahead(q, opts) {
@@ -280,15 +280,14 @@ describe('Model instace Test', function () {
             const UserModel = Dataflow.Model({
                 name: 'user',
                 fields: {
-                    id: { type: Number, defaults: 0 },
-                    nickname: { type: String, defaults: '' },
-                    sex: { type: Number, defaults: '1' },
-                    create_at: { type: String, defaults: Date.now() },
-                    disabled: { type: Number, defaults: 0 }
+                    id: { type: Number, default: 0 },
+                    nickname: { type: String, default: '' },
+                    sex: { type: Number, default: '1' },
+                    create_at: { type: String, default: Date.now() },
+                    disabled: { type: Number, default: 0 }
                 },
                 methods: {
                     typeahead(q, opts) {
-                        console.log(q);
                         return this.fetch({ q }, opts);
                     }
                 },
@@ -319,11 +318,11 @@ describe('Model instace Test', function () {
             const UserModel = Dataflow.Model({
                 name: 'user',
                 fields: {
-                    id: { type: Number, defaults: 0 },
-                    nickname: { type: String, defaults: '' },
-                    sex: { type: Number, defaults: '1' },
-                    create_at: { type: String, defaults: Date.now() },
-                    disabled: { type: Number, defaults: 0 }
+                    id: { type: Number, default: 0 },
+                    nickname: { type: String, default: '' },
+                    sex: { type: Number, default: '1' },
+                    create_at: { type: String, default: Date.now() },
+                    disabled: { type: Number, default: 0 }
                 },
                 methods: {
                     typeahead(q, opts) {
@@ -366,6 +365,120 @@ describe('Model instace Test', function () {
             }).then(handle);
             // console.log(result);
             assert.propertyVal(result, 'keyword', 'John');
+            mock.base.reset();
+        })
+    });
+
+    describe('额外钩子Receive', function () {
+        it('应当在fetch后生效', async function () {
+            const UserModel = Dataflow.Model({
+                name: 'user',
+                fields: {
+                    id: { type: Number, default: 0 },
+                    nickname: { type: String, default: '' },
+                    sex: { type: Number, default: '1' },
+                    create_at: { type: String, default: Date.now() },
+                    disabled: { type: Number, default: 0 }
+                },
+                methods: {
+                    typeahead(q, opts) {
+                        return this.fetch({ q }, opts);
+                    }
+                },
+                hooks: {
+                    ...Dataflow.mapReceiveHook([
+                        (ctx, next) => {
+                            const result = ctx.result;
+                            if (result.data.code < 200) return next();
+                            result.data.data = result.data.data.map((item, index) => {
+                                item.order = index;
+                                return item;
+                            });
+                            next();
+                        }
+                    ])
+                }
+            });
+            model = new UserModel({ name: 'user', url: '/users', contact });
+
+            mock
+                .base
+                .onGet(hosts.base + '/users', { params: { q: 'John' } })
+                .reply(200, { code: 200, data: [{ id: 1, name: 'John Smith' }], msg: '' });
+
+            let err, result;
+            [err, result] = await model.typeahead('John').then(handle);
+            assert.propertyVal(result[0], 'order', 0);
+            mock.base.reset();
+        })
+        it('应当在find后生效', async function () {
+            const create_at = Date.now();
+            const UserModel = Dataflow.Model({
+                name: 'user',
+                fields: {
+                    id: { type: Number, default: 0 },
+                    nickname: { type: String, default: '' },
+                    sex: { type: Number, default: '1' },
+                    create_at: { type: String, default: create_at },
+                    disabled: { type: Number, default: 0 }
+                },
+                hooks: {
+                    ...Dataflow.mapReceiveHook([
+                        (ctx, next) => {
+                            const res = ctx.result;
+                            if (res.data.code < 200) return next();
+                            res.data.data = ctx.scope.schema.format(res.data.data);
+                            ctx.result = res;
+                            next();
+                        }
+                    ])
+                }
+            });
+            model = new UserModel({ name: 'user', url: '/users', contact });
+
+            mock
+                .base
+                .onGet(hosts.base + '/users/1')
+                .reply(200, { code: 200, data: { id: 1, name: 'John Smith' }, msg: '' });
+
+            let err, result;
+            [err, result] = await model.find(1).then(handle);
+            assert.propertyVal(result, 'create_at', create_at);
+            mock.base.reset();
+        })
+    });
+    describe('额外钩子Send', function () {
+        it('应当在save前生效', async function () {
+            const create_at = Date.now();
+            const UserModel = Dataflow.Model({
+                name: 'user',
+                fields: {
+                    id: { type: Number, default: 0 },
+                    nickname: { type: String, default: '' },
+                    sex: { type: Number, default: '1' },
+                    create_at: { type: String, default: create_at },
+                    disabled: { type: Number, default: 0 }
+                },
+                hooks: {
+                    ...Dataflow.mapSendHook([
+                        (ctx, next) => {
+                            let data = ctx.args.pop();
+                            ctx.args = [ctx.scope.schema.filter(data, ['id', 'name', 'create_at']), ...ctx.args];
+                            next();
+                        }
+                    ])
+                }
+            });
+            model = new UserModel({ name: 'user', url: '/users', contact });
+
+            mock
+                .base
+                .onPost(hosts.base + '/users', { name: 'John Smith', create_at })
+                .reply(200, { code: 200, data: { id: 1, name: 'John Smith', create_at }, msg: '' });
+
+            let err, result;
+            [err, result] = await model.save({ name: 'John Smith', create_at, sex: 0 }).then(handle);
+            assert.propertyVal(result, 'create_at', create_at);
             mock.base.reset();
         })
     });
