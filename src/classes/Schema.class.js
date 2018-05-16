@@ -27,7 +27,7 @@ export default class Schema {
         return schema(fieldSet);
     }
 
-    get fields(){
+    get fieldSet(){
         return this._fieldSet;
     }
 }

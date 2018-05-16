@@ -42,28 +42,8 @@ class Method {
             });
         }
     }
-    static merge(options){
-        const { method, scope, before = [], after = [] } = options;
-        return function (...args) {
-            return Method.generate([
-                ...before,
-                method,
-                ...after,
-            ])(args, { scope });
-        }
-    }
     static concat(...args){
         return args.map(arg => defaults(arg, [])).reduce((x,y)=>x.concat(y));
-    }
-    static wrapper(method) {
-        return (ctx, next) => {
-            return method
-                .apply(ctx.scope, ctx.args)
-                .then(data => {
-                    ctx.result = data;
-                    next();
-                });
-        }
     }
 }
 

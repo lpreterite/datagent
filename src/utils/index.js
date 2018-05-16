@@ -1,4 +1,5 @@
 import Method from '../classes/Method.class';
+import Hooks from '../classes/Hooks.class';
 
 export const isNew = data => !data.id;
 export const getURL = (url, id, emulateIdKey) => emulateIdKey ? url : (url + (isDef(id) ? `/${id}` : ''));
@@ -46,22 +47,22 @@ export function formatField(to, defaultVal){
     }
 }
 
-export function mapReceiveHook(hooks, options){
-    options = defaults(options, { hooks: ['fetch', 'find'], abouts: ['after'] });
-    return mapHooks(hooks, options)
+export function mapReceiveHook(methods, options){
+    options = defaults(options, Hooks.ReceiveBehaviour);
+    return mapHooks(methods, options)
 }
-export function mapSendHook(hooks, options) {
-    options = defaults(options, { hooks:['save'], abouts:['before'] });
-    return mapHooks(hooks, options)
+export function mapSendHook(methods, options) {
+    options = defaults(options, Hooks.SendBehaviour);
+    return mapHooks(methods, options)
 }
-export function mapHooks(hooks, options={}){
+export function mapHooks(methods, options={}){
+    if (!isDef(options.methods)) throw new Error('The options must have methods parameter in mapHooks');
+    if (!isArray(options.methods)) throw new Error('The options.methods must be Array in mapHooks');
     if (!isDef(options.hooks)) throw new Error('The options must have hooks parameter in mapHooks');
     if (!isArray(options.hooks)) throw new Error('The options.hooks must be Array in mapHooks');
-    if (!isDef(options.abouts)) throw new Error('The options must have abouts parameter in mapHooks');
-    if (!isArray(options.abouts)) throw new Error('The options.abouts must be Array in mapHooks');
-    const result = options.hooks.map(hookName => { return { [hookName]: {} } }).reduce(Object.assign);
+    const result = options.methods.map(hookName => { return { [hookName]: {} } }).reduce(Object.assign);
     Object.keys(result).forEach(hookName=>{
-        result[hookName] = options.abouts.map(hookName => { return { [hookName]: hooks } }).reduce(Object.assign);
+        result[hookName] = options.hooks.map(hookName => { return { [hookName]: methods } }).reduce(Object.assign);
     })
     return result;
 }

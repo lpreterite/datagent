@@ -3,6 +3,7 @@ import Remote from '../src/classes/Remote.class';
 import Schema from '../src/classes/Schema.class';
 import Dataflow from '../src/Dataflow';
 import { defaults } from '../src/utils/';
+import { format } from '../src/operations/';
 
 const handle = (res) => {
     // console.log(res);
@@ -424,13 +425,14 @@ describe('Model instace Test', function () {
                 },
                 hooks: {
                     ...Dataflow.mapReceiveHook([
-                        (ctx, next) => {
-                            const res = ctx.result;
-                            if (res.data.code < 200) return next();
-                            res.data.data = ctx.scope.schema.format(res.data.data);
-                            ctx.result = res;
-                            next();
-                        }
+                        format()
+                        // (ctx, next) => {
+                        //     const res = ctx.result;
+                        //     if (res.data.code < 200) return next();
+                        //     res.data.data = ctx.scope.schema.format(res.data.data);
+                        //     ctx.result = res;
+                        //     next();
+                        // }
                     ])
                 }
             });

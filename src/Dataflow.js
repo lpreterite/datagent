@@ -36,7 +36,7 @@ export function ModelFactory(options) {
     Object
         .keys(methods)
         .forEach(methodName => {
-            const method = Method.wrapper(methods[methodName]);
+            // all hook action magic in here.
             RichModel.prototype[methodName] = function (...args){
                 const opts = utils.defaults(args[args.length-1]);
                 const hooks = utils.defaults(opts.hooks, { before: [], after: [] });
@@ -44,7 +44,15 @@ export function ModelFactory(options) {
                 before = Method.concat(hooks.before, this._hooks.getHooks(`${methodName}::before`));
                 after = Method.concat(hooks.after, this._hooks.getHooks(`${methodName}::after`));
 
-                return Method.merge({ method, scope: this, before, after })(...args);
+                const method = (ctx, next) => methods[methodName].apply(ctx.scope, ctx.args).then(data => {
+                    ctx.hook = 'after';
+                    ctx.result = data;
+                    next();
+                    return data;
+                });
+                const ctx = { scope: this, method: methodName, hook: 'before' };
+
+                return Method.generate([...before, method, ...after])(args, ctx);
             }
         });
 
