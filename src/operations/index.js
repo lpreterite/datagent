@@ -2,6 +2,21 @@ import { defaults, isDef } from "../utils/";
 import Schema from "../classes/Schema.class";
 import Hooks from "../classes/Hooks.class";
 
+export function requestData() {
+    return (ctx, next)=>{
+        const res = ctx.result;
+        if(res.status < 200) throw new Error('ajax error');
+        ctx.result = res.data;
+        next();
+    }
+}
+
+export function awaitTo(promise) {
+    return promise.then(data => {
+        return [null, data];
+    }).catch(err => [err]);
+}
+
 export function format() {
     return (ctx, next) => {
         const hook = Hooks.parse(ctx, 'behaviour');

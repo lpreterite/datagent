@@ -7,8 +7,15 @@
     "doc": "docs",
     "test": "test"
   },
+  "nyc": {
+    "require": [
+      "babel-register"
+    ],
+    "sourceMap": false,
+    "instrument": false
+  },
   "scripts": {
-    "test": "node --harmony --debug node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=test mocha-webpack --webpack-config webpack.config.js --require test/setup.js test/**/*.spec.js"
+    "test": "node --harmony --debug node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=test nyc mocha-webpack --webpack-config webpack.config.js --require test/setup.js test/**/*.js"
   },
   "repository": {
     "type": "git",
@@ -32,6 +39,7 @@
     "babel": "^6.23.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
+    "babel-plugin-istanbul": "^4.1.6",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-polyfill": "^6.26.0",
@@ -42,6 +50,7 @@
     "fecha": "^2.3.3",
     "mocha": "^4.0.1",
     "mocha-webpack": "^1.0.1",
+    "nyc": "^11.8.0",
     "vue": "^2.5.3",
     "vue-template-compiler": "^2.5.3",
     "vue-test-utils": "^1.0.0-beta.4",

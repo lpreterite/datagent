@@ -38,11 +38,11 @@ class Hooks {
     }
 
     static isReceiveBehaviour(method, hook){
-        return Hooks.ReceiveBehaviour.methods.indexOf(method) > -1 && Hooks.ReceiveBehaviour.hooks.indexOf(method) > -1;
+        return Hooks.ReceiveBehaviour.methods.indexOf(method) > -1 && Hooks.ReceiveBehaviour.hooks.indexOf(hook) > -1;
     }
 
     static isSendBehaviour(method, hook) {
-        return Hooks.SendBehaviour.methods.indexOf(method) > -1 && Hooks.SendBehaviour.hooks.indexOf(method) > -1;
+        return Hooks.SendBehaviour.methods.indexOf(method) > -1 && Hooks.SendBehaviour.hooks.indexOf(hook) > -1;
     }
 }
 

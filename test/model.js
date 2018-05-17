@@ -3,7 +3,17 @@ import Remote from '../src/classes/Remote.class';
 import Schema from '../src/classes/Schema.class';
 import Dataflow from '../src/Dataflow';
 import { defaults } from '../src/utils/';
-import { format } from '../src/operations/';
+import { format, requestData, awaitTo } from '../src/operations/';
+
+function requestHandle() {
+    return (ctx, next) => {
+        const result = ctx.result;
+        if (result.code < 200) throw new Error(result.msg);
+        ctx.result = result.data;
+        // throw new Error('233');
+        next();
+    }
+};
 
 const handle = (res) => {
     // console.log(res);
@@ -220,7 +230,14 @@ describe('Model instace Test', function () {
         it('方法内发生错误时应当报错', async function () {
             let err, result;
             try {
-                [err, result] = await model.errorTest();
+                [err, result] = await model.errorTest({}, {
+                    hooks: {
+                        before: [(ctx, next) => {
+                            throw new Error('just a bug before');
+                            next();
+                        }]
+                    }
+                });
             } catch (e) {
                 assert.equal("just a bug", e.message);
             }
@@ -327,7 +344,6 @@ describe('Model instace Test', function () {
                 },
                 methods: {
                     typeahead(q, opts) {
-                        console.log(q);
                         return this.fetch({ q }, opts);
                     }
                 },
@@ -425,6 +441,8 @@ describe('Model instace Test', function () {
                 },
                 hooks: {
                     ...Dataflow.mapReceiveHook([
+                        requestData(),
+                        requestHandle(),
                         format()
                         // (ctx, next) => {
                         //     const res = ctx.result;
@@ -444,7 +462,12 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data: { id: 1, name: 'John Smith' }, msg: '' });
 
             let err, result;
-            [err, result] = await model.find(1).then(handle);
+            [err, result] = await awaitTo(model.find(1));
+            // try{
+            //     [err, result] = await model.find(1);
+            // }catch(e){
+            //     console.log(e);
+            // }
             assert.propertyVal(result, 'create_at', create_at);
             mock.base.reset();
         })

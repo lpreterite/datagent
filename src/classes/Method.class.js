@@ -35,7 +35,9 @@ class Method {
                     queue(
                         ctx,
                         ctx => resolve(ctx.result)
-                    ).catch(e=>reject(e));
+                    ).catch(e=>{
+                        reject(e)
+                    });
                 } catch (e) {
                     reject(e);
                 }
