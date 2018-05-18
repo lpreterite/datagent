@@ -1,5 +1,5 @@
-import compose from 'koa-compose';
-import { defaults } from '../utils/';
+// import compose from 'koa-compose';
+import { defaults, compose } from '../utils/';
 
 /**
  * queue call function like that:
@@ -27,20 +27,13 @@ import { defaults } from '../utils/';
 
 class Method {
     static generate(queues) {
-        const queue = compose(queues);
+        const queue = compose(...queues);
         return (args, ctx={}) => {
             ctx = Object.assign(ctx, {args});
             return new Promise((resolve, reject) => {
-                try {
-                    queue(
-                        ctx,
-                        ctx => resolve(ctx.result)
-                    ).catch(e=>{
-                        reject(e)
-                    });
-                } catch (e) {
-                    reject(e);
-                }
+                queue(ctx)
+                    .then(ctx=>resolve(ctx.result))
+                    .catch(reject);
             });
         }
     }

@@ -43,12 +43,11 @@ export function ModelFactory(options) {
 
                 before = Method.concat(hooks.before, this._hooks.getHooks(`${methodName}::before`));
                 after = Method.concat(hooks.after, this._hooks.getHooks(`${methodName}::after`));
-                
-                const method = (ctx, next) => methods[methodName].apply(ctx.scope, ctx.args).then(data => {
+
+                const method = (ctx) => methods[methodName].apply(ctx.scope, ctx.args).then(data => {
                     ctx.hook = 'after';
                     ctx.result = data;
-                    next();
-                    return data;
+                    return Promise.resolve(ctx);
                 });
                 const ctx = { scope: this, method: methodName, hook: 'before' };
 

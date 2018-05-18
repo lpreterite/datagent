@@ -6,17 +6,15 @@ import { defaults } from '../src/utils/';
 import { format, requestData, awaitTo } from '../src/operations/';
 
 function requestHandle() {
-    return (ctx, next) => {
+    return (ctx) => {
         const result = ctx.result;
         if (result.code < 200) throw new Error(result.msg);
         ctx.result = result.data;
-        // throw new Error('233');
-        next();
+        return Promise.resolve(ctx);
     }
 };
 
 const handle = (res) => {
-    // console.log(res);
     let result, err;
     if (res.data.code < 200) {
         err = new Error(res.data.msg);
@@ -232,14 +230,14 @@ describe('Model instace Test', function () {
             try {
                 [err, result] = await model.errorTest({}, {
                     hooks: {
-                        before: [(ctx, next) => {
+                        before: [(ctx) => {
                             throw new Error('just a bug before');
-                            next();
+                            return Promise.resolve(ctx);
                         }]
                     }
                 });
             } catch (e) {
-                assert.equal("just a bug", e.message);
+                assert.equal("just a bug before", e.message);
             }
         })
         it('自定义方法应当能使用', async function () {
@@ -270,14 +268,14 @@ describe('Model instace Test', function () {
                 },
                 hooks: {
                     fetch: {
-                        after: (ctx, next) => {
+                        after: (ctx) => {
                             const result = ctx.result;
                             if (result.data.code < 200) return;
                             result.data.data = result.data.data.map((item, index)=>{
                                 item.order=index;
                                 return item;
                             });
-                            next();
+                            return Promise.resolve(ctx);
                         }
                     }
                 }
@@ -311,11 +309,11 @@ describe('Model instace Test', function () {
                 },
                 hooks: {
                     typeahead: {
-                        before: (ctx, next) => {
+                        before: (ctx) => {
                             let [query] = ctx.args;
                             query = query.q ? query.q : query.keyword;
                             ctx.args = [query];
-                            next();
+                            return Promise.resolve(ctx);
                         }
                     }
                 }
@@ -349,11 +347,11 @@ describe('Model instace Test', function () {
                 },
                 hooks: {
                     typeahead: {
-                        before: (ctx, next) => {
+                        before: (ctx) => {
                             let [query] = ctx.args;
                             query = query.q ? query.q : query.keyword;
                             ctx.args = [query];
-                            next();
+                            return Promise.resolve(ctx);
                         }
                     }
                 }
@@ -368,7 +366,7 @@ describe('Model instace Test', function () {
             let err, result;
             [err, result] = await model.typeahead({ keyword: 'John' }, {
                 hooks: {
-                    after: (ctx, next) => {
+                    after: (ctx) => {
                         let [query] = ctx.args;
                         let res = ctx.result;
                         if (res.data.code < 200) return;
@@ -376,7 +374,7 @@ describe('Model instace Test', function () {
                             keyword: query,
                             typeahead: res.data.data
                         };
-                        next();
+                        return Promise.resolve(ctx);
                     }
                 }
             }).then(handle);
@@ -404,14 +402,14 @@ describe('Model instace Test', function () {
                 },
                 hooks: {
                     ...Dataflow.mapReceiveHook([
-                        (ctx, next) => {
+                        (ctx) => {
                             const result = ctx.result;
-                            if (result.data.code < 200) return next();
+                            if (result.data.code < 200) return Promise.reject(new Error('api error'));
                             result.data.data = result.data.data.map((item, index) => {
                                 item.order = index;
                                 return item;
                             });
-                            next();
+                            return Promise.resolve(ctx);
                         }
                     ])
                 }
@@ -444,13 +442,6 @@ describe('Model instace Test', function () {
                         requestData(),
                         requestHandle(),
                         format()
-                        // (ctx, next) => {
-                        //     const res = ctx.result;
-                        //     if (res.data.code < 200) return next();
-                        //     res.data.data = ctx.scope.schema.format(res.data.data);
-                        //     ctx.result = res;
-                        //     next();
-                        // }
                     ])
                 }
             });
@@ -463,11 +454,6 @@ describe('Model instace Test', function () {
 
             let err, result;
             [err, result] = await awaitTo(model.find(1));
-            // try{
-            //     [err, result] = await model.find(1);
-            // }catch(e){
-            //     console.log(e);
-            // }
             assert.propertyVal(result, 'create_at', create_at);
             mock.base.reset();
         })
@@ -486,10 +472,10 @@ describe('Model instace Test', function () {
                 },
                 hooks: {
                     ...Dataflow.mapSendHook([
-                        (ctx, next) => {
+                        (ctx) => {
                             let data = ctx.args.pop();
                             ctx.args = [ctx.scope.schema.filter(data, ['id', 'name', 'create_at']), ...ctx.args];
-                            next();
+                            return Promise.resolve(ctx);
                         }
                     ])
                 }

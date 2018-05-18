@@ -3,11 +3,11 @@ import Schema from "../classes/Schema.class";
 import Hooks from "../classes/Hooks.class";
 
 export function requestData() {
-    return (ctx, next)=>{
+    return (ctx)=>{
         const res = ctx.result;
         if(res.status < 200) throw new Error('ajax error');
         ctx.result = res.data;
-        next();
+        return Promise.resolve(ctx);
     }
 }
 
@@ -18,7 +18,7 @@ export function awaitTo(promise) {
 }
 
 export function format() {
-    return (ctx, next) => {
+    return (ctx) => {
         const hook = Hooks.parse(ctx, 'behaviour');
         switch (hook) {
             case 'receive':
@@ -31,12 +31,12 @@ export function format() {
             default:
                 throw new Error(`The format operation must use in ${hook}.`);
         }
-        next();
+        return Promise.resolve(ctx);
     }
 }
 
 export function filter(fields){
-    return (ctx, next) => {
+    return (ctx) => {
         const hook = Hooks.parse(ctx, 'behaviour');
         switch (hook) {
             case 'receive':
@@ -49,12 +49,12 @@ export function filter(fields){
             default:
                 throw new Error(`The filter operation must use in ${hook}.`);
         }
-        next();
+        return Promise.resolve(ctx);
     }
 }
 
 export function formatFor(field, schema){
-    return (ctx, next) => {
+    return (ctx) => {
         const hook = Hooks.parse(ctx, 'behaviour');
         switch (hook) {
             case 'receive':
@@ -70,16 +70,16 @@ export function formatFor(field, schema){
             default:
                 throw new Error(`The formatFor operation must use in ${hook}.`);
         }
-        next();
+        return Promise.resolve(ctx);
     }
 }
 
 export function filterFor(field, fields) {
-    return (ctx, next) => {
+    return (ctx) => {
         if (isDef(ctx.result[field])) ctx.result[field] = Schema.filter(ctx.result[field], fields);
-        next();
+        return Promise.resolve(ctx);
     }
-    return (ctx, next) => {
+    return (ctx) => {
         const hook = Hooks.parse(ctx, 'behaviour');
         switch (hook) {
             case 'receive':
@@ -93,6 +93,6 @@ export function filterFor(field, fields) {
             default:
                 throw new Error(`The filterFor operation must use in ${hook}.`);
         }
-        next();
+        return Promise.resolve(ctx);
     }
 }

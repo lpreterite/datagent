@@ -9,7 +9,8 @@
 - [] ~~find接受参数必须跟fetch一致，第一参数为Object（代号为query）？~~
 - [x] ctx上下文必须包含method方法名称和hook当前钩子，hook当前钩子会顺着整个钩子方法执行的过程而变化。
 - [x] Hooks类添加静态方法parse解析context上下文得出当前hook，第二参数为解析结果类型(包含两种method方法钩子和behaviour行为钩子，默认是method方法钩子)，输出结果为方法+钩子的字符串，如：`fetch:after`。参考[场景1](#场景1)
-- [] 由于方法运行序列里的某序列出错无法捕获的问题，需要寻找替换`koa-compose`的解决方案，目前找到解决办法有[1](https://www.npmjs.com/package/compose-promise)、[2](https://medium.com/@dtipson/more-functional-javascript-reducing-promises-ramda-js-arrow-functions-again-c1f90e0a79d0)
+- [x] 由于方法运行序列里的某序列出错无法捕获的问题，需要寻找替换`koa-compose`的解决方案，目前找到解决办法有[1](https://www.npmjs.com/package/compose-promise)、[2](https://medium.com/@dtipson/more-functional-javascript-reducing-promises-ramda-js-arrow-functions-again-c1f90e0a79d0)
+- [x] 已使用第二个办法替换内容
 
 ## 模型包含某些方法(fetch,find,save,delete)的默认处理(hooks)？ 
 

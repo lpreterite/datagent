@@ -11,6 +11,8 @@ export const defaults = (obj, defaults = {}) =>{
     return isDef(obj) ? merge(defaults, obj) : defaults;
 };
 
+export const compose = (...list) => acc => list.reduce((acc, fn) => acc.then(fn), Promise.resolve(acc));
+
 /**
  * format code like that:
  * ```
@@ -73,6 +75,7 @@ export default {
     isDef,
     defaults,
     convert,
+    compose,
     mapSendHook,
     mapReceiveHook
 };
