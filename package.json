@@ -51,13 +51,8 @@
     "mocha": "^4.0.1",
     "mocha-webpack": "^1.0.1",
     "nyc": "^11.8.0",
-    "vue": "^2.5.3",
-    "vue-template-compiler": "^2.5.3",
-    "vue-test-utils": "^1.0.0-beta.4",
     "webpack": "^3.8.1",
     "webpack-node-externals": "^1.6.0"
   },
-  "dependencies": {
-    "koa-compose": "^4.0.0"
-  }
+  "dependencies": {}
 }
