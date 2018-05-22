@@ -17,6 +17,11 @@ export default class Schema {
     default(){
         return schema(this._fieldSet);
     }
+    get fieldSet() {
+        return this._fieldSet;
+    }
+
+    // static
     static format(data, fieldSet){
         return format(data, fieldSet);
     }
@@ -25,9 +30,5 @@ export default class Schema {
     }
     static default(fieldSet) {
         return schema(fieldSet);
-    }
-
-    get fieldSet(){
-        return this._fieldSet;
     }
 }

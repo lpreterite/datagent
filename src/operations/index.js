@@ -1,11 +1,15 @@
-import { defaults, isDef } from "../utils/";
+import { defaults, isDef, isArray } from "../utils/";
 import Schema from "../classes/Schema.class";
 import Hooks from "../classes/Hooks.class";
 
 export function requestData() {
     return (ctx)=>{
         const res = ctx.result;
-        if(res.status < 200) throw new Error('ajax error');
+        if(res.status < 200){
+            const err = new Error(res.message);
+            err.respose = res.response;
+            throw err
+        };
         ctx.result = res.data;
         return Promise.resolve(ctx);
     }
@@ -22,7 +26,11 @@ export function format() {
         const hook = Hooks.parse(ctx, 'behaviour');
         switch (hook) {
             case 'receive':
-                ctx.result = ctx.scope.schema.format(ctx.result);
+                if (isDef(ctx.result) && isArray(ctx.result)){
+                    ctx.result = ctx.result.map(item => ctx.scope.schema.format(item));
+                }else{
+                    ctx.result = ctx.scope.schema.format(ctx.result);
+                }
                 break;
             case 'send':
                 const data = ctx.args.pop();
@@ -40,7 +48,11 @@ export function filter(fields){
         const hook = Hooks.parse(ctx, 'behaviour');
         switch (hook) {
             case 'receive':
-                ctx.result = ctx.scope.schema.filter(ctx.result, fields);
+                if (isDef(ctx.result) && isArray(ctx.result)) {
+                    ctx.result = ctx.result.map(item => ctx.scope.schema.filter(item, fields));
+                } else {
+                    ctx.result = ctx.scope.schema.filter(ctx.result, fields);
+                }
                 break;
             case 'send':
                 const data = ctx.args.pop();
@@ -75,10 +87,6 @@ export function formatFor(field, schema){
 }
 
 export function filterFor(field, fields) {
-    return (ctx) => {
-        if (isDef(ctx.result[field])) ctx.result[field] = Schema.filter(ctx.result[field], fields);
-        return Promise.resolve(ctx);
-    }
     return (ctx) => {
         const hook = Hooks.parse(ctx, 'behaviour');
         switch (hook) {

@@ -85,6 +85,7 @@ export function HooksFactory(options){
 const Dataflow = {
     Contact: ContactFactory,
     Model: ModelFactory,
+    Hooks: HooksFactory,
     Schema,
     mapReceiveHook: utils.mapReceiveHook,
     mapSendHook: utils.mapSendHook,

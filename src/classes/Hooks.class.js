@@ -38,10 +38,14 @@ class Hooks {
     }
 
     static isReceiveBehaviour(method, hook){
+        if (typeof method !== 'string') throw new TypeError('The method must be string in isReceiveBehaviour()');
+        if (typeof hook !== 'string') throw new TypeError('The hook must be string in isReceiveBehaviour()');
         return Hooks.ReceiveBehaviour.methods.indexOf(method) > -1 && Hooks.ReceiveBehaviour.hooks.indexOf(hook) > -1;
     }
 
     static isSendBehaviour(method, hook) {
+        if (typeof method !== 'string') throw new TypeError('The method must be string in isSendBehaviour()');
+        if (typeof hook !== 'string') throw new TypeError('The hook must be string in isSendBehaviour()');
         return Hooks.SendBehaviour.methods.indexOf(method) > -1 && Hooks.SendBehaviour.hooks.indexOf(hook) > -1;
     }
 }

@@ -30,8 +30,8 @@ export function convert(format = {}, options){
         const result = {};
         fields.forEach(fieldName => {
             const fieldSet = format[fieldName];
-            if (!fieldSet) return result[fieldName] = data[fieldName];
-            result[fieldName] = options.format ? formatField(fieldSet.type, fieldSet.default)(data[fieldName]) : data[fieldName];
+            if (isDef(data[fieldName])) result[fieldName] = data[fieldName];
+            if (options.format && isDef(fieldSet)) result[fieldName] = formatField(fieldSet.type, fieldSet.default)(data[fieldName]);
         });
         return result;
     }
