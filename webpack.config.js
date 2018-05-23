@@ -6,31 +6,19 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "./lib"),
     publicPath: "/lib/",
-    filename: "build.js"
+    filename: "Dataflow.js"
   },
   resolve: {
     alias: {
-      vue$: "vue/dist/vue.esm.js",
       "@": path.resolve(__dirname, "src")
     }
   },
   module: {
     rules: [
       {
-        test: /\.vue$/,
-        loader: "vue-loader"
-      },
-      {
         test: /\.js$/,
         loader: "babel-loader",
         exclude: /node_modules/
-      },
-      {
-        test: /\.(png|jpg|gif|svg)$/,
-        loader: "file-loader",
-        options: {
-          name: "[name].[ext]?[hash]"
-        }
       }
     ]
   },

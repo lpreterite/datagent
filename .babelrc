@@ -15,6 +15,21 @@
                 ]
             ]
         },
+        "production": {
+            "presets": [
+                [
+                    "env",
+                    {
+                        "modules": false,
+                        "target": {
+                            "browsers": [
+                                "> 5%"
+                            ]
+                        }
+                    }
+                ]
+            ]
+        },
         "test": {
             "presets": [
                 [
