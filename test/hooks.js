@@ -13,22 +13,22 @@ describe('Hooks Class Test', () => {
             }
         };
     });
-    describe('Dataflow.Hooks()', () => {
-        beforeEach(()=>{
-            hooks = Dataflow.Hooks(opts);
-        })
-    })
-    describe('instance.getHooks()', () => {
-
-    })
-    describe('instance.each()', () => {
-
-    })
-    describe('instance.length', () => {
-
-    })
     describe('Hooks.parse()', () => {
-
+        it('应当输出字符', ()=>{
+            const ctx = { method: 'fetch', hook:'after' };
+            const result = Hooks.parse(ctx);
+            assert.typeOf(result, 'string');
+        })
+        it('应当以"[method]:[hook]"形式输出结果', ()=>{
+            const ctx = { method: 'fetch', hook: 'after' };
+            const result = Hooks.parse(ctx);
+            assert.equal(result, "fetch:after");
+        })
+        it('当第二参数type输入值为"behaviour"时，应当以"receive"或"send"输出结果其中结果', () => {
+            const ctx = { method: 'fetch', hook: 'after' };
+            const result = Hooks.parse(ctx, 'behaviour');
+            assert.equal(result, "receive");
+        })
     })
     describe('Hooks.isReceiveBehaviour()', () => {
         beforeEach(() => {

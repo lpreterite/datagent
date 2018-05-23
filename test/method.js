@@ -17,7 +17,7 @@ describe('Method Class Test', function() {
     });
   }
 
-  describe('generate()', function() {
+  describe('Method.generate()', function() {
     it('应当输出内容顺序为[1,2,3]的数组', async function() {
       const operations = [
         async function (ctx) {

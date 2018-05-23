@@ -70,13 +70,19 @@ export function formatFor(field, schema){
         const hook = Hooks.parse(ctx, 'behaviour');
         switch (hook) {
             case 'receive':
-                if (isDef(ctx.result[field])) ctx.result[field] = Schema.format(ctx.result[field], schema.fieldSet);
-                else ctx.result[field] = schema.defaults();
+                if (isArray(ctx.result)){
+                    ctx.result = ctx.result.map(item =>{
+                        item[field] = isDef(item[field]) ? Schema.format(item[field], schema.fieldSet) : schema.default();
+                        return item;
+                    });
+                }else{
+                    ctx.result[field] = isDef(ctx.result[field]) ? Schema.format(ctx.result[field], schema.fieldSet) : schema.default();
+                }
                 break;
             case 'send':
                 const data = ctx.args.pop();
                 if (isDef(data[field])) data[field] = Schema.format(data[field], schema.fieldSet);
-                else data[field] = schema.defaults();
+                else data[field] = schema.default();
                 ctx.args = [data, ...ctx.args];
                 break;
             default:
@@ -91,7 +97,14 @@ export function filterFor(field, fields) {
         const hook = Hooks.parse(ctx, 'behaviour');
         switch (hook) {
             case 'receive':
-                if (isDef(ctx.result[field])) ctx.result[field] = Schema.filter(ctx.result[field], fields);
+                if (isArray(ctx.result)) {
+                    ctx.result = ctx.result.map(item => {
+                        item[field] = isDef(item[field]) ? Schema.filter(item[field], fields) : item[field];
+                        return item;
+                    });
+                } else {
+                    ctx.result[field] = isDef(ctx.result[field]) ? Schema.filter(ctx.result[field], fields) : ctx.result[field];
+                }
                 break;
             case 'send':
                 const data = ctx.args.pop();
