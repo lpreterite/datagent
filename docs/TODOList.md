@@ -12,6 +12,31 @@
 - [x] 由于方法运行序列里的某序列出错无法捕获的问题，需要寻找替换`koa-compose`的解决方案，目前找到解决办法有[1](https://www.npmjs.com/package/compose-promise)、[2](https://medium.com/@dtipson/more-functional-javascript-reducing-promises-ramda-js-arrow-functions-again-c1f90e0a79d0)
 - [x] 已使用第二个办法替换内容
 
+## 文档TODOlist
+
+- [] js-dataflow是什么？
+- [] 起步
+    - [] 安装及使用
+    - [] 创建模型
+    - [] 定义模型字段
+    - [] 模型方法(fetch,find,save,delete)及自定义方法
+    - [] 方法钩子
+    - [] 多个远端服务
+- [] 模型字段
+    - [] 自定义类型
+    - [] 默认值
+- [] 模型方法
+    - [] 自定义方法
+- [] 方法钩子
+    - [] 创建前添加钩子
+    - [] 运行前添加钩子
+    - [] 行为钩子
+    - [] 避免触发钩子
+- [] 远端服务
+    - [] 创建远端服务
+    - [] 多个远端服务
+    - [] 切换默认远端服务
+
 ## 模型包含某些方法(fetch,find,save,delete)的默认处理(hooks)？ 
 
 答：不包含默认处理，所有处理需要手动配置（更可控），同时提供相关`operation`的方法，支持简单配置实现类似字段过滤、字段转义、字段添加之类的操作。

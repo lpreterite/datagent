@@ -35,7 +35,6 @@
   },
   "homepage": "https://github.com/lpreterite/vue-restful-model#readme",
   "devDependencies": {
-    "axios": "^0.18.0",
     "axios-mock-adapter": "^1.15.0",
     "babel": "^6.23.0",
     "babel-core": "^6.26.0",
@@ -55,5 +54,7 @@
     "webpack": "^3.8.1",
     "webpack-node-externals": "^1.6.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "axios": "^0.18.0"
+  }
 }
