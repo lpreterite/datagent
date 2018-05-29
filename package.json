@@ -2,7 +2,7 @@
   "name": "vue-restful-model",
   "version": "0.0.1",
   "description": "Provide restful model support for vue",
-  "main": "src/index.js",
+  "main": "dist/dataplumber.js",
   "directories": {
     "doc": "docs",
     "test": "test"
@@ -25,8 +25,8 @@
   "keywords": [
     "restful",
     "model",
-    "vue",
-    "vue2"
+    "dataflow",
+    "plumber"
   ],
   "author": "packy-tang <lpreterite@126.com>",
   "license": "MIT",

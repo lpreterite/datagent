@@ -82,7 +82,7 @@ export function HooksFactory(options){
     return hooks;
 }
 
-const Dataflow = {
+const DataPlumber = {
     Contact: ContactFactory,
     Model: ModelFactory,
     Hooks: HooksFactory,
@@ -91,4 +91,4 @@ const Dataflow = {
     mapSendHook: utils.mapSendHook,
 };
 
-export default Dataflow;
+export default DataPlumber;

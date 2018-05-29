@@ -4,9 +4,9 @@ var webpack = require("webpack");
 module.exports = {
   entry: "./src/index.js",
   output: {
-    path: path.resolve(__dirname, "./lib"),
-    publicPath: "/lib/",
-    filename: "Dataflow.js"
+    path: path.resolve(__dirname, "./dist"),
+    publicPath: "/dist/",
+    filename: "dataplumber.js"
   },
   resolve: {
     alias: {
