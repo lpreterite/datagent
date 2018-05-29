@@ -1,5 +1,5 @@
 {
-  "name": "vue-restful-model",
+  "name": "dataplumber",
   "version": "0.0.1",
   "description": "Provide restful model support for vue",
   "main": "dist/dataplumber.js",
@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lpreterite/vue-restful-model.git"
+    "url": "git+https://github.com/lpreterite/dataplumber.git"
   },
   "keywords": [
     "restful",
@@ -31,9 +31,9 @@
   "author": "packy-tang <lpreterite@126.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lpreterite/vue-restful-model/issues"
+    "url": "https://github.com/lpreterite/dataplumber/issues"
   },
-  "homepage": "https://github.com/lpreterite/vue-restful-model#readme",
+  "homepage": "https://github.com/lpreterite/dataplumber#readme",
   "devDependencies": {
     "axios-mock-adapter": "^1.15.0",
     "babel": "^6.23.0",
