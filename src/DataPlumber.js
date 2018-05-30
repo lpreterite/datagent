@@ -42,8 +42,8 @@ export function ModelFactory(options) {
                 const opts = utils.defaults(args[args.length-1]);
                 const hooks = utils.defaults(opts.hooks, { before: [], after: [] });
 
-                before = Method.concat(hooks.before, this._hooks.getHooks(`${methodName}::before`));
-                after = Method.concat(hooks.after, this._hooks.getHooks(`${methodName}::after`));
+                const before = Method.concat(hooks.before, this._hooks.getHooks(`${methodName}::before`));
+                const after = Method.concat(hooks.after, this._hooks.getHooks(`${methodName}::after`));
 
                 const method = (ctx) => methods[methodName].apply(ctx.scope, ctx.args).then(data => {
                     ctx.hook = 'after';

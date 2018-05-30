@@ -622,8 +622,8 @@ function ModelFactory(options) {
             var opts = __WEBPACK_IMPORTED_MODULE_0__utils___["c" /* default */].defaults(args[args.length - 1]);
             var hooks = __WEBPACK_IMPORTED_MODULE_0__utils___["c" /* default */].defaults(opts.hooks, { before: [], after: [] });
 
-            before = __WEBPACK_IMPORTED_MODULE_6__classes_Method_class__["a" /* default */].concat(hooks.before, this._hooks.getHooks(methodName + '::before'));
-            after = __WEBPACK_IMPORTED_MODULE_6__classes_Method_class__["a" /* default */].concat(hooks.after, this._hooks.getHooks(methodName + '::after'));
+            var before = __WEBPACK_IMPORTED_MODULE_6__classes_Method_class__["a" /* default */].concat(hooks.before, this._hooks.getHooks(methodName + '::before'));
+            var after = __WEBPACK_IMPORTED_MODULE_6__classes_Method_class__["a" /* default */].concat(hooks.after, this._hooks.getHooks(methodName + '::after'));
 
             var method = function method(ctx) {
                 return methods[methodName].apply(ctx.scope, ctx.args).then(function (data) {
