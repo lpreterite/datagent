@@ -23,21 +23,18 @@ export function awaitTo(promise) {
 
 export function format() {
     return (ctx) => {
-        const hook = Hooks.parse(ctx, 'behaviour');
-        switch (hook) {
-            case 'receive':
+        switch (ctx.hook) {
+            case 'after':
                 if (isDef(ctx.result) && isArray(ctx.result)){
                     ctx.result = ctx.result.map(item => ctx.scope.schema.format(item));
                 }else{
                     ctx.result = ctx.scope.schema.format(ctx.result);
                 }
                 break;
-            case 'send':
+            case 'before':
                 const data = ctx.args.pop();
                 ctx.args = [ctx.scope.schema.format(data), ...ctx.args];
                 break;
-            default:
-                throw new Error(`The format operation must use in ${hook}.`);
         }
         return Promise.resolve(ctx);
     }
@@ -45,21 +42,18 @@ export function format() {
 
 export function filter(fields){
     return (ctx) => {
-        const hook = Hooks.parse(ctx, 'behaviour');
-        switch (hook) {
-            case 'receive':
+        switch (ctx.hook) {
+            case 'after':
                 if (isDef(ctx.result) && isArray(ctx.result)) {
                     ctx.result = ctx.result.map(item => ctx.scope.schema.filter(item, fields));
                 } else {
                     ctx.result = ctx.scope.schema.filter(ctx.result, fields);
                 }
                 break;
-            case 'send':
+            case 'before':
                 const data = ctx.args.pop();
                 ctx.args = [ctx.scope.schema.filter(data, fields), ...ctx.args];
                 break;
-            default:
-                throw new Error(`The filter operation must use in ${hook}.`);
         }
         return Promise.resolve(ctx);
     }
@@ -67,9 +61,8 @@ export function filter(fields){
 
 export function formatFor(field, schema){
     return (ctx) => {
-        const hook = Hooks.parse(ctx, 'behaviour');
-        switch (hook) {
-            case 'receive':
+        switch (ctx.hook) {
+            case 'after':
                 if (isArray(ctx.result)){
                     ctx.result = ctx.result.map(item =>{
                         item[field] = isDef(item[field]) ? Schema.format(item[field], schema.fieldSet) : schema.default();
@@ -79,14 +72,12 @@ export function formatFor(field, schema){
                     ctx.result[field] = isDef(ctx.result[field]) ? Schema.format(ctx.result[field], schema.fieldSet) : schema.default();
                 }
                 break;
-            case 'send':
+            case 'before':
                 const data = ctx.args.pop();
                 if (isDef(data[field])) data[field] = Schema.format(data[field], schema.fieldSet);
                 else data[field] = schema.default();
                 ctx.args = [data, ...ctx.args];
                 break;
-            default:
-                throw new Error(`The formatFor operation must use in ${hook}.`);
         }
         return Promise.resolve(ctx);
     }
@@ -94,9 +85,8 @@ export function formatFor(field, schema){
 
 export function filterFor(field, fields) {
     return (ctx) => {
-        const hook = Hooks.parse(ctx, 'behaviour');
-        switch (hook) {
-            case 'receive':
+        switch (ctx.hook) {
+            case 'after':
                 if (isArray(ctx.result)) {
                     ctx.result = ctx.result.map(item => {
                         item[field] = isDef(item[field]) ? Schema.filter(item[field], fields) : item[field];
@@ -106,13 +96,11 @@ export function filterFor(field, fields) {
                     ctx.result[field] = isDef(ctx.result[field]) ? Schema.filter(ctx.result[field], fields) : ctx.result[field];
                 }
                 break;
-            case 'send':
+            case 'before':
                 const data = ctx.args.pop();
                 if (isDef(data[field])) data[field] = Schema.filter(data[field], fields);
                 ctx.args = [data, ...ctx.args];
                 break;
-            default:
-                throw new Error(`The filterFor operation must use in ${hook}.`);
         }
         return Promise.resolve(ctx);
     }
