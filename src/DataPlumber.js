@@ -1,4 +1,5 @@
 import utils from './utils/';
+import operations from './utils/';
 import Model from './classes/Model.class';
 import Hooks from './classes/Hooks.class';
 import Contact from './classes/Contact.class';
@@ -89,6 +90,7 @@ const DataPlumber = {
     Schema,
     mapReceiveHook: utils.mapReceiveHook,
     mapSendHook: utils.mapSendHook,
+    operations
 };
 
 export default DataPlumber;

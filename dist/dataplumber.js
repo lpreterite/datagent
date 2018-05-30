@@ -1,2 +1,851 @@
-!function(e){function t(r){if(n[r])return n[r].exports;var o=n[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,t),o.l=!0,o.exports}var n={};t.m=e,t.c=n,t.d=function(e,n,r){t.o(e,n)||Object.defineProperty(e,n,{configurable:!1,enumerable:!0,get:r})},t.n=function(e){var n=e&&e.__esModule?function(){return e.default}:function(){return e};return t.d(n,"a",n),n},t.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},t.p="/dist/",t(t.s=5)}([function(e,t,n){"use strict";function r(e,t,n){return t in e?Object.defineProperty(e,t,{value:n,enumerable:!0,configurable:!0,writable:!0}):e[t]=n,e}function o(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},t=arguments[1];return t=y(t,{format:!1}),function(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},r=arguments.length>1&&void 0!==arguments[1]?arguments[1]:[].concat(Object.keys(n),Object.keys(e)),o={};return r.forEach(function(r){var u=e[r];h(n[r])&&(o[r]=n[r]),t.format&&h(u)&&(o[r]=i(u.type,u.default)(n[r]))}),o}}function i(e,t){return function(n){var r=void 0;return r=h(n)?e(n):t,t===r?r:(d(r)&&NaN===r&&(r=t),null===r&&(r=t),r)}}function u(e,t){return t=y(t,f.a.ReceiveBehaviour),c(e,t)}function a(e,t){return t=y(t,f.a.SendBehaviour),c(e,t)}function c(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};if(!h(t.methods))throw new Error("The options must have methods parameter in mapHooks");if(!v(t.methods))throw new Error("The options.methods must be Array in mapHooks");if(!h(t.hooks))throw new Error("The options must have hooks parameter in mapHooks");if(!v(t.hooks))throw new Error("The options.hooks must be Array in mapHooks");var n=t.methods.map(function(e){return r({},e,{})}).reduce(Object.assign);return Object.keys(n).forEach(function(o){n[o]=t.hooks.map(function(t){return r({},t,e)}).reduce(Object.assign)}),n}n.d(t,"g",function(){return s}),n.d(t,"e",function(){return l}),n.d(t,"f",function(){return h}),n.d(t,"d",function(){return y}),n.d(t,"a",function(){return m}),t.b=o;var f=(n(1),n(2)),s=function(e){return!h(e.id)},l=function(e,t,n){return n?e:e+(h(t)?"/"+t:"")},h=function(e){return void 0!==e},v=function(e){return e.constructor===Array},d=function(e){return e.constructor===Number},y=function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};return h(e)?function(e,t){return e.constructor===Array?e.concat(t):Object.assign(e,t)}(t,e):t},m=function(){for(var e=arguments.length,t=Array(e),n=0;n<e;n++)t[n]=arguments[n];return function(e){return t.reduce(function(e,t){return e.then(t)},Promise.resolve(e))}};t.c={isNew:s,getURL:l,isDef:h,defaults:y,convert:o,compose:m,mapSendHook:a,mapReceiveHook:u}},function(e,t,n){"use strict";function r(e){if(Array.isArray(e)){for(var t=0,n=Array(e.length);t<e.length;t++)n[t]=e[t];return n}return Array.from(e)}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var i=n(0),u=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),a=function(){function e(){o(this,e)}return u(e,null,[{key:"generate",value:function(e){var t=i.a.apply(void 0,r(e));return function(e){var n=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};return n=Object.assign(n,{args:e}),new Promise(function(e,r){t(n).then(function(t){return e(t.result)}).catch(r)})}}},{key:"concat",value:function(){for(var e=arguments.length,t=Array(e),n=0;n<e;n++)t[n]=arguments[n];return t.map(function(e){return Object(i.d)(e,[])}).reduce(function(e,t){return e.concat(t)})}}]),e}();t.a=a},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var o=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),i=function(){function e(){r(this,e),this._map=new Map}return o(e,[{key:"addHooks",value:function(e,t){return this._map.set(e,t)}},{key:"getHooks",value:function(e){return this._map.get(e)}},{key:"each",value:function(e){return this._map.forEach(e)}},{key:"length",get:function(){return this._map.size}}],[{key:"parse",value:function(t){var n=t.method,r=t.hook,o=arguments.length>1&&void 0!==arguments[1]?arguments[1]:"method",i=n+":"+r;return"behaviour"===o&&(e.isReceiveBehaviour(n,r)&&(i="receive"),e.isSendBehaviour(n,r)&&(i="send")),i}},{key:"isReceiveBehaviour",value:function(t,n){if("string"!=typeof t)throw new TypeError("The method must be string in isReceiveBehaviour()");if("string"!=typeof n)throw new TypeError("The hook must be string in isReceiveBehaviour()");return e.ReceiveBehaviour.methods.indexOf(t)>-1&&e.ReceiveBehaviour.hooks.indexOf(n)>-1}},{key:"isSendBehaviour",value:function(t,n){if("string"!=typeof t)throw new TypeError("The method must be string in isSendBehaviour()");if("string"!=typeof n)throw new TypeError("The hook must be string in isSendBehaviour()");return e.SendBehaviour.methods.indexOf(t)>-1&&e.SendBehaviour.hooks.indexOf(n)>-1}},{key:"ReceiveBehaviour",get:function(){return{methods:["fetch","find"],hooks:["after"]}}},{key:"SendBehaviour",get:function(){return{methods:["save"],hooks:["before"]}}}]),e}();t.a=i},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var o=n(4),i=n(0),u=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),a=function(){function e(){r(this,e),this._remotes={},this._default_remote=""}return u(e,[{key:"remote",value:function(){var e=arguments.length<=0?void 0:arguments[0],t=arguments.length<=1?void 0:arguments[1],n=Object(i.d)(arguments.length<=2?void 0:arguments[2],{default:!1});if(!(arguments.length>=2)){if(e=e||this._default_remote,!this.has(e))throw new RangeError("Remote does not exist "+e+" in remote()");return t=this._remotes[e],t}if("string"!=typeof e)throw new TypeError("The first arguments must be String");if(t.constructor!==o.a)throw new TypeError("The second arguments must be Remote");this._remotes[e]=t,(n.default||1==this.length)&&this.default(e)}},{key:"default",value:function(e){if("string"!=typeof e)throw new TypeError("The name must be string in default()");if(!this.has(e))throw new RangeError("Remote does not exist "+e+" in default()");this._default_remote=e}},{key:"has",value:function(e){return-1!==Object.keys(this._remotes).indexOf(e)}},{key:"length",get:function(){return Object.keys(this._remotes).length}}]),e}();t.a=a},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var o=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),i=function(){function e(t){r(this,e),this._origin=t.origin}return o(e,[{key:"get",value:function(e,t){return this.sync({url:e,method:"GET",params:t})}},{key:"post",value:function(e,t){return this.sync({method:"POST",url:e,data:t})}},{key:"put",value:function(e,t){return this.sync({method:"PUT",url:e,data:t})}},{key:"patch",value:function(e,t){return this.sync({method:"PATCH",url:e,data:t})}},{key:"delete",value:function(e,t){return this.sync({method:"DELETE",url:e,data:t})}},{key:"sync",value:function(e){return this._origin(e)}},{key:"origin",get:function(){return this._origin}}]),e}();t.a=i},function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var r=n(6);t.default=r.a},function(e,t,n){"use strict";function r(e){if(Array.isArray(e)){for(var t=0,n=Array(e.length);t<e.length;t++)n[t]=e[t];return n}return Array.from(e)}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function i(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function u(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}function a(e){var t=new y.a(e.fields),n=b({fetch:l.a.prototype.fetch,find:l.a.prototype.find,save:l.a.prototype.save,delete:l.a.prototype.delete},e.methods),a=function(n){function r(t){o(this,r),t=s.c.defaults(t),t.name=e.name;var n=i(this,(r.__proto__||Object.getPrototypeOf(r)).call(this,t));return n.initHooks(e.hooks),n}return u(r,n),p(r,[{key:"initHooks",value:function(e){this._hooks=f(e)}},{key:"schema",get:function(){return t}}],[{key:"schema",get:function(){return t}}]),r}(l.a);return Object.keys(n).forEach(function(e){a.prototype[e]=function(){for(var t=arguments.length,o=Array(t),i=0;i<t;i++)o[i]=arguments[i];var u=s.c.defaults(o[o.length-1]),a=s.c.defaults(u.hooks,{before:[],after:[]});before=m.a.concat(a.before,this._hooks.getHooks(e+"::before")),after=m.a.concat(a.after,this._hooks.getHooks(e+"::after"));var c=function(t){return n[e].apply(t.scope,t.args).then(function(e){return t.hook="after",t.result=e,Promise.resolve(t)})},f={scope:this,method:e,hook:"before"};return m.a.generate([].concat(r(before),[c],r(after)))(o,f)}}),a}function c(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},t=(arguments.length>1&&void 0!==arguments[1]&&arguments[1],new v.a);return Object.keys(e).forEach(function(n,r){t.remote(n,new d.a({origin:e[n]}),{default:0==r})}),t}function f(e){var t=new h.a;return Object.keys(s.c.defaults(e)).forEach(function(n){var r=e[n];Object.keys(r).forEach(function(e){t.addHooks(n+"::"+e,r[e])})}),t}var s=n(0),l=n(7),h=n(2),v=n(3),d=n(4),y=n(8),m=n(1),p=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),b=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var r in n)Object.prototype.hasOwnProperty.call(n,r)&&(e[r]=n[r])}return e},g={Contact:c,Model:a,Hooks:f,Schema:y.a,mapReceiveHook:s.c.mapReceiveHook,mapSendHook:s.c.mapSendHook};t.a=g},function(e,t,n){"use strict";function r(e,t,n){return t in e?Object.defineProperty(e,t,{value:n,enumerable:!0,configurable:!0,writable:!0}):e[t]=n,e}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var i=n(0),u=n(3),a=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),c=function(){function e(t){o(this,e);var n=this._name=t.name;if(!Object(i.f)(n)||"string"!=typeof n)throw new Error("options.name must be string in Model");if(this._url=Object(i.f)(t.url)?t.url:"/"+n,!Object(i.f)(t.contact)||t.contact.constructor!=u.a)throw new Error("options.contact must be Contact class in Model");this._contact=t.contact,this._emulateIdKey=void 0!==t.emulateIdKey&&t.emulateIdKey}return a(e,[{key:"fetch",value:function(e,t){var n=Object(i.d)(t),r=n.origin;return this.remote(r).get(this._url,e)}},{key:"find",value:function(e,t){var n=Object(i.d)(t),o=n.origin,u=this._emulateIdKey?r({},this._emulateIdKey,e):{};return this.remote(o).get(Object(i.e)(this._url,e,this._emulateIdKey),u)}},{key:"save",value:function(e,t){var n=Object(i.d)(t),r=n.origin,o=e.id,u=Object(i.e)(this._url,o,this._emulateIdKey);return this.remote(r)[Object(i.g)(e)?"post":"put"](u,e)}},{key:"delete",value:function(e,t){var n=Object(i.d)(t),o=n.origin,u=this._emulateIdKey?r({},this._emulateIdKey,e):{};return this.remote(o).delete(Object(i.e)(this._url,e,this._emulateIdKey),u)}},{key:"remote",value:function(e){return this._contact.remote(e)}},{key:"contact",get:function(){return this._contact}}]),e}();t.a=c},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var o=n(0),i=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),u=function(e,t){return Object(o.b)(t,{format:!0})(e)},a=function(e,t){return Object(o.b)()(e,t)},c=function(e){return Object(o.b)(e,{format:!0})({},Object.keys(e))},f=function(){function e(t){r(this,e),this._fieldSet=t}return i(e,[{key:"format",value:function(e){return u(e,this._fieldSet)}},{key:"filter",value:function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:Object.keys(this._fieldSet);return a(e,t)}},{key:"default",value:function(){return c(this._fieldSet)}},{key:"fieldSet",get:function(){return this._fieldSet}}],[{key:"format",value:function(e,t){return u(e,t)}},{key:"filter",value:function(e,t){return a(e,t)}},{key:"default",value:function(e){return c(e)}}]),e}();t.a=f}]);
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["dataplumber"] = factory();
+	else
+		root["dataplumber"] = factory();
+})(typeof self !== 'undefined' ? self : this, function() {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, {
+/******/ 				configurable: false,
+/******/ 				enumerable: true,
+/******/ 				get: getter
+/******/ 			});
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return isNew; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return getURL; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return isDef; });
+/* unused harmony export isArray */
+/* unused harmony export isNumber */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return defaults; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return compose; });
+/* harmony export (immutable) */ __webpack_exports__["b"] = convert;
+/* unused harmony export formatField */
+/* unused harmony export mapReceiveHook */
+/* unused harmony export mapSendHook */
+/* unused harmony export mapHooks */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__classes_Method_class__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__classes_Hooks_class__ = __webpack_require__(2);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+
+var isNew = function isNew(data) {
+    return !isDef(data.id);
+};
+var getURL = function getURL(url, id, emulateIdKey) {
+    return emulateIdKey ? url : url + (isDef(id) ? '/' + id : '');
+};
+var isDef = function isDef(val) {
+    return typeof val !== 'undefined';
+};
+var isArray = function isArray(val) {
+    return val.constructor === Array;
+};
+var isNumber = function isNumber(val) {
+    return val.constructor === Number;
+};
+var defaults = function defaults(obj) {
+    var defaults = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    var merge = function merge(defaults, obj) {
+        return defaults.constructor === Array ? defaults.concat(obj) : Object.assign(defaults, obj);
+    };
+    return isDef(obj) ? merge(defaults, obj) : defaults;
+};
+
+var compose = function compose() {
+    for (var _len = arguments.length, list = Array(_len), _key = 0; _key < _len; _key++) {
+        list[_key] = arguments[_key];
+    }
+
+    return function (acc) {
+        return list.reduce(function (acc, fn) {
+            return acc.then(fn);
+        }, Promise.resolve(acc));
+    };
+};
+
+/**
+ * format code like that:
+ * ```
+ * {
+ *   "id": { type: Number, default: null },
+ *   "nickname": { type: String, default: "" },
+ *   "emial": { type: String, default:"" },
+ *   "password": { type: String, default:"" }
+ * }
+ * ```
+ */
+function convert() {
+    var format = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var options = arguments[1];
+
+    options = defaults(options, { format: false });
+    return function () {
+        var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        var fields = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [].concat(Object.keys(data), Object.keys(format));
+
+        var result = {};
+        fields.forEach(function (fieldName) {
+            var fieldSet = format[fieldName];
+            if (isDef(data[fieldName])) result[fieldName] = data[fieldName];
+            if (options.format && isDef(fieldSet)) result[fieldName] = formatField(fieldSet.type, fieldSet.default)(data[fieldName]);
+        });
+        return result;
+    };
+}
+
+function formatField(to, defaultVal) {
+    return function (val) {
+        var result = void 0;
+        if (!isDef(val)) result = defaultVal;else result = to(val);
+        if (defaultVal === result) return result;
+        if (isNumber(result) && result === NaN) result = defaultVal;
+        if (result === null) result = defaultVal;
+        return result;
+    };
+}
+
+function mapReceiveHook(methods, options) {
+    options = defaults(options, __WEBPACK_IMPORTED_MODULE_1__classes_Hooks_class__["a" /* default */].ReceiveBehaviour);
+    return mapHooks(methods, options);
+}
+function mapSendHook(methods, options) {
+    options = defaults(options, __WEBPACK_IMPORTED_MODULE_1__classes_Hooks_class__["a" /* default */].SendBehaviour);
+    return mapHooks(methods, options);
+}
+function mapHooks(methods) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    if (!isDef(options.methods)) throw new Error('The options must have methods parameter in mapHooks');
+    if (!isArray(options.methods)) throw new Error('The options.methods must be Array in mapHooks');
+    if (!isDef(options.hooks)) throw new Error('The options must have hooks parameter in mapHooks');
+    if (!isArray(options.hooks)) throw new Error('The options.hooks must be Array in mapHooks');
+    var result = options.methods.map(function (hookName) {
+        return _defineProperty({}, hookName, {});
+    }).reduce(Object.assign);
+    Object.keys(result).forEach(function (hookName) {
+        result[hookName] = options.hooks.map(function (hookName) {
+            return _defineProperty({}, hookName, methods);
+        }).reduce(Object.assign);
+    });
+    return result;
+}
+
+/* harmony default export */ __webpack_exports__["c"] = ({
+    isNew: isNew,
+    getURL: getURL,
+    isDef: isDef,
+    defaults: defaults,
+    convert: convert,
+    compose: compose,
+    mapSendHook: mapSendHook,
+    mapReceiveHook: mapReceiveHook
+});
+
+/***/ }),
+/* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils___ = __webpack_require__(0);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+// import compose from 'koa-compose';
+
+
+/**
+ * queue call function like that:
+ * ```
+ * (ctx, next) => {
+ *   // ctx is content in all queue functions, like koa.
+ *   // ctx have $model, arge, result fields
+ *   // ======================================================
+ *   // ctx.$model is function scope
+ *   // ctx.arge is function arguments
+ *   // ctx.result is this function result
+ *   next();
+ * }
+ * ```
+ * 
+ * run function return Promise data pattern like that:
+ * ```
+ * let err, result;
+ * [err, result] = Queue.run($model, args, queues);
+ * if(err) throw err;
+ * console.log(result);
+ * ```
+ * more detail look test file.
+ */
+
+var Method = function () {
+    function Method() {
+        _classCallCheck(this, Method);
+    }
+
+    _createClass(Method, null, [{
+        key: 'generate',
+        value: function generate(queues) {
+            var queue = __WEBPACK_IMPORTED_MODULE_0__utils___["a" /* compose */].apply(undefined, _toConsumableArray(queues));
+            return function (args) {
+                var ctx = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+                ctx = Object.assign(ctx, { args: args });
+                return new Promise(function (resolve, reject) {
+                    queue(ctx).then(function (ctx) {
+                        return resolve(ctx.result);
+                    }).catch(reject);
+                });
+            };
+        }
+    }, {
+        key: 'concat',
+        value: function concat() {
+            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+                args[_key] = arguments[_key];
+            }
+
+            return args.map(function (arg) {
+                return Object(__WEBPACK_IMPORTED_MODULE_0__utils___["d" /* defaults */])(arg, []);
+            }).reduce(function (x, y) {
+                return x.concat(y);
+            });
+        }
+    }]);
+
+    return Method;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (Method);
+
+/***/ }),
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Hooks = function () {
+    function Hooks() {
+        _classCallCheck(this, Hooks);
+
+        this._map = new Map();
+    }
+
+    _createClass(Hooks, [{
+        key: 'addHooks',
+        value: function addHooks(key, operations) {
+            return this._map.set(key, operations);
+        }
+    }, {
+        key: 'getHooks',
+        value: function getHooks(key) {
+            return this._map.get(key);
+        }
+    }, {
+        key: 'each',
+        value: function each(fn) {
+            return this._map.forEach(fn);
+        }
+    }, {
+        key: 'length',
+        get: function get() {
+            return this._map.size;
+        }
+    }], [{
+        key: 'parse',
+        value: function parse(_ref) {
+            var method = _ref.method,
+                hook = _ref.hook;
+            var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'method';
+
+            var result = method + ':' + hook;
+            if (type === 'behaviour') {
+                if (Hooks.isReceiveBehaviour(method, hook)) result = 'receive';
+                if (Hooks.isSendBehaviour(method, hook)) result = 'send';
+            }
+            return result;
+        }
+    }, {
+        key: 'isReceiveBehaviour',
+        value: function isReceiveBehaviour(method, hook) {
+            if (typeof method !== 'string') throw new TypeError('The method must be string in isReceiveBehaviour()');
+            if (typeof hook !== 'string') throw new TypeError('The hook must be string in isReceiveBehaviour()');
+            return Hooks.ReceiveBehaviour.methods.indexOf(method) > -1 && Hooks.ReceiveBehaviour.hooks.indexOf(hook) > -1;
+        }
+    }, {
+        key: 'isSendBehaviour',
+        value: function isSendBehaviour(method, hook) {
+            if (typeof method !== 'string') throw new TypeError('The method must be string in isSendBehaviour()');
+            if (typeof hook !== 'string') throw new TypeError('The hook must be string in isSendBehaviour()');
+            return Hooks.SendBehaviour.methods.indexOf(method) > -1 && Hooks.SendBehaviour.hooks.indexOf(hook) > -1;
+        }
+    }, {
+        key: 'ReceiveBehaviour',
+        get: function get() {
+            return {
+                methods: ['fetch', 'find'],
+                hooks: ['after']
+            };
+        }
+    }, {
+        key: 'SendBehaviour',
+        get: function get() {
+            return {
+                methods: ['save'],
+                hooks: ['before']
+            };
+        }
+    }]);
+
+    return Hooks;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (Hooks);
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Remote_class__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils___ = __webpack_require__(0);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+
+
+var Contact = function () {
+    function Contact() {
+        _classCallCheck(this, Contact);
+
+        this._remotes = {};
+        this._default_remote = "";
+    }
+
+    _createClass(Contact, [{
+        key: 'remote',
+        value: function remote() {
+            var name = arguments.length <= 0 ? undefined : arguments[0],
+                remote = arguments.length <= 1 ? undefined : arguments[1],
+                opts = Object(__WEBPACK_IMPORTED_MODULE_1__utils___["d" /* defaults */])(arguments.length <= 2 ? undefined : arguments[2], { default: false });
+            if (arguments.length >= 2) {
+                // set remote
+                if (typeof name !== 'string') throw new TypeError('The first arguments must be String');
+                if (remote.constructor !== __WEBPACK_IMPORTED_MODULE_0__Remote_class__["a" /* default */]) throw new TypeError('The second arguments must be Remote');
+                this._remotes[name] = remote;
+                if (opts.default || this.length == 1) this.default(name);
+            } else {
+                name = name ? name : this._default_remote;
+                if (!this.has(name)) throw new RangeError('Remote does not exist ' + name + ' in remote()');
+                // get remote
+                remote = this._remotes[name];
+                return remote;
+            }
+        }
+    }, {
+        key: 'default',
+        value: function _default(name) {
+            if (typeof name !== 'string') throw new TypeError('The name must be string in default()');
+            if (!this.has(name)) throw new RangeError('Remote does not exist ' + name + ' in default()');
+            this._default_remote = name;
+        }
+    }, {
+        key: 'has',
+        value: function has(name) {
+            return Object.keys(this._remotes).indexOf(name) !== -1;
+        }
+    }, {
+        key: 'length',
+        get: function get() {
+            return Object.keys(this._remotes).length;
+        }
+    }]);
+
+    return Contact;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (Contact);
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Remote = function () {
+    function Remote(options) {
+        _classCallCheck(this, Remote);
+
+        this._origin = options.origin;
+    }
+
+    _createClass(Remote, [{
+        key: 'get',
+        value: function get(url, params) {
+            return this.sync({
+                url: url,
+                method: 'GET',
+                params: params
+            });
+        }
+    }, {
+        key: 'post',
+        value: function post(url, data) {
+            return this.sync({
+                method: 'POST',
+                url: url,
+                data: data
+            });
+        }
+    }, {
+        key: 'put',
+        value: function put(url, data) {
+            return this.sync({
+                method: 'PUT',
+                url: url,
+                data: data
+            });
+        }
+    }, {
+        key: 'patch',
+        value: function patch(url, data) {
+            return this.sync({
+                method: 'PATCH',
+                url: url,
+                data: data
+            });
+        }
+    }, {
+        key: 'delete',
+        value: function _delete(url, data) {
+            return this.sync({
+                method: 'DELETE',
+                url: url,
+                data: data
+            });
+        }
+    }, {
+        key: 'sync',
+        value: function sync(options) {
+            return this._origin(options);
+        }
+    }, {
+        key: 'origin',
+        get: function get() {
+            return this._origin;
+        }
+    }]);
+
+    return Remote;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (Remote);
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__DataPlumber__ = __webpack_require__(6);
+
+/* harmony default export */ __webpack_exports__["default"] = (__WEBPACK_IMPORTED_MODULE_0__DataPlumber__["a" /* default */]);
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export ModelFactory */
+/* unused harmony export ContactFactory */
+/* unused harmony export HooksFactory */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils___ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__classes_Model_class__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__classes_Hooks_class__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__classes_Contact_class__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__classes_Remote_class__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__classes_Schema_class__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__classes_Method_class__ = __webpack_require__(1);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+
+
+
+
+
+
+
+function ModelFactory(options) {
+    var schema = new __WEBPACK_IMPORTED_MODULE_5__classes_Schema_class__["a" /* default */](options.fields);
+    var methods = _extends({
+        'fetch': __WEBPACK_IMPORTED_MODULE_1__classes_Model_class__["a" /* default */].prototype.fetch,
+        'find': __WEBPACK_IMPORTED_MODULE_1__classes_Model_class__["a" /* default */].prototype.find,
+        'save': __WEBPACK_IMPORTED_MODULE_1__classes_Model_class__["a" /* default */].prototype.save,
+        'delete': __WEBPACK_IMPORTED_MODULE_1__classes_Model_class__["a" /* default */].prototype.delete
+    }, options.methods);
+    //RichModel
+
+    var RichModel = function (_Model) {
+        _inherits(RichModel, _Model);
+
+        function RichModel(opts) {
+            _classCallCheck(this, RichModel);
+
+            opts = __WEBPACK_IMPORTED_MODULE_0__utils___["c" /* default */].defaults(opts);
+            opts.name = options.name;
+
+            var _this = _possibleConstructorReturn(this, (RichModel.__proto__ || Object.getPrototypeOf(RichModel)).call(this, opts));
+
+            _this.initHooks(options.hooks);
+            return _this;
+        }
+
+        _createClass(RichModel, [{
+            key: 'initHooks',
+            value: function initHooks(options) {
+                this._hooks = HooksFactory(options);
+            }
+        }, {
+            key: 'schema',
+            get: function get() {
+                return schema;
+            }
+        }], [{
+            key: 'schema',
+            get: function get() {
+                return schema;
+            }
+        }]);
+
+        return RichModel;
+    }(__WEBPACK_IMPORTED_MODULE_1__classes_Model_class__["a" /* default */]);
+
+    Object.keys(methods).forEach(function (methodName) {
+        // all hook action magic in here.
+        RichModel.prototype[methodName] = function () {
+            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+                args[_key] = arguments[_key];
+            }
+
+            var opts = __WEBPACK_IMPORTED_MODULE_0__utils___["c" /* default */].defaults(args[args.length - 1]);
+            var hooks = __WEBPACK_IMPORTED_MODULE_0__utils___["c" /* default */].defaults(opts.hooks, { before: [], after: [] });
+
+            before = __WEBPACK_IMPORTED_MODULE_6__classes_Method_class__["a" /* default */].concat(hooks.before, this._hooks.getHooks(methodName + '::before'));
+            after = __WEBPACK_IMPORTED_MODULE_6__classes_Method_class__["a" /* default */].concat(hooks.after, this._hooks.getHooks(methodName + '::after'));
+
+            var method = function method(ctx) {
+                return methods[methodName].apply(ctx.scope, ctx.args).then(function (data) {
+                    ctx.hook = 'after';
+                    ctx.result = data;
+                    return Promise.resolve(ctx);
+                });
+            };
+            var ctx = { scope: this, method: methodName, hook: 'before' };
+
+            return __WEBPACK_IMPORTED_MODULE_6__classes_Method_class__["a" /* default */].generate([].concat(_toConsumableArray(before), [method], _toConsumableArray(after)))(args, ctx);
+        };
+    });
+
+    return RichModel;
+}
+
+function ContactFactory() {
+    var remotes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var defaults = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'base';
+
+    var contact = new __WEBPACK_IMPORTED_MODULE_3__classes_Contact_class__["a" /* default */]();
+    Object.keys(remotes).forEach(function (remoteName, index) {
+        contact.remote(remoteName, new __WEBPACK_IMPORTED_MODULE_4__classes_Remote_class__["a" /* default */]({ origin: remotes[remoteName] }), { default: index == 0 });
+    });
+    return contact;
+}
+
+function HooksFactory(options) {
+    var hooks = new __WEBPACK_IMPORTED_MODULE_2__classes_Hooks_class__["a" /* default */]();
+    //解析hooks的逻辑，并添加hook记录
+
+    Object.keys(__WEBPACK_IMPORTED_MODULE_0__utils___["c" /* default */].defaults(options)).forEach(function (hookName) {
+        var hook = options[hookName];
+        Object.keys(hook).forEach(function (aboutName) {
+            hooks.addHooks(hookName + '::' + aboutName, hook[aboutName]);
+        });
+    });
+
+    return hooks;
+}
+
+var DataPlumber = {
+    Contact: ContactFactory,
+    Model: ModelFactory,
+    Hooks: HooksFactory,
+    Schema: __WEBPACK_IMPORTED_MODULE_5__classes_Schema_class__["a" /* default */],
+    mapReceiveHook: __WEBPACK_IMPORTED_MODULE_0__utils___["c" /* default */].mapReceiveHook,
+    mapSendHook: __WEBPACK_IMPORTED_MODULE_0__utils___["c" /* default */].mapSendHook,
+    operations: __WEBPACK_IMPORTED_MODULE_0__utils___["c" /* default */]
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (DataPlumber);
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils___ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Contact_class__ = __webpack_require__(3);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+
+
+var Model = function () {
+    function Model(options) {
+        _classCallCheck(this, Model);
+
+        var name = this._name = options.name;
+        if (!Object(__WEBPACK_IMPORTED_MODULE_0__utils___["f" /* isDef */])(name) || typeof name != 'string') {
+            throw new Error('options.name must be string in Model');
+        }
+        this._url = Object(__WEBPACK_IMPORTED_MODULE_0__utils___["f" /* isDef */])(options.url) ? options.url : '/' + name;
+        if (!Object(__WEBPACK_IMPORTED_MODULE_0__utils___["f" /* isDef */])(options.contact) || options.contact.constructor != __WEBPACK_IMPORTED_MODULE_1__Contact_class__["a" /* default */]) {
+            throw new Error('options.contact must be Contact class in Model');
+        }
+        this._contact = options.contact;
+        this._emulateIdKey = typeof options.emulateIdKey === 'undefined' ? false : options.emulateIdKey;
+    }
+
+    _createClass(Model, [{
+        key: 'fetch',
+        value: function fetch(params, opts) {
+            var _defaults = Object(__WEBPACK_IMPORTED_MODULE_0__utils___["d" /* defaults */])(opts),
+                origin = _defaults.origin;
+
+            return this.remote(origin).get(this._url, params);
+        }
+    }, {
+        key: 'find',
+        value: function find(id, opts) {
+            var _defaults2 = Object(__WEBPACK_IMPORTED_MODULE_0__utils___["d" /* defaults */])(opts),
+                origin = _defaults2.origin;
+
+            var params = this._emulateIdKey ? _defineProperty({}, this._emulateIdKey, id) : {};
+            return this.remote(origin).get(Object(__WEBPACK_IMPORTED_MODULE_0__utils___["e" /* getURL */])(this._url, id, this._emulateIdKey), params);
+        }
+    }, {
+        key: 'save',
+        value: function save(data, opts) {
+            var _defaults3 = Object(__WEBPACK_IMPORTED_MODULE_0__utils___["d" /* defaults */])(opts),
+                origin = _defaults3.origin;
+
+            var id = data.id;
+
+            var url = Object(__WEBPACK_IMPORTED_MODULE_0__utils___["e" /* getURL */])(this._url, id, this._emulateIdKey);
+            return this.remote(origin)[Object(__WEBPACK_IMPORTED_MODULE_0__utils___["g" /* isNew */])(data) ? 'post' : 'put'](url, data);
+        }
+    }, {
+        key: 'delete',
+        value: function _delete(id, opts) {
+            var _defaults4 = Object(__WEBPACK_IMPORTED_MODULE_0__utils___["d" /* defaults */])(opts),
+                origin = _defaults4.origin;
+
+            var params = this._emulateIdKey ? _defineProperty({}, this._emulateIdKey, id) : {};
+            return this.remote(origin).delete(Object(__WEBPACK_IMPORTED_MODULE_0__utils___["e" /* getURL */])(this._url, id, this._emulateIdKey), params);
+        }
+    }, {
+        key: 'remote',
+        value: function remote(name) {
+            return this._contact.remote(name);
+        }
+    }, {
+        key: 'contact',
+        get: function get() {
+            return this._contact;
+        }
+    }]);
+
+    return Model;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (Model);
+
+/***/ }),
+/* 8 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export format */
+/* unused harmony export filter */
+/* unused harmony export schema */
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils___ = __webpack_require__(0);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+
+var _format = function _format(data, fieldSet) {
+    return Object(__WEBPACK_IMPORTED_MODULE_0__utils___["b" /* convert */])(fieldSet, { format: true })(data);
+};
+
+var _filter = function _filter(data, fields) {
+    return Object(__WEBPACK_IMPORTED_MODULE_0__utils___["b" /* convert */])()(data, fields);
+};
+
+var schema = function schema(fieldSet) {
+    return Object(__WEBPACK_IMPORTED_MODULE_0__utils___["b" /* convert */])(fieldSet, { format: true })({}, Object.keys(fieldSet));
+};
+
+var Schema = function () {
+    function Schema(fieldSet) {
+        _classCallCheck(this, Schema);
+
+        this._fieldSet = fieldSet;
+    }
+
+    _createClass(Schema, [{
+        key: "format",
+        value: function format(data) {
+            return _format(data, this._fieldSet);
+        }
+    }, {
+        key: "filter",
+        value: function filter(data) {
+            var fields = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Object.keys(this._fieldSet);
+
+            return _filter(data, fields);
+        }
+    }, {
+        key: "default",
+        value: function _default() {
+            return schema(this._fieldSet);
+        }
+    }, {
+        key: "fieldSet",
+        get: function get() {
+            return this._fieldSet;
+        }
+
+        // static
+
+    }], [{
+        key: "format",
+        value: function format(data, fieldSet) {
+            return _format(data, fieldSet);
+        }
+    }, {
+        key: "filter",
+        value: function filter(data, fields) {
+            return _filter(data, fields);
+        }
+    }, {
+        key: "default",
+        value: function _default(fieldSet) {
+            return schema(fieldSet);
+        }
+    }]);
+
+    return Schema;
+}();
+
+/* harmony default export */ __webpack_exports__["a"] = (Schema);
+
+/***/ })
+/******/ ]);
+});
 //# sourceMappingURL=dataplumber.js.map
