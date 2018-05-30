@@ -59,11 +59,12 @@ export function ModelFactory(options) {
     return RichModel;
 }
 
-export function ContactFactory(remotes = {}, defaults = 'base') {
+export function ContactFactory(remotes = {}, defaults) {
     const contact = new Contact();
     Object.keys(remotes).forEach((remoteName, index) => {
         contact.remote(remoteName, new Remote({ origin: remotes[remoteName] }), { default: index == 0 });
     })
+    if (defaults) contact.default(defaults);
     return contact;
 }
 
