@@ -1,5 +1,4 @@
 import utils from './utils/';
-import operations from './utils/';
 import Model from './classes/Model.class';
 import Hooks from './classes/Hooks.class';
 import Contact from './classes/Contact.class';
@@ -84,14 +83,8 @@ export function HooksFactory(options){
     return hooks;
 }
 
-const DataPlumber = {
-    Contact: ContactFactory,
+export default {
     Model: ModelFactory,
-    Hooks: HooksFactory,
-    Schema,
-    mapReceiveHook: utils.mapReceiveHook,
-    mapSendHook: utils.mapSendHook,
-    operations
-};
-
-export default DataPlumber;
+    Contact: ContactFactory,
+    Hooks: HooksFactory
+}

@@ -1,7 +1,7 @@
 import Model from '../src/classes/Model.class';
 import Remote from '../src/classes/Remote.class';
 import Schema from '../src/classes/Schema.class';
-import DataPlumber from '../src/DataPlumber';
+import DataPlumber from '../src/';
 import { defaults } from '../src/utils/';
 import { format, requestData, awaitTo } from '../src/operations/';
 

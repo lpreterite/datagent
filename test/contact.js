@@ -1,6 +1,6 @@
 import Remote from '../src/classes/Remote.class';
 import Contact from '../src/classes/Contact.class';
-import DataPlumber from '../src/DataPlumber';
+import DataPlumber from '../src/';
 
 describe('Contact Class Test', () => {
     let contact, remotes;
