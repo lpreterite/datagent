@@ -1,37 +1,45 @@
 {
-  "name": "vue-restful-model",
+  "name": "dataplumber",
   "version": "0.0.1",
   "description": "Provide restful model support for vue",
-  "main": "src/index.js",
+  "main": "dist/dataplumber.js",
   "directories": {
     "doc": "docs",
     "test": "test"
   },
+  "nyc": {
+    "require": [
+      "babel-register"
+    ],
+    "sourceMap": false,
+    "instrument": false
+  },
   "scripts": {
-    "test": "node --harmony --debug node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=test mocha-webpack --webpack-config webpack.config.js --require test/setup.js test/**/*.spec.js"
+    "test": "node --harmony --debug node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=test nyc mocha-webpack --webpack-config webpack.config.js --require test/setup.js test/**/*.js",
+    "build": "node --harmony --debug node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=webpack.config.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lpreterite/vue-restful-model.git"
+    "url": "git+https://github.com/lpreterite/dataplumber.git"
   },
   "keywords": [
     "restful",
     "model",
-    "vue",
-    "vue2"
+    "dataflow",
+    "plumber"
   ],
   "author": "packy-tang <lpreterite@126.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lpreterite/vue-restful-model/issues"
+    "url": "https://github.com/lpreterite/dataplumber/issues"
   },
-  "homepage": "https://github.com/lpreterite/vue-restful-model#readme",
+  "homepage": "https://github.com/lpreterite/dataplumber#readme",
   "devDependencies": {
-    "axios": "^0.18.0",
     "axios-mock-adapter": "^1.15.0",
     "babel": "^6.23.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
+    "babel-plugin-istanbul": "^4.1.6",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-polyfill": "^6.26.0",
@@ -42,13 +50,11 @@
     "fecha": "^2.3.3",
     "mocha": "^4.0.1",
     "mocha-webpack": "^1.0.1",
-    "vue": "^2.5.3",
-    "vue-template-compiler": "^2.5.3",
-    "vue-test-utils": "^1.0.0-beta.4",
+    "nyc": "^11.8.0",
     "webpack": "^3.8.1",
     "webpack-node-externals": "^1.6.0"
   },
   "dependencies": {
-    "koa-compose": "^4.0.0"
+    "axios": "^0.18.0"
   }
 }

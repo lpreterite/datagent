@@ -1,11 +1,20 @@
 import Model from '../src/classes/Model.class';
 import Remote from '../src/classes/Remote.class';
 import Schema from '../src/classes/Schema.class';
-import Dataflow from '../src/Dataflow';
+import DataPlumber from '../src/';
 import { defaults } from '../src/utils/';
+import { format, requestData, awaitTo } from '../src/operations/';
+
+function requestHandle() {
+    return (ctx) => {
+        const result = ctx.result;
+        if (result.code < 200) throw new Error(result.msg);
+        ctx.result = result.data;
+        return Promise.resolve(ctx);
+    }
+};
 
 const handle = (res) => {
-    // console.log(res);
     let result, err;
     if (res.data.code < 200) {
         err = new Error(res.data.msg);
@@ -17,13 +26,13 @@ const handle = (res) => {
 describe('Model Class Test', function () {
     let Model;
     before(function () {
-        Model = Dataflow.Model({
+        Model = DataPlumber.Model({
             name: 'user',
             fields: {
-                id: { type: Number, defaults: 0 },
-                nickname: { type: String, defaults: '' },
-                sex: { type: Number, defaults: '1' },
-                create_at: { type: String, defaults: Date.now() }
+                id: { type: Number, default: 0 },
+                nickname: { type: String, default: '' },
+                sex: { type: Number, default: '1' },
+                create_at: { type: String, default: Date.now() }
             },
             methods: {
                 test: (some)=>{
@@ -61,18 +70,18 @@ describe('Model instace Test', function () {
             test: 'http://localhost:8081/api'
         };
 
-        contact = Dataflow.Contact({
+        contact = DataPlumber.Contact({
             base: axios.create({ baseURL: hosts.base }),
             test: axios.create({ baseURL: hosts.test })
         });
-        const UserModel = Dataflow.Model({
+        const UserModel = DataPlumber.Model({
             name: 'user',
             fields: {
-                id: { type: Number, defaults: 0 },
-                nickname: { type: String, defaults: '' },
-                sex: { type: Number, defaults: '1' },
-                create_at: { type: String, defaults: Date.now() },
-                disabled: { type: Number, defaults: 0 }
+                id: { type: Number, default: 0 },
+                nickname: { type: String, default: '' },
+                sex: { type: Number, default: '1' },
+                create_at: { type: String, default: Date.now() },
+                disabled: { type: Number, default: 0 }
             },
             methods: {
                 ban(id, opts) {
@@ -170,7 +179,7 @@ describe('Model instace Test', function () {
         it('当数据不存在id字段时，应当发送[POST]请求新增对象', async function () {
             mock
                 .base
-                .onPost(hosts.base + '/users')
+                .onPost(hosts.base + '/users', { name: 'Cathy Yan' })
                 .reply(200, { code: 200, data: { id: 3, name: 'John Smith' }, msg: '' });
 
             let err, result;
@@ -180,7 +189,7 @@ describe('Model instace Test', function () {
         it('当数据包含id字段时，应当发送[PUT]请求更新对象', async function () {
             mock
                 .base
-                .onPut(hosts.base + '/users/3')
+                .onPut(hosts.base + '/users/3', { id: 3, name: 'Cathy Yan' })
                 .reply(200, { code: 200, data: { id: 3, name: 'John Smith' }, msg: '' });
 
             let err, result;
@@ -219,9 +228,16 @@ describe('Model instace Test', function () {
         it('方法内发生错误时应当报错', async function () {
             let err, result;
             try {
-                [err, result] = await model.errorTest();
+                [err, result] = await model.errorTest({}, {
+                    hooks: {
+                        before: [(ctx) => {
+                            throw new Error('just a bug before');
+                            return Promise.resolve(ctx);
+                        }]
+                    }
+                });
             } catch (e) {
-                assert.equal("just a bug", e.message);
+                assert.equal("just a bug before", e.message);
             }
         })
         it('自定义方法应当能使用', async function () {
@@ -236,14 +252,14 @@ describe('Model instace Test', function () {
             mock.base.reset();
         })
         it('Model类方法钩子应当生效', async function () {
-            const UserModel = Dataflow.Model({
+            const UserModel = DataPlumber.Model({
                 name: 'user',
                 fields: {
-                    id: { type: Number, defaults: 0 },
-                    nickname: { type: String, defaults: '' },
-                    sex: { type: Number, defaults: '1' },
-                    create_at: { type: String, defaults: Date.now() },
-                    disabled: { type: Number, defaults: 0 }
+                    id: { type: Number, default: 0 },
+                    nickname: { type: String, default: '' },
+                    sex: { type: Number, default: '1' },
+                    create_at: { type: String, default: Date.now() },
+                    disabled: { type: Number, default: 0 }
                 },
                 methods: {
                     typeahead(q, opts) {
@@ -252,14 +268,14 @@ describe('Model instace Test', function () {
                 },
                 hooks: {
                     fetch: {
-                        after: (ctx, next) => {
+                        after: (ctx) => {
                             const result = ctx.result;
                             if (result.data.code < 200) return;
                             result.data.data = result.data.data.map((item, index)=>{
                                 item.order=index;
                                 return item;
                             });
-                            next();
+                            return Promise.resolve(ctx);
                         }
                     }
                 }
@@ -277,28 +293,27 @@ describe('Model instace Test', function () {
             mock.base.reset();
         })
         it('自定义方法的钩子应当生效', async function(){
-            const UserModel = Dataflow.Model({
+            const UserModel = DataPlumber.Model({
                 name: 'user',
                 fields: {
-                    id: { type: Number, defaults: 0 },
-                    nickname: { type: String, defaults: '' },
-                    sex: { type: Number, defaults: '1' },
-                    create_at: { type: String, defaults: Date.now() },
-                    disabled: { type: Number, defaults: 0 }
+                    id: { type: Number, default: 0 },
+                    nickname: { type: String, default: '' },
+                    sex: { type: Number, default: '1' },
+                    create_at: { type: String, default: Date.now() },
+                    disabled: { type: Number, default: 0 }
                 },
                 methods: {
                     typeahead(q, opts) {
-                        console.log(q);
                         return this.fetch({ q }, opts);
                     }
                 },
                 hooks: {
                     typeahead: {
-                        before: (ctx, next) => {
+                        before: (ctx) => {
                             let [query] = ctx.args;
                             query = query.q ? query.q : query.keyword;
                             ctx.args = [query];
-                            next();
+                            return Promise.resolve(ctx);
                         }
                     }
                 }
@@ -316,28 +331,27 @@ describe('Model instace Test', function () {
             mock.base.reset();
         })
         it('方法运行时应当支持添加钩子', async function () {
-            const UserModel = Dataflow.Model({
+            const UserModel = DataPlumber.Model({
                 name: 'user',
                 fields: {
-                    id: { type: Number, defaults: 0 },
-                    nickname: { type: String, defaults: '' },
-                    sex: { type: Number, defaults: '1' },
-                    create_at: { type: String, defaults: Date.now() },
-                    disabled: { type: Number, defaults: 0 }
+                    id: { type: Number, default: 0 },
+                    nickname: { type: String, default: '' },
+                    sex: { type: Number, default: '1' },
+                    create_at: { type: String, default: Date.now() },
+                    disabled: { type: Number, default: 0 }
                 },
                 methods: {
                     typeahead(q, opts) {
-                        console.log(q);
                         return this.fetch({ q }, opts);
                     }
                 },
                 hooks: {
                     typeahead: {
-                        before: (ctx, next) => {
+                        before: (ctx) => {
                             let [query] = ctx.args;
                             query = query.q ? query.q : query.keyword;
                             ctx.args = [query];
-                            next();
+                            return Promise.resolve(ctx);
                         }
                     }
                 }
@@ -352,7 +366,7 @@ describe('Model instace Test', function () {
             let err, result;
             [err, result] = await model.typeahead({ keyword: 'John' }, {
                 hooks: {
-                    after: (ctx, next) => {
+                    after: (ctx) => {
                         let [query] = ctx.args;
                         let res = ctx.result;
                         if (res.data.code < 200) return;
@@ -360,12 +374,122 @@ describe('Model instace Test', function () {
                             keyword: query,
                             typeahead: res.data.data
                         };
-                        next();
+                        return Promise.resolve(ctx);
                     }
                 }
             }).then(handle);
             // console.log(result);
             assert.propertyVal(result, 'keyword', 'John');
+            mock.base.reset();
+        })
+    });
+
+    describe('额外钩子Receive', function () {
+        it('应当在fetch后生效', async function () {
+            const UserModel = DataPlumber.Model({
+                name: 'user',
+                fields: {
+                    id: { type: Number, default: 0 },
+                    nickname: { type: String, default: '' },
+                    sex: { type: Number, default: '1' },
+                    create_at: { type: String, default: Date.now() },
+                    disabled: { type: Number, default: 0 }
+                },
+                methods: {
+                    typeahead(q, opts) {
+                        return this.fetch({ q }, opts);
+                    }
+                },
+                hooks: {
+                    ...DataPlumber.mapReceiveHook([
+                        (ctx) => {
+                            const result = ctx.result;
+                            if (result.data.code < 200) return Promise.reject(new Error('api error'));
+                            result.data.data = result.data.data.map((item, index) => {
+                                item.order = index;
+                                return item;
+                            });
+                            return Promise.resolve(ctx);
+                        }
+                    ])
+                }
+            });
+            model = new UserModel({ name: 'user', url: '/users', contact });
+
+            mock
+                .base
+                .onGet(hosts.base + '/users', { params: { q: 'John' } })
+                .reply(200, { code: 200, data: [{ id: 1, name: 'John Smith' }], msg: '' });
+
+            let err, result;
+            [err, result] = await model.typeahead('John').then(handle);
+            assert.propertyVal(result[0], 'order', 0);
+            mock.base.reset();
+        })
+        it('应当在find后生效', async function () {
+            const create_at = Date.now();
+            const UserModel = DataPlumber.Model({
+                name: 'user',
+                fields: {
+                    id: { type: Number, default: 0 },
+                    nickname: { type: String, default: '' },
+                    sex: { type: Number, default: '1' },
+                    create_at: { type: String, default: create_at },
+                    disabled: { type: Number, default: 0 }
+                },
+                hooks: {
+                    ...DataPlumber.mapReceiveHook([
+                        requestData(),
+                        requestHandle(),
+                        format()
+                    ])
+                }
+            });
+            model = new UserModel({ name: 'user', url: '/users', contact });
+
+            mock
+                .base
+                .onGet(hosts.base + '/users/1')
+                .reply(200, { code: 200, data: { id: 1, name: 'John Smith' }, msg: '' });
+
+            let err, result;
+            [err, result] = await awaitTo(model.find(1));
+            assert.propertyVal(result, 'create_at', create_at);
+            mock.base.reset();
+        })
+    });
+    describe('额外钩子Send', function () {
+        it('应当在save前生效', async function () {
+            const create_at = Date.now();
+            const UserModel = DataPlumber.Model({
+                name: 'user',
+                fields: {
+                    id: { type: Number, default: 0 },
+                    nickname: { type: String, default: '' },
+                    sex: { type: Number, default: '1' },
+                    create_at: { type: String, default: create_at },
+                    disabled: { type: Number, default: 0 }
+                },
+                hooks: {
+                    ...DataPlumber.mapSendHook([
+                        (ctx) => {
+                            let data = ctx.args.pop();
+                            ctx.args = [ctx.scope.schema.filter(data, ['id', 'name', 'create_at']), ...ctx.args];
+                            return Promise.resolve(ctx);
+                        }
+                    ])
+                }
+            });
+            model = new UserModel({ name: 'user', url: '/users', contact });
+
+            mock
+                .base
+                .onPost(hosts.base + '/users', { name: 'John Smith', create_at })
+                .reply(200, { code: 200, data: { id: 1, name: 'John Smith', create_at }, msg: '' });
+
+            let err, result;
+            [err, result] = await model.save({ name: 'John Smith', create_at, sex: 0 }).then(handle);
+            assert.propertyVal(result, 'create_at', create_at);
             mock.base.reset();
         })
     });

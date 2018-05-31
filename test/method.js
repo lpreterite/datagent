@@ -9,8 +9,7 @@ describe('Method Class Test', function() {
     return new Promise((resolve,reject)=>{
       setTimeout(()=>{
         try{
-          fn();
-          resolve();
+          resolve(fn());
         }catch(e){
           reject(e);
         }
@@ -18,33 +17,30 @@ describe('Method Class Test', function() {
     });
   }
 
-  describe('generate()', function() {
+  describe('Method.generate()', function() {
     it('应当输出内容顺序为[1,2,3]的数组', async function() {
       const operations = [
-        async function (ctx, next) {
-          await asyncFun(()=>{
+        async function (ctx) {
+          return await asyncFun(()=>{
             ctx.result = [].concat(ctx.args, 1);
+            return ctx;
           }, 150);
-          return next();
         },
-        async function (ctx, next) {
-          await asyncFun(() => {
+        async function (ctx) {
+          return await asyncFun(() => {
             ctx.result = [].concat(ctx.result || [], 2);
+            return ctx;
           }, 100);
-          return next();
         },
-        async function (ctx, next) {
-          await asyncFun(() => {
+        async function (ctx) {
+          return await asyncFun(() => {
             ctx.result = [].concat(ctx.result, 3);
+            return ctx;
           }, 200);
-          return next();
         },
       ];
 
       result = await Method.generate(operations)(data, ctx);
-      
-      // console.log(result);
-      // console.log(ctx);
 
       return assert.includeOrderedMembers(result, [1,2,3]);
     });

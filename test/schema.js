@@ -48,12 +48,7 @@ describe('Schema Class Test', function(){
     })
     describe('filter()', function () {
         it('应当只保留给定字段', function () {
-            const retain = false;
-            const format = {
-                id: { type: String, default: null },
-                sex: { type: String, default: 0 },
-            };
-            const data = Schema.filter({ id: 1, sex: 1, nickname: "Packy" }, format);
+            const data = Schema.filter({ id: 1, sex: 1, nickname: "Packy" }, ['id','sex']);
             assert.isUndefined(data.nickname, "nickname字段应该被过滤掉");
         })
     })

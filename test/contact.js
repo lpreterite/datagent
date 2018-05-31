@@ -1,10 +1,6 @@
 import Remote from '../src/classes/Remote.class';
 import Contact from '../src/classes/Contact.class';
-
-// const contact = new Contact();
-// contact.remote('test', testRemote, { default: true });
-// contact.remote('test'); // get Test Remote
-// contact.remote(); // get default Remote, Test Remote is default
+import DataPlumber from '../src/';
 
 describe('Contact Class Test', () => {
     let contact, remotes;
@@ -32,6 +28,25 @@ describe('Contact Class Test', () => {
         it('当不传入名称时应当返回默认远程服务', () => {
             contact.remote('base', new Remote({ origin: remotes.base }));
             assert.exists(contact.remote(), '没有返回远程服务');
+        })
+    })
+
+    describe('instance.default()', ()=>{
+        it('输入参数name必须是字符串', ()=>{
+            contact = DataPlumber.Contact(remotes);
+            try{
+                contact.default(233);
+            } catch (e) {
+                assert.equal(e.constructor, TypeError, e.msg);
+            }
+        })
+        it('输入参数name必须存在于remote的键', () => {
+            contact = DataPlumber.Contact(remotes);
+            try {
+                contact.default("233");
+            } catch (e) {
+                assert.equal(e.constructor, RangeError, e.msg);
+            }
         })
     })
 });

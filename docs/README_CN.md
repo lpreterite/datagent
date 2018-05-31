@@ -1,4 +1,4 @@
-# js-dataflow
+# DataPlumberJs
 
 这是一个简单的前端数据流的应用支持
 
@@ -14,7 +14,7 @@
 ```js
 // 引入
 import axios from "axios";
-import { Model, Contact } from "lpreterite/js-dataflow";
+import { Model, Contact } from "lpreterite/DataPlumberJs";
 
 // 创建链接
 const contact = Contact({

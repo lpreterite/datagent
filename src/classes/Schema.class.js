@@ -1,33 +1,34 @@
 import { convert } from "../utils/";
 
-export const format = (data, fields) => convert(data, fields);
-export const filter = (data, fields) => convert(data, fields, { fields: Object.keys(fields) });
-export const schema = fields => convert({}, fields, { fields: Object.keys(fields) });
+export const format = (data, fieldSet) => convert(fieldSet, { format:true })(data);
+export const filter = (data, fields) => convert()(data, fields);
+export const schema = fieldSet => convert(fieldSet, { format: true })({}, Object.keys(fieldSet));
 
 export default class Schema {
-    constructor(fields) {
-        this._fields = fields;
+    constructor(fieldSet) {
+        this._fieldSet = fieldSet;
     }
     format(data) {
-        return format(data, this._fields);
+        return format(data, this._fieldSet);
     }
-    filter(data){
-        return filter(data, this._fields);
+    filter(data, fields = Object.keys(this._fieldSet)){
+        return filter(data, fields);
     }
     default(){
-        return schema(this._fields);
+        return schema(this._fieldSet);
     }
-    static format(data, fields){
-        return format(data, fields);
+    get fieldSet() {
+        return this._fieldSet;
+    }
+
+    // static
+    static format(data, fieldSet){
+        return format(data, fieldSet);
     }
     static filter(data, fields) {
         return filter(data, fields);
     }
-    static default(fields) {
-        return schema(fields);
-    }
-
-    get fields(){
-        return this._fields;
+    static default(fieldSet) {
+        return schema(fieldSet);
     }
 }

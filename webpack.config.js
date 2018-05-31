@@ -4,33 +4,22 @@ var webpack = require("webpack");
 module.exports = {
   entry: "./src/index.js",
   output: {
-    path: path.resolve(__dirname, "./lib"),
-    publicPath: "/lib/",
-    filename: "build.js"
+    library: "dataplumber",
+    libraryTarget: "umd",
+    path: path.resolve(__dirname, "./dist"),
+    filename: "dataplumber.js"
   },
   resolve: {
     alias: {
-      vue$: "vue/dist/vue.esm.js",
       "@": path.resolve(__dirname, "src")
     }
   },
   module: {
     rules: [
       {
-        test: /\.vue$/,
-        loader: "vue-loader"
-      },
-      {
         test: /\.js$/,
         loader: "babel-loader",
         exclude: /node_modules/
-      },
-      {
-        test: /\.(png|jpg|gif|svg)$/,
-        loader: "file-loader",
-        options: {
-          name: "[name].[ext]?[hash]"
-        }
       }
     ]
   },
