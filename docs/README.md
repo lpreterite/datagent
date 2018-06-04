@@ -296,7 +296,7 @@ $user.fetch().then(data=>{
         }
     })
     const $user = new UserModel()
-    $user.find().then(data=>{
+    $user.find(1).then(data=>{
         // [GET] /api/user
         // => { status:200, data: { id:1, nickname:'Tony' } }
         console.log(data); // { id:1, nickname:'Tony' }...]
