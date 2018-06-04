@@ -25,11 +25,11 @@ const contact = Contact({
 const UserModel = Model({
     name: 'user',
     fields: {
-        id: { type: Number, defaults: 0 },
-        nickname: { type: String, defaults: '' },
-        sex: { type: Number, defaults: '1' },
-        create_at: { type: String, defaults: Date.now() },
-        disabled: { type: Number, defaults: 0 }
+        id: { type: Number, default: 0 },
+        nickname: { type: String, default: '' },
+        sex: { type: Number, default: '1' },
+        create_at: { type: String, default: Date.now() },
+        disabled: { type: Number, default: 0 }
     },
     methods: {
         ban(id, opts) {
@@ -59,3 +59,7 @@ async function(){
 ```
 
 后续文档待更新...
+
+
+
+`Dataplumber.Model()`方法接受参数：
