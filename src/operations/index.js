@@ -15,12 +15,6 @@ export function requestData() {
     }
 }
 
-export function awaitTo(promise) {
-    return promise.then(data => {
-        return [null, data];
-    }).catch(err => [err]);
-}
-
 export function format() {
     return (ctx) => {
         switch (ctx.hook) {

@@ -68,6 +68,11 @@ export function mapHooks(methods, options={}){
     })
     return result;
 }
+export function awaitTo(promise) {
+    return promise.then(data => {
+        return [null, data];
+    }).catch(err => [err]);
+}
 
 export default {
     isNew,

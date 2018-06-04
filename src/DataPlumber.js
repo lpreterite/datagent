@@ -18,8 +18,11 @@ export function ModelFactory(options) {
     //RichModel
     class RichModel extends Model{
         constructor(opts){
-            opts = utils.defaults(opts);
-            opts.name = options.name;
+            opts = utils.defaults(opts, {
+                name: options.name,
+                url: options.url,
+                contact: options.contact
+            });
             super(opts);
             this.initHooks(options.hooks);
         }
