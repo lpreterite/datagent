@@ -13,10 +13,11 @@ export function ModelFactory(options) {
         'find': Model.prototype.find,
         'save': Model.prototype.save,
         'delete': Model.prototype.delete,
+        'destroy': Model.prototype.destroy,
         ...options.methods
     }
     //RichModel
-    class RichModel extends Model{
+    class DataModel extends Model{
         constructor(opts){
             opts = utils.defaults(opts, {
                 name: options.name,
@@ -40,7 +41,7 @@ export function ModelFactory(options) {
         .keys(methods)
         .forEach(methodName => {
             // all hook action magic in here.
-            RichModel.prototype[methodName] = function (...args){
+            DataModel.prototype[methodName] = function (...args){
                 const opts = utils.defaults(args[args.length-1]);
                 const hooks = utils.defaults(opts.hooks, { before: [], after: [] });
 
@@ -58,7 +59,7 @@ export function ModelFactory(options) {
             }
         });
 
-    return RichModel;
+    return DataModel;
 }
 
 export function ContactFactory(remotes = {}, defaults) {

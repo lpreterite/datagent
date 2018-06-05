@@ -29,10 +29,13 @@ export default class Model {
         const url = getURL(this._url, id, this._emulateIdKey);
         return this.remote(origin)[isNew(data) ? 'post' : 'put'](url, data);
     }
-    delete(id, opts) {
+    destroy(id, opts) {
         const { origin } = defaults(opts);
         const params = this._emulateIdKey ? { [this._emulateIdKey]: id } : {};
         return this.remote(origin).delete(getURL(this._url, id, this._emulateIdKey), params);
+    }
+    delete(...args){
+        return this.delete(...args);
     }
     remote(name) {
         return this._contact.remote(name);
