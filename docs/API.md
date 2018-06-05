@@ -336,24 +336,124 @@ import Schema from 'dataplumber/src/classes/Schema.class'
 
 const schema = new Schema({
     id: { type: Number, default: null },
-    nickname: { type: String, default: '' },
-    sex: { type: Number, default: 1 }
+    name: { type: String, default: '' },
+    disabled: { type: Number, default: 0 }
 })
+```
+
+### schema.format()
+
+格式化对象
+
+参数：
+
+| 字段 | 限制         | 描述             |
+|------|--------------|------------------|
+| data | 必须, Object | 需要格式化的对象 |
+
+```js
+const data = { name: 'Tony' }
+const result = schema.format(data)
+console.log(result) // { id:null, name:'Tony', disabled: 0 }
+```
+
+### schema.filter()
+
+过滤字段
+
+参数：
+
+| 字段   | 限制                | 描述                                                        |
+|--------|---------------------|-------------------------------------------------------------|
+| data   | 必须, Object        | 需要处理的对象                                              |
+| fields | 可选, Array<String> | 需要保留的字段名称，默认是初次化时传入的对象所包含的字段列表 |
+
+```js
+const data = { name: 'Tony', sex: 1, disabled: 0 }
+const result = schema.filter(data)
+console.log(result) // { name:'Tony', disabled: 0 }
+```
+
+保留给定字段
+
+```js
+const data = { name: 'Tony', sex: 1, disabled: 0 }
+const result = schema.filter(data, ['name','sex'])
+console.log(result) // { name:'Tony', sex: 1 }
+```
+
+### schema.default()
+
+获取一个包含默认值的对象
+
+```js
+const defaultData = schema.default();
+console.log(result) // { id:null, name:'', disabled: 0 }
+```
+
+### schema.fieldSet
+
+取得field设定
+
+```js
+console.log(schema.fieldSet);
+/*
+{
+    id: { type: Number, default: null },
+    name: { type: String, default: '' },
+    disabled: { type: Number, default: 0 }
+}
+*/
 ```
 
 ### Schema.format()
 
+格式化对象，`Schema`的静态方法
+
+参数：
+
+| 字段     | 限制         | 描述             |
+|----------|--------------|------------------|
+| data     | 必须, Object | 需要格式化的对象 |
+| fieldSet | 必须, Object | 格式化依据       |
+
+```js
+const data = { name: 'Tony' }
+const result = Schema.format(data)
+console.log(result) // { id:null, name:'Tony', disabled: 0 }
+```
+
 ### Schema.filter()
+
+过滤字段，`Schema`的静态方法
+
+参数：
+
+| 字段   | 限制                | 描述                                                        |
+|--------|---------------------|-------------------------------------------------------------|
+| data   | 必须, Object        | 需要格式化的对象                                            |
+| fields | 必须, Array<String> | 需要保留的字段名称，默认是初次化时传入的对象所包含的字段列表 |
+
+```js
+const data = { name: 'Tony', sex: 1, disabled: 0 }
+const result = Schema.filter(data, ['name','sex'])
+console.log(result) // { name:'Tony', sex: 1 }
+```
 
 ### Schema.default()
 
-### schema.format()
+获取一个包含默认值的对象，`Schema`的静态方法
 
-### schema.filter()
-
-### schema.default()
-
-### schema.fieldSet
+```js
+const fieldSet = {
+    id: { type: Number, default: null },
+    name: { type: String, default: '' },
+    disabled: { type: Number, default: 0 }
+}
+const data = { name: 'Tony' }
+const result = Schema.default(fieldSet)
+console.log(result) // { id:null, name:'Tony', disabled: 0 }
+```
 
 ## Operations
 
