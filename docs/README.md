@@ -3,8 +3,7 @@
 - [x] 快速手上
 - [ ] 基础
     - [x] 介绍
-    - [x] 设计概念
-    - [x] 链接与远端服务
+    - [x] 远端、链接、数据模型
     - [x] 数据模型
     - [x] 定义字段
     - [x] 定义方法
@@ -85,33 +84,21 @@ model.delete(2).then(res=>{
 
 ## 基础
 
-### 介绍
+### DataPlumber是什么？
 
-#### DataPlumber是什么？
+`DataPlumber`是一个用于前端Ajax请求的模块化工具，提供字段定义，方法扩展，切换源等功能。在如React, Vue, Angular等现代前端框架下不同UI层面通信的数据我们称为视图模型(ViewModel)。现在互联网常用于客户端与服务器间通信都是基于RESTful方式设计的持久化服务，这种基于持久化的设计可以借助`DataPlumber`将通信数据表示为数据模型(DataModel)。数据模型管理着数据字段和通信服务，同时为编排业务代码提供相关方法的钩子进行预处理或后处理。
 
-`DataPlumber`是一个用于前端Ajax请求的模块化工具，提供字段定义，方法扩展，切换源等功能。
+### 远端、链接、数据模型
 
-#### 为何使用`DataPlumber`？
+这三种定义的关系就如标题一样，链接和数据模型都是建立在远端之上。远端可以是一个服务，而链接管理着远端，在数据模型需要操作数据时就必须使用链接取得远端才能完成通信。
 
-看似简单的前端在项目越做越大时，后续维护的成本也持续提升。使用`DataPlumber`能帮你减少一些问题的发生：
+- 远端 Remote
+- 链接 Contact
+- 数据模型 DataModel
 
-- 字段定义：定义字段为接口提高可读性，接手的同事阅读代码后能更快加入工作。
-- 切换服务：多个服务器随意切换，满足不同服务请求。
-- 面向RESTful：模型对象贴近于restful接口的设计，代码语义更清晰。
-- 数据处理：请求接口前后能设置钩子对数据进行预处理或后续处理，减少冗余代码。
+> 上面是三个是常用类
 
-### 设计概念
-
-`DataPlumber`设计初期把代码分为两层抽象：
-
-- 通讯层：指Ajax请求代码层面上的封装，`DataPlumber`是基于axios再封装并提供管理多个远端服务功能。
-- 数据模型层：数据模型使用同一语义的方法，使用更符合面向对象设计，致敬[`Backbone.js`](http://backbonejs.org/)的模型设计。
-
-### 链接与远端服务
-
-链接(Contact)与远端服务(Remote)是通讯层的基础，Remote封装HTTP请求处理并提供支持，Contact提供管理远端服务功能。
-
-使用`DataPlumber.Contact()`方法能快速创建链接，并为它设置远端服务：
+用`DataPlumber`快速创建一个包含远端的链接：
 
 ```js
 import axios from "axios"
@@ -120,34 +107,26 @@ import DataPlumber from "dataplumber"
 const contact = DataPlumber.Contact({
     base: axios.create({ baseURL: '/api' })
 })
-
-// 请求数据
-const remote = contact.remote()
-remote.get('/users').then(res=>{
-     // [GET] /api/users
-     // => { status: 200, data:[...] }
-    console.log(res)
-})
 ```
 
-不但能设置单个远端服务，下面是满足多个远端服务的情况下的实现：
+数据模型实例化时把链接作为参数传入：
 
 ```js
-import axios from "axios"
-import DataPlumber from "dataplumber"
+const UserModel = DataPlumber.Model({ name: 'user' })
+const $user = new UserModel({ contact })
+```
 
-const contact = DataPlumber.Contact({
-    online: axios.create({ baseURL: 'http://test.com/api' }),
-    local: axios.create({ baseURL: 'localhost/api' })
-})
+尝试请求数据：
 
-const localRemote = contact.remote('local')
-localRemote.get('/users').then(res=>{
-     // [GET] /api/users
-     // => { status: 200, data:[...] }
-    console.log(res)
+```js
+$user.find(1).then(data=>{
+    // [GET] /api/user
+    // => { status:200, data: { id:1, nickname:'Tony' } }
+    console.log(data);
 })
 ```
+
+经过上面的例子相信对`DataPlumber`的使用有一定的了解。`DataPlumber`提供的数据模型还有字段、方法、钩子等功能下面再一一细说。
 
 ### 数据模型
 

@@ -68,6 +68,70 @@ async function(){
 
 
 
+#### DataPlumber是什么？
+
+`DataPlumber`是一个用于前端Ajax请求的模块化工具，提供字段定义，方法扩展，切换源等功能。
+
+#### 为何使用`DataPlumber`？
+
+看似简单的前端在项目越做越大时，后续维护的成本也持续提升。使用`DataPlumber`能帮你减少一些问题的发生：
+
+- 字段定义：定义字段为接口提高可读性，接手的同事阅读代码后能更快加入工作。
+- 切换服务：多个服务器随意切换，满足不同服务请求。
+- 面向RESTful：模型对象贴近于restful接口的设计，代码语义更清晰。
+- 数据处理：请求接口前后能设置钩子对数据进行预处理或后续处理，减少冗余代码。
+
+### 设计概念
+
+`DataPlumber`设计初期把代码分为两层抽象：
+
+- 通讯层：指Ajax请求代码层面上的封装，`DataPlumber`是基于axios再封装并提供管理多个远端服务功能。
+- 数据模型层：数据模型使用同一语义的方法，使用更符合面向对象设计，致敬[`Backbone.js`](http://backbonejs.org/)的模型设计。
+
+### 链接与远端服务
+
+链接(Contact)与远端服务(Remote)是通讯层的基础，Remote封装HTTP请求处理并提供支持，Contact提供管理远端服务功能。
+
+使用`DataPlumber.Contact()`方法能快速创建链接，并为它设置远端服务：
+
+```js
+import axios from "axios"
+import DataPlumber from "dataplumber"
+
+const contact = DataPlumber.Contact({
+    base: axios.create({ baseURL: '/api' })
+})
+
+// 请求数据
+const remote = contact.remote()
+remote.get('/users').then(res=>{
+     // [GET] /api/users
+     // => { status: 200, data:[...] }
+    console.log(res)
+})
+```
+
+不但能设置单个远端服务，下面是满足多个远端服务的情况下的实现：
+
+```js
+import axios from "axios"
+import DataPlumber from "dataplumber"
+
+const contact = DataPlumber.Contact({
+    online: axios.create({ baseURL: 'http://test.com/api' }),
+    local: axios.create({ baseURL: 'localhost/api' })
+})
+
+const localRemote = contact.remote('local')
+localRemote.get('/users').then(res=>{
+     // [GET] /api/users
+     // => { status: 200, data:[...] }
+    console.log(res)
+})
+```
+
+
+
 
 ### DataPlumber是什么？
 
