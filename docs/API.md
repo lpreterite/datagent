@@ -51,24 +51,27 @@ const contact = new Contact();
 
 `contact.remote()`是一个多态方法。
 
-- 传入单个参数为取得远端
-    | 字段 | 限制         | 描述     |
-    |------|--------------|----------|
-    | name | 可选, String | 远端名称，默认为空时取得首次设置的远端 |
+#### 传入单个参数为取得远端
 
-    ```js
-    const baseRemote = contact.remote('base')
-    ```
-- 传入多个参数可设置远端
-    | 字段    | 限制         | 描述                                      |
-    |---------|--------------|-------------------------------------------|
-    | name    | 必须, String | 远端名称                                  |
-    | remote  | 必须, Remote | 远端                                      |
-    | options | 可选, Object | 配置参数，`{ default:'name' }`用于设置默认值 |
-    
-    ```js
-    contact.remote('base', new Remote({ origin: axios.create({ baseURL: 'localhost/api' }) }))
-    ```
+| 字段 | 限制         | 描述                                  |
+|------|--------------|---------------------------------------|
+| name | 可选, String | 远端名称，默认为空时取得首次设置的远端 |
+
+```js
+const baseRemote = contact.remote('base')
+```
+
+#### 传入多个参数可设置远端
+
+| 字段    | 限制         | 描述                                      |
+|---------|--------------|-------------------------------------------|
+| name    | 必须, String | 远端名称                                  |
+| remote  | 必须, Remote | 远端                                      |
+| options | 可选, Object | 配置参数，`{ default:'name' }`用于设置默认值 |
+
+```js
+contact.remote('base', new Remote({ origin: axios.create({ baseURL: 'localhost/api' }) }))
+```
 
 ### contact.default()
 
