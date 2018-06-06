@@ -240,7 +240,7 @@ $user.logout().then(res=>{
 `DataPlumber`为模型方法提供调用前后处理钩子设置，在使用时提供请求数据的处理，下面来看一下如何使用：
 
 ```js
-import { default as DataPlumber, requestData, filter } from "dataplumber"
+import { default as DataPlumber, respondData, filter } from "dataplumber"
 const UserModel = DataPlumber.Model({
     name: 'user',
     fields: {
@@ -250,7 +250,7 @@ const UserModel = DataPlumber.Model({
         disabled: { type: Number, default: 0 }
     },
     hooks: {
-        fetch: { after: [requestData(), filter(['id'])] }
+        fetch: { after: [respondData(), filter(['id'])] }
     }
 })
 
@@ -262,16 +262,16 @@ $user.fetch().then(data=>{
 })
 ```
 
-`requestData`方法为我们把返回的`resquest.data`抽出来，然后`filter`方法把所有数据对象的字段都过滤只剩下id字段。钩子支持设置`fetch`, `find`, `save`, `delete`等包括模型定义的方法，让一些业务代码或者额外的处理写在方法调用前，达到减少冗余代码的目的。
+`respondData`方法为我们把返回的`resquest.data`抽出来，然后`filter`方法把所有数据对象的字段都过滤只剩下id字段。钩子支持设置`fetch`, `find`, `save`, `delete`等包括模型定义的方法，让一些业务代码或者额外的处理写在方法调用前，达到减少冗余代码的目的。
 
 目前`DataPlumber`提供了以下一些钩子处理的方法：
 
-- `requestData()`用于`after`钩子，把返回数据对象抽出。
+- `respondData()`用于`after`钩子，把返回数据对象抽出。
     ```js
     const UserModel = DataPlumber.Model({
         name: 'user',
         hooks: {
-            find: { after: [requestData()] }
+            find: { after: [respondData()] }
         }
     })
     const $user = new UserModel()

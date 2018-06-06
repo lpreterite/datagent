@@ -1,10 +1,135 @@
 # API 参考
 
+- [DataPlumber](#dataplumber)
+    - [DataPlumber.Contact()](#dataplumbercontact)
+    - [DataPlumber.Model()](#dataplumbermodel)
+    - [DataPlumber.Hooks()](#dataplumberhooks)
+- [Remote](#remote)
+    - [remote.origin](#remoteorigin)
+- [Contact](#contact)
+    - [contact.remote()](#contactremote)
+        - [传入单个参数为取得远端](#传入单个参数为取得远端)
+        - [传入多个参数可设置远端](#传入多个参数可设置远端)
+    - [contact.default()](#contactdefault)
+    - [contact.has()](#contacthas)
+- [Model](#model)
+    - [model.fetch()](#modelfetch)
+    - [model.find()](#modelfind)
+    - [model.save()](#modelsave)
+    - [model.destroy()](#modeldestroy)
+    - [model.remote()](#modelremote)
+    - [model.contact](#modelcontact)
+- [DataModel](#datamodel)
+    - [DataModel.schema](#datamodelschema)
+    - [DataModel实例的方法](#DataModel实例的方法)
+- [Schema](#schema)
+    - [schema.format()](#schemaformat)
+    - [schema.filter()](#schemafilter)
+    - [schema.default()](#schemadefault)
+    - [schema.fieldSet](#schemafieldset)
+    - [Schema.format()](#schemaformat)
+    - [Schema.filter()](#schemafilter)
+    - [Schema.default()](#schemadefault)
+- [Operations](#operations)
+    - [respondData](#responddata)
+    - [format](#format)
+    - [formatFor](#formatfor)
+    - [filter](#filter)
+    - [filterFor](#filterfor)
+
 ## DataPlumber
+
+### DataPlumber.Contact()
+
+快速生成链接(Contact)对象并设置远端(Remote)内容。
+
+参数：
+
+| 字段     | 限制         | 描述         |
+|----------|--------------|--------------|
+| remotes  | 必须, Object | 远端设定     |
+| defaults | 可选, String | 设置默认远端 |
+
+返回[`Contact`](#Contact)
+
+```js
+import axios from 'axios'
+import { default as DataPlumber, filter } from 'dataplumber'
+
+const contact = DataPlumber.Contact({
+    base: axios.create({ baseURL: 'localhost/api' }),
+    test: axios.create({ baseURL: 'localhost:8880/api' })
+})
+
+// [GET] localhost/api/user
+// => { status:200, data:[...] }
+contact.remote().get('/user').then(res=>console.log)
+```
 
 ### DataPlumber.Model()
 
-### DataPlumber.Contact()
+生成`DataModel`的工厂方法。
+
+参数：
+
+| 字段    | 限制         | 描述 |
+|---------|--------------|------|
+| options | 可选, Object |      |
+
+options格式：
+
+| 字段    | 限制          | 描述                                     |
+|---------|---------------|------------------------------------------|
+| name    | 可选, String  | 类名                                     |
+| url     | 可选, String  | 远端地址，默认为``/${name}``              |
+| contact | 可选, Contact | 链接                                     |
+| fields  | 可选, Object  | 字段设定，格式参考[`Schema`](#Schema)     |
+| methods | 可选, Object  | 方法                                     |
+| hooks   | 可选, Object  | 钩子，使用参考[`Operations`](#operations) |
+
+返回[`DataModel`](#DataModel)
+
+一个较为完整的例子：
+
+```js
+import axios from 'axios'
+import { default as DataPlumber, filter } from 'dataplumber'
+
+const contact = DataPlumber.Contact({
+    base: axios.create({ baseURL: 'localhost/api' })
+})
+
+const UserModel = DataPlumber.Model({
+    name: 'user',
+    fields: {
+        id: { type: Number, default: null },
+        name: { type: String, default: '' },
+        disabled: { type: String, default: '' },
+    },
+    methods: {
+        disable(data){
+            return this.remote().post({ ...data, disabled: 1 })
+        },
+        enable(data){
+            return this.remote().post({ ...data, disabled: 0 })
+        }
+    },
+    hooks: {
+        disable: { before:[filter(['id','disabled'])] },
+        enable: { before:[filter(['id','disabled'])] }
+    }
+})
+
+const $user = new UserModel({ contact })
+
+$user.disable({ id:1, name:'Tony' }).then(res=>console.log)
+// [POST] localhost/api/user | { id:1, disabled:1 }
+// => { status: 200, data: {...} }
+
+$user.enable({ id:1, name:'Tony' }).then(res=>console.log)
+// [POST] localhost/api/user | { id:1, disabled:0 }
+// => { status: 200, data: {...} }
+```
 
 ### DataPlumber.Hooks()
 
@@ -107,6 +232,12 @@ console.log(hasRemote) // false
 ## Model
 
 初次化参数：
+
+| 字段    | 限制         | 描述 |
+|---------|--------------|------|
+| options | 可选, Object |      |
+
+options对象字段：
 
 | 字段         | 限制 | 描述                                                                                   |
 |--------------|------|----------------------------------------------------------------------------------------|
@@ -324,7 +455,7 @@ $user.fetch({keyword:'Ti'}, {
 |----------|--------------|---------------------------------------------------------------------------------------|
 | fieldSet | 必须, Object | 包含字段名(key)与字段设定(val)的哈希数据，例子：{ id: { type: Number, default: null } } |
 
-字段设定的对象：
+字段设定(fieldSet)的字段：
 
 | 字段    | 限制           | 描述                                      |
 |---------|----------------|-------------------------------------------|
@@ -457,12 +588,235 @@ console.log(result) // { id:null, name:'Tony', disabled: 0 }
 
 ## Operations
 
-### requestData
+### respondData
+
+用于钩子的方法，提取返回的结果。从`respond`中提取`data`内容传至下一个方法。
+
+限制：
+
+| 钩子   | 是否支持 | 描述 |
+|--------|----------|------|
+| before | ✘        |      |
+| after  | ✔        |      |
+
+```js
+import axios from 'axios'
+import { default as DataPlumber, respondData } from 'dataplumber'
+
+const contact = DataPlumber.Contact({
+    base: axios.create({ baseURL: 'localhost/api' })
+})
+
+const UserModel = DataPlumber.Model({
+    name: 'user',
+    contact,
+    hooks: {
+        fetch: { after:[respondData()] }
+    }
+})
+const $user = new UserModel()
+$user.fetch().then(data=>console.log)
+// [GET] localhost/api/user
+// respond => { status: 200, data: [{id:1, name:'Tony'},{id:2, name:'Ben'}] }
+// respondData => [{id:1, name:'Tony'},{id:2, name:'Ben'}]
+```
 
 ### format
 
-### filter
+用于钩子的方法，格式化数据。
+
+参数：
+
+| 字段   | 限制        | 描述                                   |
+|--------|-------------|----------------------------------------|
+| schema | 可选，Schema | 默认使用数据模型设定的schema进行格式化 |
+
+限制：
+
+| 钩子   | 是否支持 | 描述                                                |
+|--------|----------|-----------------------------------------------------|
+| before | ✔        | 为传入参数格式化                                    |
+| after  | ✔        | 为返回结果格式化；返回结果是数组时格式化数组内的对象 |
+
+```js
+import axios from 'axios'
+import { default as DataPlumber, respondData, format } from 'dataplumber'
+
+const contact = DataPlumber.Contact({
+    base: axios.create({ baseURL: 'localhost/api' })
+})
+
+const UserModel = DataPlumber.Model({
+    name: 'user',
+    contact,
+    fields: {
+        id: { type: Number, default: null },
+        name: { type: String, default: '' },
+        disabled: { type: String, default: '' },
+    },
+    hooks: {
+        find: { after:[respondData(), format()] }
+    }
+})
+const $user = new UserModel()
+$user.find().then(data=>console.log)
+// [GET] localhost/api/user
+// respond => { status: 200, data: {id:1, name:'Tony', disabled: 0 } }
+// format => {id:1, name:'Tony', disabled:'0'}
+```
 
 ### formatFor
 
+用于钩子的方法，格式化指定数据。
+
+参数：
+
+| 字段   | 限制        | 描述                                   |
+|--------|-------------|----------------------------------------|
+| field  | 必须，String | 需格式化的字段名称                               |
+| schema | 可选，Schema | 默认使用数据模型设定的schema进行格式化 |
+
+限制：
+
+| 钩子   | 是否支持 | 描述                                                |
+|--------|----------|-----------------------------------------------------|
+| before | ✔        | 为传入参数格式化                                    |
+| after  | ✔        | 为返回结果格式化；返回结果是数组时格式化数组内的对象 |
+
+```js
+import axios from 'axios'
+import { default as DataPlumber, respondData, formatFor } from 'dataplumber'
+
+const contact = DataPlumber.Contact({
+    base: axios.create({ baseURL: 'localhost/api' })
+})
+
+const RoleModel = DataPlumber.Model({
+    name: 'role',
+    contact,
+    fields: {
+        id: { type: Number, default: null },
+        name: { type: String, default: '' },
+        disabled: { type: String, default: '' },
+    }
+})
+
+const UserModel = DataPlumber.Model({
+    name: 'user',
+    contact,
+    fields: {
+        id: { type: Number, default: null },
+        name: { type: String, default: '' },
+        disabled: { type: String, default: '' },
+    },
+    hooks: {
+        find: { after:[respondData(), formatFor('role', RoleModel.schema)] }
+    }
+})
+
+const $user = new UserModel()
+$user.find().then(data=>console.log)
+// [GET] localhost/api/user
+// respond => { status: 200, data: { id:1, name:'Tony', disabled: 0, role: { id: 1, name:'admin', disabled: 0 } } }
+// formatFor => { id:1, name:'Tony', disabled: 0, role: { id: 1, name:'admin', disabled: '0' } }
+```
+
+### filter
+
+用于钩子的方法，过滤对象字段。
+
+参数：
+
+| 字段   | 限制               | 描述                       |
+|--------|--------------------|----------------------------|
+| fields | 可选，Array<String> | 默认使用数据模型设定的字段 |
+
+限制：
+
+| 钩子   | 是否支持 | 描述                                                |
+|--------|----------|-----------------------------------------------------|
+| before | ✔        | 为传入参数过滤字段                                    |
+| after  | ✔        | 为返回结果过滤字段；返回结果是数组时过滤字段数组内的对象 |
+
+```js
+import axios from 'axios'
+import { default as DataPlumber, filter } from 'dataplumber'
+
+const contact = DataPlumber.Contact({
+    base: axios.create({ baseURL: 'localhost/api' })
+})
+
+const UserModel = DataPlumber.Model({
+    name: 'user',
+    contact,
+    fields: {
+        id: { type: Number, default: null },
+        name: { type: String, default: '' },
+        disabled: { type: String, default: '' },
+    },
+    hooks: {
+        save: { before:[filter(['id','disabled'])] }
+    }
+})
+const $user = new UserModel()
+const data = { id:1, name:'Tony', disabled: '1' };
+$user.save(data).then(data=>console.log)
+// [PUT] localhost/api/user | { id: 1, disabled: '1' }
+// => { status: 200, data: {id:1, name:'Tony', disabled: 1 } }
+```
+
 ### filterFor
+
+用于钩子的方法，过滤指定对象字段。
+
+参数：
+
+| 字段   | 限制               | 描述                       |
+|--------|--------------------|----------------------------|
+| field  | 必须，String        | 需过滤的字段名称           |
+| fields | 可选，Array<String> | 默认使用数据模型设定的字段 |
+
+限制：
+
+| 钩子   | 是否支持 | 描述                                                |
+|--------|----------|-----------------------------------------------------|
+| before | ✔        | 为传入参数过滤字段                                    |
+| after  | ✔        | 为返回结果过滤字段；返回结果是数组时过滤字段数组内的对象 |
+
+```js
+import axios from 'axios'
+import { default as DataPlumber, filter } from 'dataplumber'
+
+const contact = DataPlumber.Contact({
+    base: axios.create({ baseURL: 'localhost/api' })
+})
+
+const RoleModel = DataPlumber.Model({
+    name: 'role',
+    contact,
+    fields: {
+        id: { type: Number, default: null },
+        name: { type: String, default: '' },
+        disabled: { type: String, default: '' },
+    }
+})
+
+const UserModel = DataPlumber.Model({
+    name: 'user',
+    contact,
+    fields: {
+        id: { type: Number, default: null },
+        name: { type: String, default: '' },
+        disabled: { type: String, default: '' },
+    },
+    hooks: {
+        save: { before:[filterFor('role', ['id','disabled'])] }
+    }
+})
+
+const $user = new UserModel()
+const data = { id:1, name:'Tony', disabled: '1', role: { id: 1, name:'admin', disabled: '1' } }
+$user.save(data).then(data=>console.log)
+// [PUT] localhost/api/user | { id:1, name:'Tony', disabled: '1', role: { id: 1, disabled: '1' } }
+// => { status: 200, data: {id:1, name:'Tony', disabled: 1 } }
+```

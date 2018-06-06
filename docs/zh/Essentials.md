@@ -53,7 +53,7 @@ console.log(filterData); // { id:1, nickname: 'Tony' }
 
 ```js
 import axios from "axios";
-import { default as DataPlumber, requestData, format } from "dataplumber";
+import { default as DataPlumber, respondData, format } from "dataplumber";
 
 const UserModel = DataPlumber.Model({
     name: 'user',
@@ -65,7 +65,7 @@ const UserModel = DataPlumber.Model({
         disabled: { type: Number, defaults: 0 }
     },
     hooks: {
-        find: { after:[requestData(), filter(['id','nickname'])] }
+        find: { after:[respondData(), filter(['id','nickname'])] }
     }
 });
 
