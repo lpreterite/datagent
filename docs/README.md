@@ -82,7 +82,7 @@ model.delete(2).then(res=>{
 })
 ```
 
-## 基础
+## 介绍
 
 ### DataPlumber是什么？
 
@@ -126,7 +126,7 @@ $user.find(1).then(data=>{
 })
 ```
 
-经过上面的例子相信对`DataPlumber`的使用有一定的了解。`DataPlumber`提供的数据模型还有字段、方法、钩子等功能下面再一一细说。
+经过上面的例子相信对`DataPlumber`的使用有一定的了解。`DataPlumber`提供的数据模型还有字段、方法、钩子等功能下面再一一细说。如果你想知道得更详细，可以阅读[API参考](API.md)或源代码。
 
 ### 数据模型
 
