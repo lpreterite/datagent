@@ -1,6 +1,6 @@
 # DataPlumber
 
-[![build status](https://img.shields.io/travis/lpreterite/dataplumber.svg?style=flat-square)](https://travis-ci.org/lpreterite/dataplumber)
+[![build status](https://travis-ci.org/lpreterite/dataplumber.svg?branch=master)](https://travis-ci.org/lpreterite/dataplumber)
 
 `DataPlumber`是一个用于前端Ajax请求的模块化工具，提供字段定义，方法扩展，切换源等。
 
