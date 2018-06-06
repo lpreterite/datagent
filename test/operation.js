@@ -1,5 +1,5 @@
 import {
-    requestData,
+    respondData,
     awaitTo,
     format,
     filter,
@@ -9,7 +9,7 @@ import {
 import Schema from '../src/classes/Schema.class';
 
 describe('Hook operations function test', ()=>{
-    describe('requestData', ()=>{
+    describe('respondData', ()=>{
         let ctx = {};
         it('当respond的status小于200时，上下文的result应当替换为respond.data', async () => {
             ctx = {
@@ -18,7 +18,7 @@ describe('Hook operations function test', ()=>{
                     data: [{ id: 1, name: 'Tom' }]
                 }
             };
-            const context = await requestData()(ctx);
+            const context = await respondData()(ctx);
             assert.equal(context.result.constructor, Array);
         })
         it('当respond的status大于200时，应当抛出错误', async () => {
@@ -28,7 +28,7 @@ describe('Hook operations function test', ()=>{
                 }
             };
             try{
-                const context = await requestData()(ctx);
+                const context = await respondData()(ctx);
             } catch (e) {
                 assert.equal(e.constructor, Error);
             }
@@ -55,7 +55,7 @@ describe('Hook operations function test', ()=>{
                     data: { id: 1, name: 'Tom' }
                 }
             };
-            ctx = await requestData()(ctx);
+            ctx = await respondData()(ctx);
             ctx = await format()(ctx);
             assert.hasAllKeys(ctx.result, { id: 1, name: 'Tom', sex: 0 });
         })
@@ -71,7 +71,7 @@ describe('Hook operations function test', ()=>{
                     data: [{ id: 1, name: 'Tom' }]
                 }
             };
-            ctx = await requestData()(ctx);
+            ctx = await respondData()(ctx);
             ctx = await format()(ctx);
             assert.hasAllKeys(ctx.result[0], { id: 1, name: 'Tom', sex: 0 } );
         })
@@ -132,7 +132,7 @@ describe('Hook operations function test', ()=>{
                     data: { id: 1, name: 'Tom', role: { id: 1, name: 'member' } }
                 }
             };
-            ctx = await requestData()(ctx);
+            ctx = await respondData()(ctx);
             ctx = await formatFor('role', role)(ctx);
             assert.property(ctx.result.role, 'created_at');
         })
@@ -149,7 +149,7 @@ describe('Hook operations function test', ()=>{
                     data: [{ id: 1, name: 'Tom', role: { id: 1, name: 'member' } }]
                 }
             };
-            ctx = await requestData()(ctx);
+            ctx = await respondData()(ctx);
             ctx = await formatFor('role', role)(ctx);
             assert.property(ctx.result[0].role, 'created_at');
         })
@@ -217,7 +217,7 @@ describe('Hook operations function test', ()=>{
                     data: { id: 1, name: 'Tom', order: 1 }
                 }
             };
-            ctx = await requestData()(ctx);
+            ctx = await respondData()(ctx);
             ctx = await filter()(ctx);
             assert.hasAllKeys(ctx.result, { id: 1, name: 'Tom' });
         })
@@ -233,7 +233,7 @@ describe('Hook operations function test', ()=>{
                     data: [{ id: 1, name: 'Tom', order: 1 }]
                 }
             };
-            ctx = await requestData()(ctx);
+            ctx = await respondData()(ctx);
             ctx = await filter()(ctx);
             assert.hasAllKeys(ctx.result[0], { id: 1, name: 'Tom' });
         })
@@ -306,7 +306,7 @@ describe('Hook operations function test', ()=>{
                     data: { id: 1, name: 'Tom', order: 1, role: { id: 1, name: 'member' } }
                 }
             };
-            ctx = await requestData()(ctx);
+            ctx = await respondData()(ctx);
             ctx = await filterFor('role', ['id'])(ctx);
             assert.hasAllKeys(ctx.result.role, { id: 1 });
         })
@@ -322,7 +322,7 @@ describe('Hook operations function test', ()=>{
                     data: [{ id: 1, name: 'Tom', order: 1, role: { id: 1, name: 'member' } }]
                 }
             };
-            ctx = await requestData()(ctx);
+            ctx = await respondData()(ctx);
             ctx = await filterFor('role', ['id'])(ctx);
             assert.hasAllKeys(ctx.result[0].role, { id: 1 });
         })

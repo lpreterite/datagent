@@ -2,8 +2,8 @@ import Model from '../src/classes/Model.class';
 import Remote from '../src/classes/Remote.class';
 import Schema from '../src/classes/Schema.class';
 import DataPlumber from '../src/';
-import { defaults } from '../src/utils/';
-import { format, requestData, awaitTo } from '../src/operations/';
+import { defaults, awaitTo } from '../src/utils/';
+import { format, respondData } from '../src/operations/';
 
 function requestHandle() {
     return (ctx) => {
@@ -54,8 +54,8 @@ describe('Model Class Test', function () {
     it('prototype应当包含save方法', function () {
         return assert.isDefined(Model.prototype.save);
     })
-    it('prototype应当包含delete方法', function () {
-        return assert.isDefined(Model.prototype.delete);
+    it('prototype应当包含destroy方法', function () {
+        return assert.isDefined(Model.prototype.destroy);
     })
     it('prototype应当包含自定义方法', function () {
         return assert.isDefined(Model.prototype.test);
@@ -197,7 +197,7 @@ describe('Model instace Test', function () {
             assert.propertyVal(result, 'id', 3);
         })
     })
-    describe('instance.delete()', function () {
+    describe('instance.destroy()', function () {
         afterEach(function () {
             mock.base.reset();
             mock.test.reset();
@@ -209,7 +209,7 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data: { id: 1, name: 'John Smith' }, msg: '' });
 
             let err, result;
-            [err, result] = await model.delete(1).then(handle);
+            [err, result] = await model.destroy(1).then(handle);
             assert.propertyVal(result, 'id', 1);
         })
         it('当传入origin参数时，应当切换至对应的远端服务', async function () {
@@ -219,7 +219,7 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data: { id: 1, name: 'John Smith' }, msg: '' });
 
             let err, result;
-            [err, result] = await model.delete(1, { origin: 'test' }).then(handle);
+            [err, result] = await model.destroy(1, { origin: 'test' }).then(handle);
             assert.propertyVal(result, 'id', 1);
         })
     })
@@ -439,7 +439,7 @@ describe('Model instace Test', function () {
                 },
                 hooks: {
                     ...DataPlumber.mapReceiveHook([
-                        requestData(),
+                        respondData(),
                         requestHandle(),
                         format()
                     ])
