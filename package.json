@@ -1,8 +1,8 @@
 {
-  "name": "dataplumber",
+  "name": "@packy-tang/dataplumber",
   "version": "0.1.0",
   "description": "DataPlumber is a modular tool for front-end Ajax requests, providing field definitions, method extensions, switching sources and more",
-  "main": "dist/dataplumber.js",
+  "main": "lib/dataplumber.js",
   "directories": {
     "doc": "docs",
     "test": "test"

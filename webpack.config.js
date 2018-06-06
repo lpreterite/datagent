@@ -6,7 +6,7 @@ module.exports = {
   output: {
     library: "dataplumber",
     libraryTarget: "umd",
-    path: path.resolve(__dirname, "./dist"),
+    path: path.resolve(__dirname, "./lib"),
     filename: "dataplumber.js"
   },
   resolve: {
