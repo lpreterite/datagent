@@ -3,7 +3,7 @@ import Remote from '../src/classes/Remote.class';
 import Schema from '../src/classes/Schema.class';
 import DataPlumber from '../src/';
 import { defaults, awaitTo } from '../src/utils/';
-import { format, requestData } from '../src/operations/';
+import { format, respondData } from '../src/operations/';
 
 function requestHandle() {
     return (ctx) => {
@@ -439,7 +439,7 @@ describe('Model instace Test', function () {
                 },
                 hooks: {
                     ...DataPlumber.mapReceiveHook([
-                        requestData(),
+                        respondData(),
                         requestHandle(),
                         format()
                     ])

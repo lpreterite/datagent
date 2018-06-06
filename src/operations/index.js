@@ -2,7 +2,7 @@ import { defaults, isDef, isArray } from "../utils/";
 import Schema from "../classes/Schema.class";
 import Hooks from "../classes/Hooks.class";
 
-export function requestData() {
+export function respondData() {
     return (ctx)=>{
         const res = ctx.result;
         if(res.status < 200){
@@ -15,19 +15,20 @@ export function requestData() {
     }
 }
 
-export function format() {
+export function format(schema) {
     return (ctx) => {
+        schema = isDef(schema) ? schema : ctx.scope.schema;
         switch (ctx.hook) {
             case 'after':
                 if (isDef(ctx.result) && isArray(ctx.result)){
-                    ctx.result = ctx.result.map(item => ctx.scope.schema.format(item));
+                    ctx.result = ctx.result.map(item => schema.format(item));
                 }else{
-                    ctx.result = ctx.scope.schema.format(ctx.result);
+                    ctx.result = schema.format(ctx.result);
                 }
                 break;
             case 'before':
                 const data = ctx.args.pop();
-                ctx.args = [ctx.scope.schema.format(data), ...ctx.args];
+                ctx.args = [schema.format(data), ...ctx.args];
                 break;
         }
         return Promise.resolve(ctx);
@@ -55,6 +56,7 @@ export function filter(fields){
 
 export function formatFor(field, schema){
     return (ctx) => {
+        schema = isDef(schema) ? schema : ctx.scope.schema;
         switch (ctx.hook) {
             case 'after':
                 if (isArray(ctx.result)){
