@@ -1,7 +1,7 @@
 import Model from '../src/classes/Model.class';
 import Remote from '../src/classes/Remote.class';
 import Schema from '../src/classes/Schema.class';
-import DataPlumber from '../src/';
+import Datagent from '../src/';
 import { defaults, awaitTo } from '../src/utils/';
 import { format, respondData } from '../src/operations/';
 
@@ -26,7 +26,7 @@ const handle = (res) => {
 describe('Model Class Test', function () {
     let Model;
     before(function () {
-        Model = DataPlumber.Model({
+        Model = Datagent.Model({
             name: 'user',
             fields: {
                 id: { type: Number, default: 0 },
@@ -70,11 +70,11 @@ describe('Model instace Test', function () {
             test: 'http://localhost:8081/api'
         };
 
-        contact = DataPlumber.Contact({
+        contact = Datagent.Contact({
             base: axios.create({ baseURL: hosts.base }),
             test: axios.create({ baseURL: hosts.test })
         });
-        const UserModel = DataPlumber.Model({
+        const UserModel = Datagent.Model({
             name: 'user',
             fields: {
                 id: { type: Number, default: 0 },
@@ -252,7 +252,7 @@ describe('Model instace Test', function () {
             mock.base.reset();
         })
         it('Model类方法钩子应当生效', async function () {
-            const UserModel = DataPlumber.Model({
+            const UserModel = Datagent.Model({
                 name: 'user',
                 fields: {
                     id: { type: Number, default: 0 },
@@ -293,7 +293,7 @@ describe('Model instace Test', function () {
             mock.base.reset();
         })
         it('自定义方法的钩子应当生效', async function(){
-            const UserModel = DataPlumber.Model({
+            const UserModel = Datagent.Model({
                 name: 'user',
                 fields: {
                     id: { type: Number, default: 0 },
@@ -331,7 +331,7 @@ describe('Model instace Test', function () {
             mock.base.reset();
         })
         it('方法运行时应当支持添加钩子', async function () {
-            const UserModel = DataPlumber.Model({
+            const UserModel = Datagent.Model({
                 name: 'user',
                 fields: {
                     id: { type: Number, default: 0 },
@@ -386,7 +386,7 @@ describe('Model instace Test', function () {
 
     describe('额外钩子Receive', function () {
         it('应当在fetch后生效', async function () {
-            const UserModel = DataPlumber.Model({
+            const UserModel = Datagent.Model({
                 name: 'user',
                 fields: {
                     id: { type: Number, default: 0 },
@@ -401,7 +401,7 @@ describe('Model instace Test', function () {
                     }
                 },
                 hooks: {
-                    ...DataPlumber.mapReceiveHook([
+                    ...Datagent.mapReceiveHook([
                         (ctx) => {
                             const result = ctx.result;
                             if (result.data.code < 200) return Promise.reject(new Error('api error'));
@@ -428,7 +428,7 @@ describe('Model instace Test', function () {
         })
         it('应当在find后生效', async function () {
             const create_at = Date.now();
-            const UserModel = DataPlumber.Model({
+            const UserModel = Datagent.Model({
                 name: 'user',
                 fields: {
                     id: { type: Number, default: 0 },
@@ -438,7 +438,7 @@ describe('Model instace Test', function () {
                     disabled: { type: Number, default: 0 }
                 },
                 hooks: {
-                    ...DataPlumber.mapReceiveHook([
+                    ...Datagent.mapReceiveHook([
                         respondData(),
                         requestHandle(),
                         format()
@@ -461,7 +461,7 @@ describe('Model instace Test', function () {
     describe('额外钩子Send', function () {
         it('应当在save前生效', async function () {
             const create_at = Date.now();
-            const UserModel = DataPlumber.Model({
+            const UserModel = Datagent.Model({
                 name: 'user',
                 fields: {
                     id: { type: Number, default: 0 },
@@ -471,7 +471,7 @@ describe('Model instace Test', function () {
                     disabled: { type: Number, default: 0 }
                 },
                 hooks: {
-                    ...DataPlumber.mapSendHook([
+                    ...Datagent.mapSendHook([
                         (ctx) => {
                             let data = ctx.args.pop();
                             ctx.args = [ctx.scope.schema.filter(data, ['id', 'name', 'create_at']), ...ctx.args];

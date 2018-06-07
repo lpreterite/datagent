@@ -1,6 +1,6 @@
 import Remote from '../src/classes/Remote.class';
 import Contact from '../src/classes/Contact.class';
-import DataPlumber from '../src/';
+import Datagent from '../src/';
 
 describe('Contact Class Test', () => {
     let contact, remotes;
@@ -33,7 +33,7 @@ describe('Contact Class Test', () => {
 
     describe('instance.default()', ()=>{
         it('输入参数name必须是字符串', ()=>{
-            contact = DataPlumber.Contact(remotes);
+            contact = Datagent.Contact(remotes);
             try{
                 contact.default(233);
             } catch (e) {
@@ -41,7 +41,7 @@ describe('Contact Class Test', () => {
             }
         })
         it('输入参数name必须存在于remote的键', () => {
-            contact = DataPlumber.Contact(remotes);
+            contact = Datagent.Contact(remotes);
             try {
                 contact.default("233");
             } catch (e) {

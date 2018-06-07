@@ -1,14 +1,14 @@
 export * from './operations/';
-export * from './DataPlumber';
+export * from './datagent';
 
 import { mapReceiveHook, mapSendHook } from './utils/';
-import DataPlumber from './DataPlumber';
+import Datagent from './datagent';
 export {
     mapReceiveHook,
     mapSendHook
 }
 export default {
-    ...DataPlumber,
+    ...Datagent,
     mapReceiveHook,
     mapSendHook
 }

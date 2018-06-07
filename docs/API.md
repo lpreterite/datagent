@@ -1,9 +1,9 @@
 # API 参考
 
-- [DataPlumber](#dataplumber)
-    - [DataPlumber.Contact()](#dataplumbercontact)
-    - [DataPlumber.Model()](#dataplumbermodel)
-    - [DataPlumber.Hooks()](#dataplumberhooks)
+- [Datagent](#datagent)
+    - [Datagent.Contact()](#datagentcontact)
+    - [Datagent.Model()](#datagentmodel)
+    - [Datagent.Hooks()](#datagenthooks)
 - [Remote](#remote)
     - [remote.origin](#remoteorigin)
 - [Contact](#contact)
@@ -37,9 +37,9 @@
     - [filter](#filter)
     - [filterFor](#filterfor)
 
-## DataPlumber
+## Datagent
 
-### DataPlumber.Contact()
+### Datagent.Contact()
 
 快速生成链接(Contact)对象并设置远端(Remote)内容。
 
@@ -54,9 +54,9 @@
 
 ```js
 import axios from 'axios'
-import { default as DataPlumber, filter } from 'dataplumber'
+import { default as Datagent, filter } from 'datagent'
 
-const contact = DataPlumber.Contact({
+const contact = Datagent.Contact({
     base: axios.create({ baseURL: 'localhost/api' }),
     test: axios.create({ baseURL: 'localhost:8880/api' })
 })
@@ -66,7 +66,7 @@ const contact = DataPlumber.Contact({
 contact.remote().get('/user').then(res=>console.log)
 ```
 
-### DataPlumber.Model()
+### Datagent.Model()
 
 生成`DataModel`的工厂方法。
 
@@ -93,13 +93,13 @@ options格式：
 
 ```js
 import axios from 'axios'
-import { default as DataPlumber, filter } from 'dataplumber'
+import { default as Datagent, filter } from 'datagent'
 
-const contact = DataPlumber.Contact({
+const contact = Datagent.Contact({
     base: axios.create({ baseURL: 'localhost/api' })
 })
 
-const UserModel = DataPlumber.Model({
+const UserModel = Datagent.Model({
     name: 'user',
     fields: {
         id: { type: Number, default: null },
@@ -131,7 +131,7 @@ $user.enable({ id:1, name:'Tony' }).then(res=>console.log)
 // => { status: 200, data: {...} }
 ```
 
-### DataPlumber.Hooks()
+### Datagent.Hooks()
 
 ## Remote
 
@@ -143,7 +143,7 @@ $user.enable({ id:1, name:'Tony' }).then(res=>console.log)
 
 ```js
 import axios from 'axios'
-import Remote from 'dataplumber/src/classes/Remote.class'
+import Remote from 'datagent/src/classes/Remote.class'
 const remote = new Remote({ origin: axios.create({ baseURL: 'localhost/api' }) })
 ```
 
@@ -167,8 +167,8 @@ const remote = new Remote({ origin: axios.create({ baseURL: 'localhost/api' }) }
 
 ```js
 import axios from 'axios'
-import Remote from 'dataplumber/src/classes/Remote.class'
-import Contact from 'dataplumber/src/classes/Contact.class'
+import Remote from 'datagent/src/classes/Remote.class'
+import Contact from 'datagent/src/classes/Contact.class'
 const contact = new Contact();
 ```
 
@@ -248,9 +248,9 @@ options对象字段：
 
 ```js
 import axios from 'axios'
-import Remote from 'dataplumber/src/classes/Remote.class'
-import Contact from 'dataplumber/src/classes/Contact.class'
-import Model from 'dataplumber/src/classes/Model.class'
+import Remote from 'datagent/src/classes/Remote.class'
+import Contact from 'datagent/src/classes/Contact.class'
+import Model from 'datagent/src/classes/Model.class'
 
 const contact = new Contact();
 contact.remote('base', new Remote({ origin: axios.create({ baseURL: 'localhost/api' }) }))
@@ -373,24 +373,24 @@ console.log(model.contact.constructor === Contact) // true
 | contact      | 可选, Contact | 链接                                                                                   |
 | emulateIdKey | 可选, String  | 仿真ID，默认为`false`，当设置值如`id`时会在请求数据是把仿真ID以`query`的方式添加至地址中 |
 
-`name`,`url`,`contact`参数在使用`DataPlumber.Model()`定义时均可以设置，所以在模型初次化时不一定需要提供。
+`name`,`url`,`contact`参数在使用`Datagent.Model()`定义时均可以设置，所以在模型初次化时不一定需要提供。
 
 ```js
 import axios from 'axios'
-import DataPlumber from 'dataplumber'
-import Schema from 'dataplumber/src/classes/Schema.class'
+import Datagent from 'datagent'
+import Schema from 'datagent/src/classes/Schema.class'
 
-const contact = DataPlumber.Contact({
+const contact = Datagent.Contact({
     base: axios.create({ baseURL: 'localhost/api' })
 })
 
-const UserModel = DataPlumber.Model({ name: 'user', contact })
+const UserModel = Datagent.Model({ name: 'user', contact })
 const $user = new UserModel();
 ```
 
 ### DataModel.schema
 
-`DataPlumber.Model`方法提供的字段设置，背后其实是生成了一个`Schema`类。
+`Datagent.Model`方法提供的字段设置，背后其实是生成了一个`Schema`类。
 
 ```js
 console.log(UserModel.schema.constructor === Schema) // true
@@ -419,7 +419,7 @@ console.log($user.schema.constructor === Schema) // true
 ]
 ```
 
-实际处理的方式我称为“折叠方法”，把一个队列的方法顺序运行并得出结果，具体想了解更多可看源码`dataplumber/src/utls/index.js:14`的`compose`方法。
+实际处理的方式我称为“折叠方法”，把一个队列的方法顺序运行并得出结果，具体想了解更多可看源码`datagent/src/utls/index.js:14`的`compose`方法。
 
 这里只写`fetch`方法作为例子，其他方法使用是一致的。
 
@@ -463,7 +463,7 @@ $user.fetch({keyword:'Ti'}, {
 | default | 可选, any      | 定义字段默认值，默认值类型可字段类型不一致 |
 
 ```js
-import Schema from 'dataplumber/src/classes/Schema.class'
+import Schema from 'datagent/src/classes/Schema.class'
 
 const schema = new Schema({
     id: { type: Number, default: null },
@@ -601,13 +601,13 @@ console.log(result) // { id:null, name:'Tony', disabled: 0 }
 
 ```js
 import axios from 'axios'
-import { default as DataPlumber, respondData } from 'dataplumber'
+import { default as Datagent, respondData } from 'datagent'
 
-const contact = DataPlumber.Contact({
+const contact = Datagent.Contact({
     base: axios.create({ baseURL: 'localhost/api' })
 })
 
-const UserModel = DataPlumber.Model({
+const UserModel = Datagent.Model({
     name: 'user',
     contact,
     hooks: {
@@ -640,13 +640,13 @@ $user.fetch().then(data=>console.log)
 
 ```js
 import axios from 'axios'
-import { default as DataPlumber, respondData, format } from 'dataplumber'
+import { default as Datagent, respondData, format } from 'datagent'
 
-const contact = DataPlumber.Contact({
+const contact = Datagent.Contact({
     base: axios.create({ baseURL: 'localhost/api' })
 })
 
-const UserModel = DataPlumber.Model({
+const UserModel = Datagent.Model({
     name: 'user',
     contact,
     fields: {
@@ -685,13 +685,13 @@ $user.find().then(data=>console.log)
 
 ```js
 import axios from 'axios'
-import { default as DataPlumber, respondData, formatFor } from 'dataplumber'
+import { default as Datagent, respondData, formatFor } from 'datagent'
 
-const contact = DataPlumber.Contact({
+const contact = Datagent.Contact({
     base: axios.create({ baseURL: 'localhost/api' })
 })
 
-const RoleModel = DataPlumber.Model({
+const RoleModel = Datagent.Model({
     name: 'role',
     contact,
     fields: {
@@ -701,7 +701,7 @@ const RoleModel = DataPlumber.Model({
     }
 })
 
-const UserModel = DataPlumber.Model({
+const UserModel = Datagent.Model({
     name: 'user',
     contact,
     fields: {
@@ -740,13 +740,13 @@ $user.find().then(data=>console.log)
 
 ```js
 import axios from 'axios'
-import { default as DataPlumber, filter } from 'dataplumber'
+import { default as Datagent, filter } from 'datagent'
 
-const contact = DataPlumber.Contact({
+const contact = Datagent.Contact({
     base: axios.create({ baseURL: 'localhost/api' })
 })
 
-const UserModel = DataPlumber.Model({
+const UserModel = Datagent.Model({
     name: 'user',
     contact,
     fields: {
@@ -785,13 +785,13 @@ $user.save(data).then(data=>console.log)
 
 ```js
 import axios from 'axios'
-import { default as DataPlumber, filter } from 'dataplumber'
+import { default as Datagent, filter } from 'datagent'
 
-const contact = DataPlumber.Contact({
+const contact = Datagent.Contact({
     base: axios.create({ baseURL: 'localhost/api' })
 })
 
-const RoleModel = DataPlumber.Model({
+const RoleModel = Datagent.Model({
     name: 'role',
     contact,
     fields: {
@@ -801,7 +801,7 @@ const RoleModel = DataPlumber.Model({
     }
 })
 
-const UserModel = DataPlumber.Model({
+const UserModel = Datagent.Model({
     name: 'user',
     contact,
     fields: {

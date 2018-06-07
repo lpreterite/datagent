@@ -3,7 +3,7 @@
 ## 安装
 
 ```sh
-npm install dataplumber
+npm install datagent
 ```
 
 ## 使用
@@ -11,15 +11,15 @@ npm install dataplumber
 ```js
 // 引入
 import axios from "axios";
-import DataPlumber from "dataplumber";
+import Datagent from "datagent";
 
 // 创建链接
-const contact = DataPlumber.Contact({
+const contact = Datagent.Contact({
     base: axios.create({ baseURL: '/api' })
 });
 
 // 定义模型
-const UserModel = DataPlumber.Model({ name: 'user' });
+const UserModel = Datagent.Model({ name: 'user' });
 
 // 创建模型
 model = new UserModel({ contact });
