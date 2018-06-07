@@ -1,8 +1,8 @@
 {
-  "name": "@packy-tang/dataplumber",
+  "name": "datagent",
   "version": "0.1.0",
-  "description": "DataPlumber is a modular tool for front-end Ajax requests, providing field definitions, method extensions, switching sources and more",
-  "main": "lib/dataplumber.js",
+  "description": "Datagent is a modular tool for front-end Ajax requests, providing field definitions, method extensions, switching sources and more",
+  "main": "lib/datagent.js",
   "directories": {
     "doc": "docs",
     "test": "test"
@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lpreterite/dataplumber.git"
+    "url": "git+https://github.com/lpreterite/datagent.git"
   },
   "keywords": [
     "restful",
@@ -31,9 +31,9 @@
   "author": "packy-tang <lpreterite@126.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lpreterite/dataplumber/issues"
+    "url": "https://github.com/lpreterite/datagent/issues"
   },
-  "homepage": "https://github.com/lpreterite/dataplumber#readme",
+  "homepage": "https://github.com/lpreterite/datagent#readme",
   "devDependencies": {
     "axios-mock-adapter": "^1.15.0",
     "babel": "^6.23.0",

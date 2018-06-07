@@ -29,7 +29,7 @@
 ### 安装
 
 ```sh
-npm install dataplumber
+npm install datagent
 ```
 
 ### 使用
@@ -37,15 +37,15 @@ npm install dataplumber
 ```js
 // 引入
 import axios from "axios"
-import DataPlumber from "dataplumber"
+import Datagent from "datagent"
 
 // 创建链接
-const contact = DataPlumber.Contact({
+const contact = Datagent.Contact({
     base: axios.create({ baseURL: '/api' })
 })
 
 // 定义模型
-const UserModel = DataPlumber.Model({ name: 'user' })
+const UserModel = Datagent.Model({ name: 'user' })
 
 // 创建模型
 model = new UserModel({ contact })
@@ -84,9 +84,9 @@ model.delete(2).then(res=>{
 
 ## 介绍
 
-### DataPlumber是什么？
+### Datagent是什么？
 
-`DataPlumber`是一个用于前端Ajax请求的模块化工具，提供字段定义，方法扩展，切换源等功能。在如React, Vue, Angular等现代前端框架下不同UI层面通信的数据我们称为视图模型(ViewModel)。现在互联网常用于客户端与服务器间通信都是基于RESTful方式设计的持久化服务，这种基于持久化的设计可以借助`DataPlumber`将通信数据表示为数据模型(DataModel)。数据模型管理着数据字段和通信服务，同时为编排业务代码提供相关方法的钩子进行预处理或后处理。
+`Datagent`是一个用于前端Ajax请求的模块化工具，提供字段定义，方法扩展，切换源等功能。在如React, Vue, Angular等现代前端框架下不同UI层面通信的数据我们称为视图模型(ViewModel)。现在互联网常用于客户端与服务器间通信都是基于RESTful方式设计的持久化服务，这种基于持久化的设计可以借助`Datagent`将通信数据表示为数据模型(DataModel)。数据模型管理着数据字段和通信服务，同时为编排业务代码提供相关方法的钩子进行预处理或后处理。
 
 ### 远端、链接、数据模型
 
@@ -98,13 +98,13 @@ model.delete(2).then(res=>{
 
 > 上面是三个是常用类
 
-用`DataPlumber`快速创建一个包含远端的链接：
+用`Datagent`快速创建一个包含远端的链接：
 
 ```js
 import axios from "axios"
-import DataPlumber from "dataplumber"
+import Datagent from "datagent"
 
-const contact = DataPlumber.Contact({
+const contact = Datagent.Contact({
     base: axios.create({ baseURL: '/api' })
 })
 ```
@@ -112,7 +112,7 @@ const contact = DataPlumber.Contact({
 数据模型实例化时把链接作为参数传入：
 
 ```js
-const UserModel = DataPlumber.Model({ name: 'user' })
+const UserModel = Datagent.Model({ name: 'user' })
 const $user = new UserModel({ contact })
 ```
 
@@ -126,7 +126,7 @@ $user.find(1).then(data=>{
 })
 ```
 
-经过上面的例子相信对`DataPlumber`的使用有一定的了解。`DataPlumber`提供的数据模型还有字段、方法、钩子等功能下面再一一细说。如果你想知道得更详细，可以阅读[API参考](API.md)或源代码。
+经过上面的例子相信对`Datagent`的使用有一定的了解。`Datagent`提供的数据模型还有字段、方法、钩子等功能下面再一一细说。如果你想知道得更详细，可以阅读[API参考](API.md)或源代码。
 
 ### 数据模型
 
@@ -136,13 +136,13 @@ $user.find(1).then(data=>{
 - 从服务器加载并保存
 - 数据更改时发出事件
 
-“数据更改时发出事件”的功能已不是模型层需要解决的问题，在如React, Vue, Angular等现代前端框架的帮助下，数据层应该更专注数据处理上。下面来看一下`DataPlumber`的模型层是如何使用的。
+“数据更改时发出事件”的功能已不是模型层需要解决的问题，在如React, Vue, Angular等现代前端框架的帮助下，数据层应该更专注数据处理上。下面来看一下`Datagent`的模型层是如何使用的。
 
 在使用数据模型之前，我们可以使用`Dataplumber.Model()`定义一个数据模型抽象：
 
 ```js
-import DataPlumber from "dataplumber"
-const UserModel = DataPlumber.Model({ name: 'user' })
+import Datagent from "datagent"
+const UserModel = Datagent.Model({ name: 'user' })
 ```
 
 接下来创建这个用户类，便能从服务器加载或保存数据：
@@ -169,8 +169,8 @@ $user.find(1).then(user=>{
 为模型定义数据字段能让你在开发项目期间对数据接口一目了然，同时也让接手的同事能更快的了解项目。
 
 ```js
-import DataPlumber from "dataplumber"
-const UserModel = DataPlumber.Model({
+import Datagent from "datagent"
+const UserModel = Datagent.Model({
     name: 'user',
     fields: {
         id: { type: Number, default: null },
@@ -189,11 +189,11 @@ console.log(result) // { id: 1, nickname: 'Tony' }
 
 ### 定义方法
 
-`DataPlumber`的模型提供`fetch`, `find`, `save`, `delete`方法进行数据的获取和编辑功能，但是在实际的开发场景中并不能完全满足需求。所以在定义模型的同时提供定义方法的设置：
+`Datagent`的模型提供`fetch`, `find`, `save`, `delete`方法进行数据的获取和编辑功能，但是在实际的开发场景中并不能完全满足需求。所以在定义模型的同时提供定义方法的设置：
 
 ```js
-import DataPlumber from "dataplumber"
-const UserModel = DataPlumber.Model({
+import Datagent from "datagent"
+const UserModel = Datagent.Model({
     name: 'user',
     methods: {
         test(){
@@ -209,8 +209,8 @@ console.log($user.test()) // test string
 以下可能是比较贴合实际使用的情况：
 
 ```js
-import DataPlumber from "dataplumber"
-const UserModel = DataPlumber.Model({
+import Datagent from "datagent"
+const UserModel = Datagent.Model({
     name: 'user',
     methods: {
         login(account){
@@ -237,11 +237,11 @@ $user.logout().then(res=>{
 
 ### 设置钩子
 
-`DataPlumber`为模型方法提供调用前后处理钩子设置，在使用时提供请求数据的处理，下面来看一下如何使用：
+`Datagent`为模型方法提供调用前后处理钩子设置，在使用时提供请求数据的处理，下面来看一下如何使用：
 
 ```js
-import { default as DataPlumber, respondData, filter } from "dataplumber"
-const UserModel = DataPlumber.Model({
+import { default as Datagent, respondData, filter } from "datagent"
+const UserModel = Datagent.Model({
     name: 'user',
     fields: {
         id: { type: Number, default: null },
@@ -264,11 +264,11 @@ $user.fetch().then(data=>{
 
 `respondData`方法为我们把返回的`resquest.data`抽出来，然后`filter`方法把所有数据对象的字段都过滤只剩下id字段。钩子支持设置`fetch`, `find`, `save`, `delete`等包括模型定义的方法，让一些业务代码或者额外的处理写在方法调用前，达到减少冗余代码的目的。
 
-目前`DataPlumber`提供了以下一些钩子处理的方法：
+目前`Datagent`提供了以下一些钩子处理的方法：
 
 - `respondData()`用于`after`钩子，把返回数据对象抽出。
     ```js
-    const UserModel = DataPlumber.Model({
+    const UserModel = Datagent.Model({
         name: 'user',
         hooks: {
             find: { after: [respondData()] }

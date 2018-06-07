@@ -4,10 +4,10 @@ var webpack = require("webpack");
 module.exports = {
   entry: "./src/index.js",
   output: {
-    library: "dataplumber",
+    library: "datagent",
     libraryTarget: "umd",
     path: path.resolve(__dirname, "./lib"),
-    filename: "dataplumber.js"
+    filename: "datagent.js"
   },
   resolve: {
     alias: {

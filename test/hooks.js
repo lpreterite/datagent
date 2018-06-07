@@ -1,5 +1,5 @@
 import Hooks from '../src/classes/Hooks.class';
-import DataPlumber from '../src/DataPlumber';
+import Datagent from '../src/datagent';
 
 describe('Hooks Class Test', () => {
     let hooks, opts;
@@ -32,7 +32,7 @@ describe('Hooks Class Test', () => {
     })
     describe('Hooks.isReceiveBehaviour()', () => {
         beforeEach(() => {
-            hooks = DataPlumber.Hooks(opts);
+            hooks = Datagent.Hooks(opts);
         })
         it('传入参数method应当为string', () => {
             try {
@@ -51,7 +51,7 @@ describe('Hooks Class Test', () => {
     })
     describe('Hooks.isSendBehaviour()', () => {
         beforeEach(() => {
-            hooks = DataPlumber.Hooks(opts);
+            hooks = Datagent.Hooks(opts);
         })
         it('传入参数method应当为string', () => {
             try {
