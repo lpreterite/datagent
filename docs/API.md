@@ -433,7 +433,7 @@ console.log($user.schema.constructor === Schema) // true
 调用时设置一次性钩子：
 
 ```js
-$user.fetch({keyword:'Ti'}, {
+$user.fetch({ keyword:'Ti' }, {
     hooks: {
         before: [ctx=>{
             const params = ctx.args[0];
