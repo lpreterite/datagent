@@ -57,8 +57,6 @@ $user.find(1).then(data=>{
 })
 ```
 
-经过上面的例子相信对`Datagent`的使用有了一定的兴趣。`Datagent`提供的数据模型还有字段、方法、钩子等功能在后面再一一细说。如果想了解得更多，可以阅读[API参考](docs/API.md)或源代码。
-
 ## 数据模型
 
 ```js
@@ -210,12 +208,11 @@ const contact = Datagent.Contact({
 
 const UserModel = Datagent.Model({
     name: 'user',
-    contact,
     hooks: {
         fetch: { after:[respondData()] }
     }
 })
-const $user = new UserModel()
+const $user = new UserModel({ contact })
 $user.fetch().then(data=>console.log)
 // [GET] localhost/api/user
 // respond => { status: 200, data: [{id:1, name:'Tony'},{id:2, name:'Ben'}] }
@@ -225,18 +222,6 @@ $user.fetch().then(data=>console.log)
 也能在调用方法时进行设置：
 
 ```js
-import axios from 'axios'
-import { default as Datagent, respondData } from 'datagent'
-
-const contact = Datagent.Contact({
-    base: axios.create({ baseURL: 'localhost/api' })
-})
-
-const UserModel = Datagent.Model({
-    name: 'user',
-    contact
-})
-const $user = new UserModel()
 $user.fetch({}, {
     hooks:{ after: [ respondData() ] }
 }).then(data=>console.log)
@@ -244,3 +229,17 @@ $user.fetch({}, {
 // respond => { status: 200, data: [{id:1, name:'Tony'},{id:2, name:'Ben'}] }
 // respondData => [{id:1, name:'Tony'},{id:2, name:'Ben'}]
 ```
+
+`respondData`方法为我们把返回的`resquest.data`抽出来，再传递至下一个方法。钩子支持设置`fetch`, `find`, `save`, `delete`等模型自身或定义的方法，让一些业务代码或者额外的处理写在方法调用前，达到减少冗余代码的目的。
+
+目前`Datagent`提供了以下一些钩子处理的方法：
+
+- [`respondData()`](./docs/API.md#respondData)
+- [`format()`](./docs/API.md#format)
+- [`formatFor()`](./docs/API.md#formatFor)
+- [`filter()`](./docs/API.md#filter)
+- [`filterFor()`](./docs/API.md#filterFor)
+
+钩子方法并不多，需要各位多提供意见及时完善满足更多需求，暂时没能满足你需要的，可以参考以下代码自定义钩子方法。
+
+经过上面的例子相信对`Datagent`的使用有了一定的兴趣。`Datagent`提供的数据模型还有字段、方法、钩子等功能在后面再一一细说。如果想了解得更多，可以阅读[API参考](docs/API.md)或源代码。
