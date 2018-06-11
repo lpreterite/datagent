@@ -15,8 +15,8 @@
     "instrument": false
   },
   "scripts": {
-    "test": "node --harmony --debug node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=test nyc mocha-webpack --webpack-config webpack.config.js --require test/setup.js test/**/*.js",
-    "build": "node --harmony --debug node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=webpack.config.js"
+    "test": "node --harmony node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=test nyc mocha-webpack --webpack-config webpack.config.js --require test/setup.js test/**/*.js",
+    "build": "node --harmony node_modules/cross-env/dist/bin/cross-env.js NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=webpack.config.js"
   },
   "repository": {
     "type": "git",
