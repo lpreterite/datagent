@@ -148,7 +148,7 @@ $user.save({ id:1, name:"Tony", disabled: 1 }).then(res=>{
 })
 
 // 发送带id的DELETE请求
-$user.delete(2).then(res=>{
+$user.destroy(2).then(res=>{
     // [DELETE] /api/user/2
     // => { status: 200, data: { id:2, name:"Ben", disabled: 0 } }
     console.log(res)
