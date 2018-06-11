@@ -240,7 +240,9 @@ $user.logout().then(res=>{
 `Datagent`为模型方法提供调用前后处理钩子设置，在使用时提供请求数据的处理，下面来看一下如何使用：
 
 ```js
-import { default as Datagent, respondData, filter } from "datagent"
+import Datagent from "datagent"
+const { respondData, filter } = Datagent.Hooks
+
 const UserModel = Datagent.Model({
     name: 'user',
     fields: {
