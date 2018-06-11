@@ -35,7 +35,7 @@ export default class Model {
         return this.remote(origin).delete(getURL(this._url, id, this._emulateIdKey), params);
     }
     delete(...args){
-        return this.delete(...args);
+        return this.destroy(...args);
     }
     remote(name) {
         return this._contact.remote(name);
