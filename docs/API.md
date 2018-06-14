@@ -54,7 +54,8 @@
 
 ```js
 import axios from 'axios'
-import { default as Datagent, filter } from 'datagent'
+import Datagent from "datagent"
+const { filter } = Datagent.Hooks
 
 const contact = Datagent.Contact({
     base: axios.create({ baseURL: 'localhost/api' }),
@@ -93,7 +94,8 @@ options格式：
 
 ```js
 import axios from 'axios'
-import { default as Datagent, filter } from 'datagent'
+import Datagent from "datagent"
+const { respondData, filter } = Datagent.Hooks
 
 const contact = Datagent.Contact({
     base: axios.create({ baseURL: 'localhost/api' })
@@ -601,7 +603,8 @@ console.log(result) // { id:null, name:'Tony', disabled: 0 }
 
 ```js
 import axios from 'axios'
-import { default as Datagent, respondData } from 'datagent'
+import Datagent from "datagent"
+const { respondData } = Datagent.Hooks
 
 const contact = Datagent.Contact({
     base: axios.create({ baseURL: 'localhost/api' })
@@ -640,7 +643,8 @@ $user.fetch().then(data=>console.log)
 
 ```js
 import axios from 'axios'
-import { default as Datagent, respondData, format } from 'datagent'
+import Datagent from "datagent"
+const { respondData, format } = Datagent.Hooks
 
 const contact = Datagent.Contact({
     base: axios.create({ baseURL: 'localhost/api' })
@@ -685,7 +689,8 @@ $user.find().then(data=>console.log)
 
 ```js
 import axios from 'axios'
-import { default as Datagent, respondData, formatFor } from 'datagent'
+import Datagent from "datagent"
+const { respondData, formatFor } = Datagent.Hooks
 
 const contact = Datagent.Contact({
     base: axios.create({ baseURL: 'localhost/api' })
@@ -740,7 +745,8 @@ $user.find().then(data=>console.log)
 
 ```js
 import axios from 'axios'
-import { default as Datagent, filter } from 'datagent'
+import Datagent from "datagent"
+const { filter } = Datagent.Hooks
 
 const contact = Datagent.Contact({
     base: axios.create({ baseURL: 'localhost/api' })
@@ -785,7 +791,8 @@ $user.save(data).then(data=>console.log)
 
 ```js
 import axios from 'axios'
-import { default as Datagent, filter } from 'datagent'
+import Datagent from "datagent"
+const { filter } = Datagent.Hooks
 
 const contact = Datagent.Contact({
     base: axios.create({ baseURL: 'localhost/api' })

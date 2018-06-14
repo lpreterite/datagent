@@ -1,5 +1,3 @@
-import Model from '../src/classes/Model.class';
-import Remote from '../src/classes/Remote.class';
 import Schema from '../src/classes/Schema.class';
 import Datagent from '../src/';
 import { defaults, awaitTo } from '../src/utils/';

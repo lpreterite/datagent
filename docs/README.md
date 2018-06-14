@@ -75,7 +75,7 @@ model.save({ id:1, name:"Tony", disabled: 1 }).then(res=>{
 })
 
 // 发送带id的DELETE请求
-model.delete(2).then(res=>{
+model.destroy(2).then(res=>{
     // [DELETE] /api/user/2
     // => { status: 200, data: { id:2, name:"Ben", disabled: 0 } }
     console.log(res)
@@ -189,7 +189,7 @@ console.log(result) // { id: 1, nickname: 'Tony' }
 
 ### 定义方法
 
-`Datagent`的模型提供`fetch`, `find`, `save`, `delete`方法进行数据的获取和编辑功能，但是在实际的开发场景中并不能完全满足需求。所以在定义模型的同时提供定义方法的设置：
+`Datagent`的模型提供`fetch`, `find`, `save`, `destroy`方法进行数据的获取和编辑功能，但是在实际的开发场景中并不能完全满足需求。所以在定义模型的同时提供定义方法的设置：
 
 ```js
 import Datagent from "datagent"
@@ -240,7 +240,9 @@ $user.logout().then(res=>{
 `Datagent`为模型方法提供调用前后处理钩子设置，在使用时提供请求数据的处理，下面来看一下如何使用：
 
 ```js
-import { default as Datagent, respondData, filter } from "datagent"
+import Datagent from "datagent"
+const { respondData, filter } = Datagent.Hooks
+
 const UserModel = Datagent.Model({
     name: 'user',
     fields: {
@@ -262,7 +264,7 @@ $user.fetch().then(data=>{
 })
 ```
 
-`respondData`方法为我们把返回的`resquest.data`抽出来，然后`filter`方法把所有数据对象的字段都过滤只剩下id字段。钩子支持设置`fetch`, `find`, `save`, `delete`等包括模型定义的方法，让一些业务代码或者额外的处理写在方法调用前，达到减少冗余代码的目的。
+`respondData`方法为我们把返回的`resquest.data`抽出来，然后`filter`方法把所有数据对象的字段都过滤只剩下id字段。钩子支持设置`fetch`, `find`, `save`, `destroy`等包括模型定义的方法，让一些业务代码或者额外的处理写在方法调用前，达到减少冗余代码的目的。
 
 目前`Datagent`提供了以下一些钩子处理的方法：
 
