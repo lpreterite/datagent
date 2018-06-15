@@ -1,6 +1,6 @@
 {
   "name": "datagent",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Datagent is a modular tool for front-end Ajax requests, providing field definitions, method extensions, switching sources and more",
   "main": "lib/datagent.js",
   "directories": {
