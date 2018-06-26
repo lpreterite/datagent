@@ -27,7 +27,6 @@ export default class Model {
         const { origin } = defaults(opts);
         const { id } = data;
         const url = getURL(this._url, id, this._emulateIdKey);
-        console.log(isNew(data) ? 'post' : 'put', data);
         return this.remote(origin)[isNew(data) ? 'post' : 'put'](url, data);
     }
     destroy(id, opts) {
