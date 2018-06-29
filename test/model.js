@@ -178,17 +178,27 @@ describe('Model instace Test', function () {
             mock
                 .base
                 .onPost(hosts.base + '/users', { name: 'Cathy Yan' })
-                .reply(200, { code: 200, data: { id: 3, name: 'John Smith' }, msg: '' });
+                .reply(200, { code: 200, data: { id: 3, name: 'Cathy Yan' }, msg: '' });
 
             let err, result;
             [err, result] = await model.save({ name: 'Cathy Yan' }).then(handle);
             assert.propertyVal(result, 'id', 3);
         })
+        // it('当id字段为空字符时，应当发送[POST]请求新增对象', async function () {
+        //     mock
+        //         .base
+        //         .onPost(hosts.base + '/users', { id: 'null', name: 'Cathy Yan' })
+        //         .reply(200, { code: 200, data: { id: 3, name: 'Cathy Yan' }, msg: '' });
+
+        //     let err, result;
+        //     [err, result] = await model.save({ id: null, name: 'Cathy Yan' }).then(handle);
+        //     assert.propertyVal(result, 'id', 3);
+        // })
         it('当数据包含id字段时，应当发送[PUT]请求更新对象', async function () {
             mock
                 .base
                 .onPut(hosts.base + '/users/3', { id: 3, name: 'Cathy Yan' })
-                .reply(200, { code: 200, data: { id: 3, name: 'John Smith' }, msg: '' });
+                .reply(200, { code: 200, data: { id: 3, name: 'Cathy Yan' }, msg: '' });
 
             let err, result;
             [err, result] = await model.save({ id: 3, name: 'Cathy Yan' }).then(handle);
@@ -462,7 +472,7 @@ describe('Model instace Test', function () {
             const UserModel = Datagent.Model({
                 name: 'user',
                 fields: {
-                    id: { type: Number, default: 0 },
+                    id: { type: Number, default: null },
                     nickname: { type: String, default: '' },
                     sex: { type: Number, default: '1' },
                     create_at: { type: String, default: create_at },
