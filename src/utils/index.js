@@ -40,9 +40,10 @@ export function convert(format = {}, options){
 export function formatField(to, defaultVal){
     return val=>{
         let result;
-        if(!isDef(val)) result = defaultVal;
-        else result = to(val);
+        if (typeof defaultVal === "function") defaultVal = defaultVal();
+        if (!isDef(val)) result = defaultVal;
         if (defaultVal === result) return result;
+        else result = to(val);
         if (isNumber(result) && result === NaN) result = defaultVal;
         if (result === null) result = defaultVal;
         return result;
