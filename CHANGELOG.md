@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.1.0
+
+- find与destroy方法改为接受params参数（不再只是id）。
+- fieldSet默认值default支持使用函数：`{ type: Date, default: Date.now }`。
+- 修改format规则：当字段值与默认值一致时，不作任何处理直接输出原有的值。
+- 文档加上`mapSendHook`与`mapReceiveHook`例子。
+
 ## 1.0.3
 
 - 修复判断对象是否为新对象的方法逻辑，当`id`为`0`,`null`,`undefined`都判断为新对象。

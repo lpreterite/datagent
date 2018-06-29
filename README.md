@@ -52,7 +52,7 @@ const $user = new UserModel({ contact })
 尝试请求数据：
 
 ```js
-$user.find(1).then(data=>{
+$user.find({id:1}).then(data=>{
     // [GET] /api/user
     // => { status:200, data: { id:1, nickname:'Tony' } }
     console.log(data);
@@ -131,7 +131,7 @@ $user.fetch({ disabled: 0 }).then(users=>{
     console.log(users)
 })
 
-$user.find(1).then(user=>{
+$user.find({id:1}).then(user=>{
     // [GET] /api/user/1
     // => { status: 200, data: { id:1, name:"Tony", disabled: 1 } }
     console.log(user)
@@ -150,7 +150,7 @@ $user.save({ id:1, name:"Tony", disabled: 1 }).then(res=>{
 })
 
 // 发送带id的DELETE请求
-$user.destroy(2).then(res=>{
+$user.destroy({id:2}).then(res=>{
     // [DELETE] /api/user/2
     // => { status: 200, data: { id:2, name:"Ben", disabled: 0 } }
     console.log(res)
@@ -244,5 +244,34 @@ $user.fetch({}, {
 - [`filterFor()`](./docs/API.md#filterFor)
 
 钩子方法并不多，需要各位多提供意见及时完善满足更多需求，暂时没能满足你需要的欢迎在这里提issue。
+
+有时候一些处理需在所有钩子生效，比如以下状况：
+
+```js
+import Datagent from "datagent";
+const Model = Datagent.Model({
+    hooks: {
+        fetch: { after: [respondData(), format()]},
+        find: { after: [respondData(), format()]},
+        save: { before: [format()], after: [respondData()]},
+        delete: {after: [respondData()]},
+        publish: {after: [respondData()]}
+    }
+}
+```
+
+这种例子较为常见，这里提供两个处理函数方便钩子的设置：
+
+```js
+import Datagent from "datagent";
+const Model = Datagent.Model({
+    hooks: {
+         // 只设置发送数据前的钩子，save:before
+        ...Datagent.mapSendHook([format()]),
+         // 设置接收数据后的钩子，包括：fetch:after, find:after
+        ...Datagent.mapReceiveHook([respondData(), requestHandle(), format()])
+    }
+}
+```
 
 经过上面的例子相信对`Datagent`的使用有了一定的兴趣。`Datagent`提供的数据模型还有字段、方法、钩子等功能在后面再一一细说。如果想了解得更多，可以阅读[API参考](docs/API.md)或源代码。

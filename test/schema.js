@@ -38,6 +38,15 @@ describe('Schema Class Test', function(){
             const data = Schema.format({ id: 1, sex: 1, nickname: "Packy" }, format);
             assert.isDefined(data.nickname, "nickname字段应该保留");
         })
+        it('处理字段的值与默认值一直时应当不处理', function () {
+            const format = {
+                id: { type: String, default: null },
+                sex: { type: String, default: 0 },
+                created_at: { type: Date, default: null }
+            };
+            const data = Schema.format({ id: 1, sex: 1, nickname: "Packy" }, format);
+            assert.equal(data.created_at, null, "created_at应该为null");
+        })
         it('支持自定义类型转换', function () {
             const format = {
                 created_at: { type: DateFormat.format('YYYY-MM-DD HH:mm:ss'), default: '' }
@@ -52,7 +61,7 @@ describe('Schema Class Test', function(){
             assert.isUndefined(data.nickname, "nickname字段应该被过滤掉");
         })
     })
-    describe('schema()', function () {
+    describe('default()', function () {
         it('应当返回所以设定字段的默认值', function () {
             const format = {
                 id: { type: String, default: 1 },
@@ -61,6 +70,18 @@ describe('Schema Class Test', function(){
             };
             const data = Schema.default(format);
             assert.include(data, {id:1,sex:0,nickname:'Packy'});
+        })
+        it('支持defaul为函数', function () {
+            const now = Date.now();
+
+            const format = {
+                id: { type: String, default: 1 },
+                sex: { type: String, default: 0 },
+                nickname: { type: String, default: 'Packy' },
+                created_at: { type: Date, default:()=>now  }
+            };
+            const data = Schema.default(format);
+            assert.include(data, { id: 1, sex: 0, nickname: 'Packy', created_at: now });
         })
     })
 });

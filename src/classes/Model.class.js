@@ -18,9 +18,11 @@ export default class Model {
         const { origin } = defaults(opts);
         return this.remote(origin).get(this._url, params);
     }
-    find(id, opts) {
+    find(params, opts) {
         const { origin } = defaults(opts);
-        const params = this._emulateIdKey ? { [this._emulateIdKey]: id } : {};
+        const { id } = params;
+        if (this._emulateIdKey) params[this._emulateIdKey] = params.id;
+        else delete params.id
         return this.remote(origin).get(getURL(this._url, id, this._emulateIdKey), params );
     }
     save(data, opts) {
@@ -29,9 +31,11 @@ export default class Model {
         const url = getURL(this._url, id, this._emulateIdKey);
         return this.remote(origin)[isNew(data) ? 'post' : 'put'](url, data);
     }
-    destroy(id, opts) {
+    destroy(params, opts) {
         const { origin } = defaults(opts);
-        const params = this._emulateIdKey ? { [this._emulateIdKey]: id } : {};
+        const { id } = params;
+        if (this._emulateIdKey) params[this._emulateIdKey] = params.id;
+        else delete params.id
         return this.remote(origin).delete(getURL(this._url, id, this._emulateIdKey), params);
     }
     delete(...args){

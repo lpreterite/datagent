@@ -3,7 +3,8 @@
 - [Datagent](#datagent)
     - [Datagent.Contact()](#datagentcontact)
     - [Datagent.Model()](#datagentmodel)
-    - [Datagent.Hooks()](#datagenthooks)
+    - [Datagent.mapSendHook()](#datagentmapSendHook)
+    - [Datagent.mapReceiveHook()](#datagentmapReceiveHook)
 - [Remote](#remote)
     - [remote.origin](#remoteorigin)
 - [Contact](#contact)
@@ -133,7 +134,47 @@ $user.enable({ id:1, name:'Tony' }).then(res=>console.log)
 // => { status: 200, data: {...} }
 ```
 
-### Datagent.Hooks()
+## Datagent.mapSendHook()
+
+设置发送数据前的钩子（save:before）
+
+参数：
+
+| 字段  | 限制        | 描述             |
+|-------|-------------|------------------|
+| hooks | 必须, Array | 一堆钩子处理函数 |
+
+使用：
+
+```js
+import Datagent from "datagent";
+const Model = Datagent.Model({
+    hooks: {
+        ...Datagent.mapSendHook([format()])
+    }
+}
+```
+
+## Datagent.mapReceiveHook()
+
+设置接收数据后的钩子，包括：fetch:after, find:after
+
+参数：
+
+| 字段  | 限制        | 描述             |
+|-------|-------------|------------------|
+| hooks | 必须, Array | 一堆钩子处理函数 |
+
+使用：
+
+```js
+import Datagent from "datagent";
+const Model = Datagent.Model({
+    hooks: {
+        ...Datagent.mapReceiveHook([respondData(), requestHandle(), format()])
+    }
+}
+```
 
 ## Remote
 
@@ -295,15 +336,15 @@ model.fetch({}, {origin:'test'}).then(res=>console.log)
 
 参数：
 
-| 字段    | 限制                | 描述                            |
-|---------|---------------------|---------------------------------|
-| id      | 必须, Number,String | 对象id                          |
-| options | 可选, Object        | 配置，`{ origin }`用于设置访问源 |
+| 字段    | 限制         | 描述                            |
+|---------|--------------|---------------------------------|
+| params  | 必须, Object | 参数对象必须包含id              |
+| options | 可选, Object | 配置，`{ origin }`用于设置访问源 |
 
 ```js
 // [GET] localhost/api/user/1
 // => { status: 200, data:{...} }
-model.find(1).then(res=>console.log)
+model.find({id:1}).then(res=>console.log)
 ```
 
 ### model.save()
@@ -341,13 +382,13 @@ model.save({ id:1, name: 'Tony', disabled: 0 }).then(res=>console.log)
 
 | 字段    | 限制         | 描述                            |
 |---------|--------------|---------------------------------|
-| id      | 必须, Object | 对象id                          |
+| params  | 必须, Object | 参数对象必须包含id              |
 | options | 可选, Object | 配置，`{ origin }`用于设置访问源 |
 
 ```js
 // [DELETE] localhost/api/user/1
 // => { status: 200, data:{...} }
-model.destroy(1).then(res=>console.log)
+model.destroy({id:1}).then(res=>console.log)
 ```
 
 ### model.remote()
@@ -663,7 +704,7 @@ const UserModel = Datagent.Model({
     }
 })
 const $user = new UserModel()
-$user.find().then(data=>console.log)
+$user.find({id:1}).then(data=>console.log)
 // [GET] localhost/api/user
 // respond => { status: 200, data: {id:1, name:'Tony', disabled: 0 } }
 // format => {id:1, name:'Tony', disabled:'0'}
@@ -720,7 +761,7 @@ const UserModel = Datagent.Model({
 })
 
 const $user = new UserModel()
-$user.find().then(data=>console.log)
+$user.find({id:1}).then(data=>console.log)
 // [GET] localhost/api/user
 // respond => { status: 200, data: { id:1, name:'Tony', disabled: 0, role: { id: 1, name:'admin', disabled: 0 } } }
 // formatFor => { id:1, name:'Tony', disabled: 0, role: { id: 1, name:'admin', disabled: '0' } }

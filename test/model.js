@@ -155,7 +155,7 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data: { id: 1, name: 'John Smith' }, msg: '' });
 
             let err, result;
-            [err, result] = await model.find(1).then(handle);
+            [err, result] = await model.find({id: 1}).then(handle);
             assert.propertyVal(result, 'id', 1);
         })
         it('当传入origin参数时，应当切换至对应的远端服务', async function () {
@@ -165,7 +165,7 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data: { id: 1, name: 'John Smith' }, msg: '' });
 
             let err, result;
-            [err, result] = await model.find(1, { origin: 'test' }).then(handle);
+            [err, result] = await model.find({id: 1}, { origin: 'test' }).then(handle);
             assert.propertyVal(result, 'id', 1);
         })
     })
@@ -217,7 +217,7 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data: { id: 1, name: 'John Smith' }, msg: '' });
 
             let err, result;
-            [err, result] = await model.destroy(1).then(handle);
+            [err, result] = await model.destroy({id:1}).then(handle);
             assert.propertyVal(result, 'id', 1);
         })
         it('当传入origin参数时，应当切换至对应的远端服务', async function () {
@@ -227,7 +227,7 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data: { id: 1, name: 'John Smith' }, msg: '' });
 
             let err, result;
-            [err, result] = await model.destroy(1, { origin: 'test' }).then(handle);
+            [err, result] = await model.destroy({id:1}, { origin: 'test' }).then(handle);
             assert.propertyVal(result, 'id', 1);
         })
     })
@@ -461,7 +461,7 @@ describe('Model instace Test', function () {
                 .reply(200, { code: 200, data: { id: 1, name: 'John Smith' }, msg: '' });
 
             let err, result;
-            [err, result] = await awaitTo(model.find(1));
+            [err, result] = await awaitTo(model.find({id:1}));
             assert.propertyVal(result, 'create_at', create_at);
             mock.base.reset();
         })
