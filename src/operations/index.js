@@ -20,9 +20,9 @@ export function format(schema) {
         schema = isDef(schema) ? schema : ctx.scope.schema;
         switch (ctx.hook) {
             case 'after':
-                if (isDef(ctx.result) && isArray(ctx.result)){
+                if (isDef(ctx.result) && isArray(ctx.result)) {
                     ctx.result = ctx.result.map(item => schema.format(item));
-                }else{
+                } else {
                     ctx.result = schema.format(ctx.result);
                 }
                 break;
@@ -99,5 +99,29 @@ export function filterFor(field, fields) {
                 break;
         }
         return Promise.resolve(ctx);
+    }
+}
+
+export function getField(fieldName, action) {
+    return async ctx => {
+        switch (ctx.hook){
+            case 'after':
+                if (isDef(ctx.result[fieldName])){
+                    const fieldVal = ctx.result[fieldName]
+                    const _ctx = await action({ ...ctx, result: fieldVal })
+                    ctx.result[fieldName] = _ctx.result
+                }
+                break;
+            case 'before':
+                const data = ctx.args.pop();
+                if (isDef(data[fieldName])) {
+                    const fieldVal = data[fieldName]
+                    const _ctx = await action({ ...ctx, args: [fieldVal] })
+                    data[fieldName] = _ctx.args[0]
+                    ctx.args = [data, ...ctx.args]
+                }
+                break;
+        }
+        return Promise.resolve(ctx)
     }
 }

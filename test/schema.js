@@ -45,7 +45,6 @@ describe('Schema Class Test', function(){
                 created_at: { type: Date, default: null }
             };
             const data = Schema.format({ id: 1, sex: 1, nickname: "Packy", created_at: null }, format);
-            console.log(data);
             assert.equal(data.created_at, null, "created_at应该为null");
         })
         it('支持自定义类型转换', function () {

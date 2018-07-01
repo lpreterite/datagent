@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.1.1
+
+- 添加`getField`的钩子处理方法
+- 修复format函数在处理null值时会转换的问题
+
 ## 1.1.0
 
 - find与destroy方法改为接受params参数（不再只是id）。

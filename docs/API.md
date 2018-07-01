@@ -37,6 +37,7 @@
     - [formatFor](#formatfor)
     - [filter](#filter)
     - [filterFor](#filterfor)
+    - [getField](#getField)
 
 ## Datagent
 
@@ -833,7 +834,7 @@ $user.save(data).then(data=>console.log)
 ```js
 import axios from 'axios'
 import Datagent from "datagent"
-const { filter } = Datagent.Hooks
+const { filterFor } = Datagent.Hooks
 
 const contact = Datagent.Contact({
     base: axios.create({ baseURL: 'localhost/api' })
@@ -859,6 +860,63 @@ const UserModel = Datagent.Model({
     },
     hooks: {
         save: { before:[filterFor('role', ['id','disabled'])] }
+    }
+})
+
+const $user = new UserModel()
+const data = { id:1, name:'Tony', disabled: '1', role: { id: 1, name:'admin', disabled: '1' } }
+$user.save(data).then(data=>console.log)
+// [PUT] localhost/api/user | { id:1, name:'Tony', disabled: '1', role: { id: 1, disabled: '1' } }
+// => { status: 200, data: {id:1, name:'Tony', disabled: 1 } }
+```
+
+### getField
+
+用于钩子的方法，提取指定字段进行后续操作。
+
+参数：
+
+| 字段   | 限制               | 描述                       |
+|--------|--------------------|----------------------------|
+| field | 必须，String | 需要处理的字段 |
+|action|必须, Function| 后续处理的函数，可使用钩子的函数方法：format, filter, formatFor等 |
+
+限制：
+
+| 钩子   | 是否支持 | 描述                                                |
+|--------|----------|-----------------------------------------------------|
+| before | ✔        | 为传入参数处理字段                                    |
+| after  | ✔        | 为返回结果处理字段 |
+
+```js
+import axios from 'axios'
+import Datagent from "datagent"
+const { filter, getField } = Datagent.Hooks
+
+const contact = Datagent.Contact({
+    base: axios.create({ baseURL: 'localhost/api' })
+})
+
+const RoleModel = Datagent.Model({
+    name: 'role',
+    contact,
+    fields: {
+        id: { type: Number, default: null },
+        name: { type: String, default: '' },
+        disabled: { type: String, default: '' },
+    }
+})
+
+const UserModel = Datagent.Model({
+    name: 'user',
+    contact,
+    fields: {
+        id: { type: Number, default: null },
+        name: { type: String, default: '' },
+        disabled: { type: String, default: '' },
+    },
+    hooks: {
+        save: { before:[getField('role', filter(['id','disabled']))] }
     }
 })
 
