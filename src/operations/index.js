@@ -27,7 +27,7 @@ export function format(schema) {
                 }
                 break;
             case 'before':
-                const data = ctx.args.pop();
+                const data = ctx.args.shift();
                 ctx.args = [schema.format(data), ...ctx.args];
                 break;
         }

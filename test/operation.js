@@ -58,7 +58,7 @@ describe('Hook operations function test', ()=>{
             };
             ctx = await respondData()(ctx);
             ctx = await format()(ctx);
-            assert.hasAllKeys(ctx.result, { id: 1, name: 'Tom', sex: 0 });
+            assert.ownInclude(ctx.result, { id: 1, name: 'Tom', sex: 0 });
         })
         it('当方法运作在fetch:after的钩子且返回对象是数组时，应当转义数组内的数据字段', async () => {
             ctx = {
@@ -74,7 +74,7 @@ describe('Hook operations function test', ()=>{
             };
             ctx = await respondData()(ctx);
             ctx = await format()(ctx);
-            assert.hasAllKeys(ctx.result[0], { id: 1, name: 'Tom', sex: 0 } );
+            assert.ownInclude(ctx.result[0], { id: 1, name: 'Tom', sex: 0 } );
         })
         it('当方法运作在save:before的钩子且返回对象时，应当转义传入数据字段', async () => {
             ctx = {
@@ -83,10 +83,10 @@ describe('Hook operations function test', ()=>{
                 scope: {
                     schema
                 },
-                args: [{ id: 1, name: 'Tom' }]
+                args: [{ id: 1, name: 'Tom' }, undefined]
             };
             ctx = await format()(ctx);
-            assert.hasAllKeys(ctx.args[0], { id: 1, name: 'Tom', sex: 0 });
+            assert.ownInclude(ctx.args[0], { id: 1, name: 'Tom', sex: 0 });
         })
         it('当方法运作在fetch:after, find:after, save:before以外的钩子时，应当抛出错误', async () => {
             ctx = {
