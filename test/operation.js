@@ -4,7 +4,8 @@ import {
     format,
     filter,
     formatFor,
-    filterFor
+    filterFor,
+    getField
 } from '../src/operations/';
 import Schema from '../src/classes/Schema.class';
 
@@ -57,7 +58,7 @@ describe('Hook operations function test', ()=>{
             };
             ctx = await respondData()(ctx);
             ctx = await format()(ctx);
-            assert.hasAllKeys(ctx.result, { id: 1, name: 'Tom', sex: 0 });
+            assert.ownInclude(ctx.result, { id: 1, name: 'Tom', sex: 0 });
         })
         it('当方法运作在fetch:after的钩子且返回对象是数组时，应当转义数组内的数据字段', async () => {
             ctx = {
@@ -73,7 +74,7 @@ describe('Hook operations function test', ()=>{
             };
             ctx = await respondData()(ctx);
             ctx = await format()(ctx);
-            assert.hasAllKeys(ctx.result[0], { id: 1, name: 'Tom', sex: 0 } );
+            assert.ownInclude(ctx.result[0], { id: 1, name: 'Tom', sex: 0 } );
         })
         it('当方法运作在save:before的钩子且返回对象时，应当转义传入数据字段', async () => {
             ctx = {
@@ -82,10 +83,10 @@ describe('Hook operations function test', ()=>{
                 scope: {
                     schema
                 },
-                args: [{ id: 1, name: 'Tom' }]
+                args: [{ id: 1, name: 'Tom' }, undefined]
             };
             ctx = await format()(ctx);
-            assert.hasAllKeys(ctx.args[0], { id: 1, name: 'Tom', sex: 0 });
+            assert.ownInclude(ctx.args[0], { id: 1, name: 'Tom', sex: 0 });
         })
         it('当方法运作在fetch:after, find:after, save:before以外的钩子时，应当抛出错误', async () => {
             ctx = {
@@ -355,6 +356,54 @@ describe('Hook operations function test', ()=>{
             } catch (e) {
                 assert.include(e.message, 'The filterFor operation must use in');
             }
+        })
+    })
+
+
+    describe('getField', () => {
+        let ctx, user, role;
+        beforeEach(() => {
+            user = new Schema({
+                id: { type: Number, default: null },
+                name: { type: String, default: null },
+                sex: { type: Number, default: 0 },
+            })
+            role = new Schema({
+                id: { type: Number, default: null },
+                name: { type: String, default: null },
+                created_at: { type: Number, default: Date.now() }
+            })
+        })
+        it('当方法运行在after钩子时，应当对返回对象的字段进行处理', async () => {
+            ctx = {
+                method: 'fetch',
+                hook: 'after',
+                scope: {
+                    schema: user
+                },
+                result: {
+                    status: 200,
+                    data: {
+                        current_page: 1,
+                        data: [{ id: 1, name: 'Tom' }]
+                    }
+                }
+            };
+            ctx = await respondData()(ctx);
+            ctx = await getField('data', format())(ctx);
+            assert.hasAllKeys(ctx.result.data[0], { id: 1, name: 'Tom', sex: 0 });
+        })
+        it('当方法运行在before钩子时，应当对传入参数的字段进行处理', async () => {
+            ctx = {
+                method: 'save',
+                hook: 'before',
+                scope: {
+                    schema: user
+                },
+                args: [{ id: 1, name: 'Tom', role: { id: 1, name: 'member' } }]
+            };
+            ctx = await getField('role', format(role))(ctx);
+            assert.property(ctx.args[0].role, 'created_at');
         })
     })
 })

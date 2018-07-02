@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.1.2
+
+- 修复在`save:before`的钩子下处理传入参数时，把最后参数作为处理的数据对象进行格式化。
+
+## 1.1.1
+
+- 添加`getField`的钩子处理方法
+- 修复format函数在处理null值时会转换的问题
+
 ## 1.1.0
 
 - find与destroy方法改为接受params参数（不再只是id）。

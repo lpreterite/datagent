@@ -38,13 +38,13 @@ describe('Schema Class Test', function(){
             const data = Schema.format({ id: 1, sex: 1, nickname: "Packy" }, format);
             assert.isDefined(data.nickname, "nickname字段应该保留");
         })
-        it('处理字段的值与默认值一直时应当不处理', function () {
+        it('处理字段的值与默认值一致时应当不处理', function () {
             const format = {
                 id: { type: String, default: null },
                 sex: { type: String, default: 0 },
                 created_at: { type: Date, default: null }
             };
-            const data = Schema.format({ id: 1, sex: 1, nickname: "Packy" }, format);
+            const data = Schema.format({ id: 1, sex: 1, nickname: "Packy", created_at: null }, format);
             assert.equal(data.created_at, null, "created_at应该为null");
         })
         it('支持自定义类型转换', function () {
