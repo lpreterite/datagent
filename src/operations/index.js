@@ -46,7 +46,7 @@ export function filter(fields){
                 }
                 break;
             case 'before':
-                const data = ctx.args.pop();
+                const data = ctx.args.shift();
                 ctx.args = [ctx.scope.schema.filter(data, fields), ...ctx.args];
                 break;
         }
@@ -69,7 +69,7 @@ export function formatFor(field, schema){
                 }
                 break;
             case 'before':
-                const data = ctx.args.pop();
+                const data = ctx.args.shift();
                 if (isDef(data[field])) data[field] = Schema.format(data[field], schema.fieldSet);
                 else data[field] = schema.default();
                 ctx.args = [data, ...ctx.args];
@@ -93,7 +93,7 @@ export function filterFor(field, fields) {
                 }
                 break;
             case 'before':
-                const data = ctx.args.pop();
+                const data = ctx.args.shift();
                 if (isDef(data[field])) data[field] = Schema.filter(data[field], fields);
                 ctx.args = [data, ...ctx.args];
                 break;
@@ -113,7 +113,7 @@ export function getField(fieldName, action) {
                 }
                 break;
             case 'before':
-                const data = ctx.args.pop();
+                const data = ctx.args.shift();
                 if (isDef(data[fieldName])) {
                     const fieldVal = data[fieldName]
                     const _ctx = await action({ ...ctx, args: [fieldVal] })
