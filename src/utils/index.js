@@ -2,7 +2,7 @@ import Method from '../classes/Method.class';
 import Hooks from '../classes/Hooks.class';
 
 export const isNew = data => !isDef(data.id) || !data.id;
-export const getURL = (url, id, emulateIdKey) => emulateIdKey ? url : (url + (isDef(id) ? `/${id}` : ''));
+export const getURL = (url, id, emulateIdKey) => emulateIdKey ? url : (url + ((isDef(id) && !!id) ? `/${id}` : ''));
 export const isDef = val => typeof val !== 'undefined';
 export const isArray = val => val.constructor === Array;
 export const isNumber = val => val.constructor === Number;
