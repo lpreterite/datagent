@@ -2,6 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/datagent.svg)](https://www.npmjs.com/package/datagent)
 [![build status](https://travis-ci.org/lpreterite/datagent.svg?branch=master)](https://travis-ci.org/lpreterite/datagent)
+[![NPM downloads](http://img.shields.io/npm/dm/datagent.svg)](https://www.npmjs.com/package/datagent)
 
 `Datagent`是一个用于前端Ajax请求的模块化工具，提供字段定义，方法扩展，切换源等功能。在如React, Vue, Angular等现代前端框架下不同UI层面通信的数据我们称为视图模型(ViewModel)。现在互联网常用于客户端与服务器间通信都是基于RESTful方式设计的持久化服务，这种基于持久化的设计可以借助`Datagent`将通信数据表示为数据模型(DataModel)。数据模型管理着数据字段和通信服务，同时为编排业务代码提供相关方法的钩子进行预处理或后处理。
 
