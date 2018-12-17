@@ -1,0 +1,9 @@
+kind: pipeline
+name: default
+
+steps:
+- name: frontend
+  image: node:8.11.4
+  commands:
+  - npm install
+  - npm test
