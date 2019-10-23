@@ -43,7 +43,14 @@ export const format = (data, fieldSet)=>convert({...schema(data)}, fieldSet)
 ## 数据模型代理的设计及使用例子
 
 ```js
+// 定义远端链接
+// utils/contact.js
+import axios from "axios"
+import { datagent } from "datagent"
+export default datagent.contact({base: axios.create()})
+
 // 定义数据字段
+// models/tags.schema.js
 import { datagent } from "datagent"
 
 function Fen(){}
@@ -64,12 +71,15 @@ const PaginationSchema = datagent.schema({
 })
 
 // 设置数据模型处理细节
+// models/tags.model.js
 import { datagent } from "datagent"
+import contact from "utils/contact"
 const { respondData, requestHandle, formatFor } = datagent.hooks
 
 const MODEL_NAME = "tags"
 const TagsModel = datagent.model({
     name: MODEL_NAME,
+    contact,
     // or
     // url: "/tags",
     methods: {
@@ -88,10 +98,9 @@ const TagsModel = datagent.model({
 export default TagsModel
 
 // 页面代码
-import axios from "axios"
+// pages/tags.js
 import { datagent, asyncTo } from "datagent"
-const contact = datagent.contact({base: axios.create()})
-const datagent = datagent([TagsModel], { contact })
+const datagent = datagent.agent([TagsModel])
 const TAGS = TagsModel.name
 
 const page = {
