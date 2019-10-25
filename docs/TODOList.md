@@ -89,10 +89,10 @@ const TagsModel = datagent.model({
         }
     },
     hooks: {
-        fetch: method=>[method(), respondData(), requestHandle(), formatFor(ViewSchema, (ctx,format)=>ctx.result.data=format(ctx.result.data))],
-        find: method=>[method(), respondData(), requestHandle(), formatFor(ViewSchema)],
-        save: method=>[formatFor(ServeSchema, (ctx,format)=>ctx.args=format(ctx.args)), method(), respondData(), requestHandle()],
-        disabled: method=>[method(), respondData(), requestHandle()],
+        fetch: method=>([method(), respondData(), requestHandle(), formatFor(ViewSchema, (ctx,format)=>ctx.result.data=format(ctx.result.data))]),
+        find: method=>([method(), respondData(), requestHandle(), formatFor(ViewSchema)]),
+        save: method=>([formatFor(ServeSchema, (ctx,format)=>ctx.args=format(ctx.args)), method(), respondData(), requestHandle()]),
+        disabled: method=>([method(), respondData(), requestHandle()]),
     }
 })
 export default TagsModel

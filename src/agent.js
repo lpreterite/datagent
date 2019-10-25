@@ -1,7 +1,7 @@
-export function agent(_models, options){
-    const { contact, model_name="name" } = {...options}
+export default function agent(_models, options){
+    const { model_name="name" } = {...options}
     const MODEL_NAME = model_name
-    const models = [].concat(_models).reduce((result, model)=>({...result, [model[MODEL_NAME]]:new model({ contact })}),{})
+    const models = [].concat(_models).reduce((result, model)=>({...result, [model[MODEL_NAME]]:model}),{})
 
     const events = {
         error: err=>console.error(err),
