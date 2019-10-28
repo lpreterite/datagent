@@ -1,5 +1,5 @@
-import { existError, isDef, isString, isArray, isFunction } from "utils/"
-import * as queue from "queue"
+import { existError, isDef, isString, isArray, isFunction } from "./utils/"
+import * as queue from "./queue"
 
 export const isNew = data => !isDef(data.id) || !data.id
 export const getURL = (url, id, emulateIdKey) => emulateIdKey ? url : (url + ((isDef(id) && !!id) ? `/${id}` : ''))
@@ -22,9 +22,9 @@ export const restful = {
         const { origin } = {...opts}
         const { contact, url, getURL, emulateIdKey, isNew } = ctx.options
         const { id } = data
-        const url = getURL(url, id, emulateIdKey)
+        const _url = getURL(url, id, emulateIdKey)
         const method = isNew(data) ? 'post' : 'put'
-        return contact.remote(origin)[method](url, data)
+        return contact.remote(origin)[method](_url, data)
     },
     destroy(params, opts, ctx) {
         const { origin } = {...opts}

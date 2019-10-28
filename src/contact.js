@@ -5,28 +5,20 @@ export default function contact(remotes={}){
 
     const has = name=>Object.keys(remotes).indexOf(name) > -1
     const getRemote = name=>remotes[Object.keys(remotes).find(item=>item==name)]
-    const setRemote = (name, remote)=>has(name) && (remotes[name]=remote)
+    const setRemote = (name, remote)=>(remotes[name]=remote)
     const setDefault = name=>_default=getRemote(name)
     const remote = (...args)=>{
         const [name, remote] = args
-        if(args.lengt>1) setRemote(name, remote)
+        if(args.length>1) setRemote(name, remote)
         else if(!name) return _default
         else return getRemote(name)
     }
 
     const context = {
         has,
-        default: setDefault,
+        default:name=>!!name?setDefault(name):_default,
         remote
     }
-
-    Object.defineProperties(context, {
-        "default":{
-            get(){
-                return _default
-            }
-        }
-    })
 
     return Object.freeze(context)
 }

@@ -1,7 +1,6 @@
-import Schema from '../src/classes/Schema.class';
-import Datagent from '../src/';
-import { defaults, awaitTo } from '../src/utils/';
-import { format, respondData } from '../src/operations/';
+import datagent from '../src/';
+import { awaitTo } from '../src/utils/';
+import { formatFor, respondData } from '../src/operations';
 
 function requestHandle() {
     return (ctx) => {
@@ -21,46 +20,7 @@ const handle = (res) => {
     return Promise.resolve([err, result, res]);
 };
 
-describe('Model Class Test', function () {
-    let Model;
-    before(function () {
-        Model = Datagent.Model({
-            name: 'user',
-            fields: {
-                id: { type: Number, default: 0 },
-                nickname: { type: String, default: '' },
-                sex: { type: Number, default: '1' },
-                create_at: { type: String, default: Date.now() }
-            },
-            methods: {
-                test: (some)=>{
-                    return some+"thing";
-                }
-            }
-        })
-    });
-
-    it('应当包含schema对象', function () {
-        return assert.equal(Model.schema.constructor, Schema);
-    })
-    it('prototype应当包含fetch方法', function(){
-        return assert.isDefined(Model.prototype.fetch);
-    })
-    it('prototype应当包含find方法', function () {
-        return assert.isDefined(Model.prototype.find);
-    })
-    it('prototype应当包含save方法', function () {
-        return assert.isDefined(Model.prototype.save);
-    })
-    it('prototype应当包含destroy方法', function () {
-        return assert.isDefined(Model.prototype.destroy);
-    })
-    it('prototype应当包含自定义方法', function () {
-        return assert.isDefined(Model.prototype.test);
-    })
-})
-
-describe('Model instace Test', function () {
+describe('Model Test', function () {
     let mock, hosts, contact, model;
     before(function () {
         hosts = {
@@ -68,12 +28,14 @@ describe('Model instace Test', function () {
             test: 'http://localhost:8081/api'
         };
 
-        contact = Datagent.Contact({
+        contact = datagent.contact({
             base: axios.create({ baseURL: hosts.base }),
             test: axios.create({ baseURL: hosts.test })
         });
-        const UserModel = Datagent.Model({
+        model = datagent.model({
             name: 'user',
+            url: '/users',
+            contact,
             fields: {
                 id: { type: Number, default: 0 },
                 nickname: { type: String, default: '' },
@@ -90,7 +52,6 @@ describe('Model instace Test', function () {
                 }
             }
         });
-        model = new UserModel({ name: 'user', url: '/users', contact });
 
         // init mock XHR
         mock = {
@@ -260,8 +221,10 @@ describe('Model instace Test', function () {
             mock.base.reset();
         })
         it('Model类方法钩子应当生效', async function () {
-            const UserModel = Datagent.Model({
+            model = datagent.model({
                 name: 'user',
+                url: '/users',
+                contact,
                 fields: {
                     id: { type: Number, default: 0 },
                     nickname: { type: String, default: '' },
@@ -288,7 +251,6 @@ describe('Model instace Test', function () {
                     }
                 }
             });
-            model = new UserModel({ name: 'user', url: '/users', contact });
 
             mock
                 .base
@@ -301,8 +263,10 @@ describe('Model instace Test', function () {
             mock.base.reset();
         })
         it('自定义方法的钩子应当生效', async function(){
-            const UserModel = Datagent.Model({
+            model = datagent.model({
                 name: 'user',
+                url: '/users',
+                contact,
                 fields: {
                     id: { type: Number, default: 0 },
                     nickname: { type: String, default: '' },
@@ -326,7 +290,6 @@ describe('Model instace Test', function () {
                     }
                 }
             });
-            model = new UserModel({ name: 'user', url: '/users', contact });
 
             mock
                 .base
@@ -339,8 +302,10 @@ describe('Model instace Test', function () {
             mock.base.reset();
         })
         it('方法运行时应当支持添加钩子', async function () {
-            const UserModel = Datagent.Model({
+            model = datagent.model({
                 name: 'user',
+                url: '/users',
+                contact,
                 fields: {
                     id: { type: Number, default: 0 },
                     nickname: { type: String, default: '' },
@@ -364,7 +329,6 @@ describe('Model instace Test', function () {
                     }
                 }
             });
-            model = new UserModel({ name: 'user', url: '/users', contact });
 
             mock
                 .base
@@ -394,8 +358,10 @@ describe('Model instace Test', function () {
 
     describe('额外钩子Receive', function () {
         it('应当在fetch后生效', async function () {
-            const UserModel = Datagent.Model({
+            model = datagent.model({
                 name: 'user',
+                url: '/users',
+                contact,
                 fields: {
                     id: { type: Number, default: 0 },
                     nickname: { type: String, default: '' },
@@ -409,7 +375,7 @@ describe('Model instace Test', function () {
                     }
                 },
                 hooks: {
-                    ...Datagent.mapReceiveHook([
+                    ...datagent.mapReceiveHook([
                         (ctx) => {
                             const result = ctx.result;
                             if (result.data.code < 200) return Promise.reject(new Error('api error'));
@@ -422,7 +388,6 @@ describe('Model instace Test', function () {
                     ])
                 }
             });
-            model = new UserModel({ name: 'user', url: '/users', contact });
 
             mock
                 .base
@@ -436,8 +401,10 @@ describe('Model instace Test', function () {
         })
         it('应当在find后生效', async function () {
             const create_at = Date.now();
-            const UserModel = Datagent.Model({
+            model = datagent.model({
                 name: 'user',
+                url: '/users',
+                contact,
                 fields: {
                     id: { type: Number, default: 0 },
                     nickname: { type: String, default: '' },
@@ -446,14 +413,13 @@ describe('Model instace Test', function () {
                     disabled: { type: Number, default: 0 }
                 },
                 hooks: {
-                    ...Datagent.mapReceiveHook([
+                    ...datagent.mapReceiveHook([
                         respondData(),
                         requestHandle(),
                         format()
                     ])
                 }
             });
-            model = new UserModel({ name: 'user', url: '/users', contact });
 
             mock
                 .base
@@ -469,8 +435,10 @@ describe('Model instace Test', function () {
     describe('额外钩子Send', function () {
         it('应当在save前生效', async function () {
             const create_at = Date.now();
-            const UserModel = Datagent.Model({
+            model = datagent.model({
                 name: 'user',
+                url: '/users',
+                contact,
                 fields: {
                     id: { type: Number, default: null },
                     nickname: { type: String, default: '' },
@@ -479,7 +447,7 @@ describe('Model instace Test', function () {
                     disabled: { type: Number, default: 0 }
                 },
                 hooks: {
-                    ...Datagent.mapSendHook([
+                    ...datagent.mapSendHook([
                         (ctx) => {
                             let data = ctx.args.pop();
                             ctx.args = [ctx.scope.schema.filter(data, ['id', 'name', 'create_at']), ...ctx.args];
@@ -488,7 +456,6 @@ describe('Model instace Test', function () {
                     ])
                 }
             });
-            model = new UserModel({ name: 'user', url: '/users', contact });
 
             mock
                 .base

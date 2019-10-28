@@ -1,7 +1,3 @@
-export function wrap(cb){
-    return ctx => cb() || ctx
-}
-
 export function respondData(){
     return ctx=>{
         const res = ctx.result;
@@ -15,14 +11,16 @@ export function respondData(){
     }
 }
 
-export function formatFor(schema, handle){
+export function formatFor(schema, handle=(ctx, format)=>ctx.result=format(ctx.result)){
     return ctx=>{
-        return wrap(handle(ctx, schema.format))
+        handle(ctx, schema.format)
+        return ctx
     }
 }
 
-export function filterFor(schema, handle){
+export function filterFor(schema, handle=(ctx, filter)=>ctx.result=filter(ctx.result)){
     return ctx=>{
-        return wrap(handle(ctx, schema.filter))
+        handle(ctx, schema.filter)
+        return ctx
     }
 }

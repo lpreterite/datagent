@@ -17,7 +17,7 @@ export function wrap(method){
     return ctx=>method.apply(ctx.scope, ctx.args).then(data=>Promise.resolve({...ctx, result: data}))
 }
 export function context(options){
-    const { scope, method, ..._opts } = {args=null, result=null, ...options}
+    const { scope, method, ..._opts } = {args:null, result:null, ...options}
     const context = {
         ..._opts
     }
