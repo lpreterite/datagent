@@ -40,15 +40,15 @@ export const restful = {
 }
 export default function model(options){
     let { name, url, contact, methods={}, hooks={}, emulateIdKey=false } = { ...options }
-    existError(val=>isDef(val) && isString(val), new Error('options.name must be string in Model'))(name)
+    existError(val=>(isDef(val) && isString(val)), new Error('options.name must be string in Model'))(name)
     existError(isDef, new Error('options.contact must be Contact class in Model'))(contact)
-    const _url = url == isDef(url) ? url : `/${name}`
+    const _url = isDef(url) ? url : `/${name}`
 
     const context = {}
 
     methods = { ...restful, ...methods }
     Object.keys(methods).forEach(methodName=>{
-        let method = methods[methodName]
+        let method = queue.wrap(methods[methodName])
         let hook = hooks[methodName]
         context[methodName] = (...args)=>{
             /** 
@@ -60,14 +60,16 @@ export default function model(options){
              * **/
             const options = { contact, url:_url, getURL, emulateIdKey, isNew }
             const ctx = queue.context({ scope: context, method: methodName, args, options })
-            method = queue.wrap(method)
             // 先判断是否有钩子函数，有执行并获得方法串数组，没有则提供只有当前方法的数组
-            const method_queue = hook ? hook(method) : [method]
+            const method_queue = hook ? hook(()=>method) : [method]
             existError(val=>isArray(val)&&val.every(fn=>isFunction(fn)), new Error("hook return result must be Array<Function> in Model"))(method_queue)
             // 串联方法组并生成可执行方法
             const method_exec = queue.generate(method_queue)
             // 执行串联后的方法
-            return method_exec([...args, ctx], ctx)
+            const _args = new Array(3)
+            args.forEach((arg,index)=>_args.splice(index, 1, arg))
+            _args.splice(2, 1, ctx)
+            return method_exec(_args, ctx)
         }
     })
 

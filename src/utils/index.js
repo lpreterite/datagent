@@ -4,7 +4,9 @@ export function awaitTo(promise) {
     }).catch(err => [err]);
 }
 export function existError(compare, err){
-    return (...vals)=>{if(compare(...vals)) throw err}
+    return (...vals)=>{
+        if(!compare(...vals)){throw err}
+    }
 }
 export const isDef = val => typeof val !== 'undefined'
 export const isString = val => typeof val === 'string'
