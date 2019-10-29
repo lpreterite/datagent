@@ -1,3 +1,4 @@
+import { existError, isDef, isString } from "./utils/"
 import remote from "./remote"
 export default function contact(remotes={}){
     let _default = null
@@ -7,7 +8,11 @@ export default function contact(remotes={}){
     _default = Object.values(remotes).shift()
 
     const has = name=>Object.keys(remotes).indexOf(name) > -1
-    const getRemote = name=>remotes[Object.keys(remotes).find(item=>item==name)]
+    const getRemote = name=>{
+        existError(isString, new Error(`The name must be String in contact`))(name)
+        existError(isDef, new Error(`No '${name}' found in remotes`))(remotes[name])
+        return remotes[name]
+    }
     const setRemote = (name, remote)=>(remotes[name]=remote)
     const setDefault = name=>_default=getRemote(name)
 

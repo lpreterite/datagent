@@ -13,7 +13,7 @@ export default function agent(_models, options){
     }
 
     function active(model_name, action, query, options){
-        options = {origin:"develop", ...options}
+        options = {...options}
         let ctx = {model_name, action, query, options}
         ctx = eventWrapper(ctx, events.before, [ctx])
         return models[ctx.model_name][ctx.action](ctx.query, ctx.options)

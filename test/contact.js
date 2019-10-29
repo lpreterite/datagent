@@ -31,24 +31,20 @@ describe('Contact Class Test', () => {
             contact.default('base')
             assert.exists(contact.remote(), '没有返回远程服务');
         })
+        it('当传入名称没有找到远端服务时要报错', () => {
+            contact.remote('base', _remote(remotes.base));
+            assert.throws(()=>contact.remote('develop'), /No 'develop' found in remotes/);
+        })
     })
 
     describe('instance.default()', ()=>{
         it('输入参数name必须是字符串', ()=>{
             contact = datagent.contact(remotes);
-            try{
-                contact.default(233);
-            } catch (e) {
-                assert.equal(e.constructor, TypeError, e.msg);
-            }
+            assert.throws(()=>contact.default(233), /The name must be String in contact/);
         })
         it('输入参数name必须存在于remote的键', () => {
             contact = datagent.contact(remotes);
-            try {
-                contact.default("233");
-            } catch (e) {
-                assert.equal(e.constructor, RangeError, e.msg);
-            }
+            assert.throws(()=>contact.default('233'), /No '233' found in remotes/);
         })
     })
 });

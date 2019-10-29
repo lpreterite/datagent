@@ -10,9 +10,6 @@ export function generate(queues) {
         });
     }
 }
-export function concat(...args){
-    return args.map(arg => defaults(arg, [])).reduce((x,y)=>x.concat(y));
-}
 export function wrap(method){
     return ctx=>{
         return method.apply(ctx.scope, ctx.args).then(data=>Promise.resolve({...ctx, result: data}))
