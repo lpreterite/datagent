@@ -21,6 +21,22 @@ export function filter(data, fields){
     return fields.reduce((result, field)=>({...result, [field]:data[field]}), {})
 }
 
+/**
+ * 生成schema的工厂方法
+ * 
+ * fieldSet Example:
+ * ```
+ * const fieldSet = {
+ *   id: { type: Number, default: null },
+ *   name: { type: String, default: "" },
+ * }
+ * ```
+ *
+ * @param {Object} [fieldSet={}] - 字段设定
+ * @param {Function} fieldSet.type - 字段定义
+ * @param {*} fieldSet.default - 字段默认值
+ * @returns {Object} schema实例
+ */
 function schema(fieldSet={}){
     fieldSet = {...fieldSet}
     const _fields = Object.keys(fieldSet)
