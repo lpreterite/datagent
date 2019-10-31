@@ -23,11 +23,11 @@ export default [
 			{ name, file: pkg.module, format: 'es', exports: 'named', sourcemap }
 		],
         plugins: [
-			resolve(),
-			commonjs(),
 			babel({
 				exclude: 'node_modules/**'
 			}),
+			resolve(),
+			commonjs(),
 			//// babel is use istanbul, so rollup not to use istanbul in plugin
 			// istanbul({
 			// 	exclude: ['test/**/*','node_modules/**/*']
