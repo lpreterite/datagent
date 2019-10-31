@@ -8,8 +8,13 @@
             }
         ]
     ],
+    "plugins": [
+        "@babel/plugin-proposal-class-properties"
+    ],
     "env": {
         "test": {
+            "retainLines": true,
+            "sourceMaps": "inline",
             "presets": [
                 [
                     "@babel/env",

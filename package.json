@@ -31,7 +31,6 @@
   "dependencies": {
     "@babel/cli": "^7.6.4",
     "@babel/core": "^7.6.4",
-    "@babel/plugin-syntax-class-properties": "^7.2.0",
     "@babel/preset-env": "^7.6.3",
     "@babel/register": "^7.6.2",
     "@istanbuljs/nyc-config-babel": "^2.1.1",
