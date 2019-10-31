@@ -25,12 +25,16 @@ export function filter(data, fields){
  * 生成schema的工厂方法
  * 
  * fieldSet Example:
- * ```
+ * 
+ * @example
+ * import datagent from "datagent"
  * const fieldSet = {
  *   id: { type: Number, default: null },
  *   name: { type: String, default: "" },
  * }
- * ```
+ * 
+ * const schema = datagent.schema(fieldSet)
+ * @example
  *
  * @param {Object} [fieldSet={}] - 字段设定
  * @param {Function} fieldSet.type - 字段定义
