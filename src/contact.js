@@ -1,6 +1,6 @@
 import { existError, isDef, isString } from "./utils/"
 import remote from "./remote"
-export default function contact(remotes={}){
+function Contact(remotes={}){
     let _default = null
     Object.keys(remotes).forEach(remoteName=>{
         remotes[remoteName]=remote(remotes[remoteName])
@@ -29,3 +29,8 @@ export default function contact(remotes={}){
 
     return Object.freeze(context)
 }
+
+
+const factory = remotes => new Contact(remotes)
+export const constructor = Contact
+export default factory

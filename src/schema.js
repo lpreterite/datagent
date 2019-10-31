@@ -21,10 +21,34 @@ export function filter(data, fields){
     return fields.reduce((result, field)=>({...result, [field]:data[field]}), {})
 }
 
+function Schema(fieldSet={}){ 
+    fieldSet = {...fieldSet} 
+    const _fields = Object.keys(fieldSet) 
+ 
+    const context = { 
+        serialize: ()=>serialize(fieldSet), 
+        format: data=>format(data, fieldSet), 
+        filter: (data, fields=_fields)=>filter(data, fields) 
+    } 
+ 
+    Object.defineProperties(context, { 
+        "fields":{ 
+            get(){ 
+                return _fields 
+            } 
+        }, 
+        "fieldSet":{ 
+            get(){ 
+                return fieldSet 
+            } 
+        } 
+    }) 
+ 
+    return Object.freeze(context)
+} 
+
 /**
  * 生成schema的工厂方法
- * 
- * fieldSet Example:
  * 
  * @example
  * import datagent from "datagent"
@@ -32,39 +56,12 @@ export function filter(data, fields){
  *   id: { type: Number, default: null },
  *   name: { type: String, default: "" },
  * }
- * 
  * const schema = datagent.schema(fieldSet)
  * @example
  *
  * @param {Object} [fieldSet={}] - 字段设定
- * @param {Function} fieldSet.type - 字段定义
- * @param {*} fieldSet.default - 字段默认值
  * @returns {Object} schema实例
  */
-function schema(fieldSet={}){
-    fieldSet = {...fieldSet}
-    const _fields = Object.keys(fieldSet)
-
-    const context = {
-        serialize: ()=>serialize(fieldSet),
-        format: data=>format(data, fieldSet),
-        filter: (data, fields=_fields)=>filter(data, fields)
-    }
-
-    Object.defineProperties(context, {
-        "fields":{
-            get(){
-                return _fields
-            }
-        },
-        "fieldSet":{
-            get(){
-                return fieldSet
-            }
-        }
-    })
-
-    return Object.freeze(context)
-}
-
-export default schema
+const factory = (fieldSet={}) => new Schema(fieldSet)
+export const constructor = Schema
+export default factory

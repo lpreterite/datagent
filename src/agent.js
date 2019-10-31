@@ -1,4 +1,4 @@
-export default function agent(_models, options){
+function Agent(_models, options){
     const { model_name="name" } = {...options}
     const MODEL_NAME = model_name
     const models = [].concat(_models).reduce((result, model)=>({...result, [model[MODEL_NAME]]:model}),{})
@@ -48,3 +48,7 @@ export default function agent(_models, options){
 
     return Object.freeze(context)
 }
+
+const factory = (_models, options) => new Agent(_models, options)
+export const constructor = Agent
+export default factory

@@ -38,7 +38,8 @@ export const restful = {
         return this.destroy(...args)
     }
 }
-export default function model(options){
+
+function Model(options){
     let { name, url, contact, methods={}, hooks={}, emulateIdKey=false } = { ...options }
     existError(val=>(isDef(val) && isString(val)), new Error('options.name must be string in Model'))(name)
     existError(isDef, new Error('options.contact must be Contact class in Model'))(contact)
@@ -103,3 +104,8 @@ export default function model(options){
 
     return Object.freeze(context)
 }
+
+
+const factory = options => new Model(options)
+export const constructor = Model
+export default factory

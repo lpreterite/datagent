@@ -1,3 +1,5 @@
+export {default as context} from "./context"
+
 export const compose = (...list) => acc => list.reduce((acc, fn) => acc.then(fn), Promise.resolve(acc));
 export function generate(queues) {
     const queue = compose(...queues);
@@ -14,23 +16,4 @@ export function wrap(method){
     return ctx=>{
         return method.apply(ctx.scope, ctx.args).then(data=>Promise.resolve({...ctx, result: data}))
     }
-}
-export function context(options){
-    const { scope, method, ..._opts } = {args:null, result:null, ...options}
-    const context = {
-        ..._opts
-    }
-    Object.defineProperties(context, {
-        "scope":{
-            get(){
-                return scope
-            }
-        },
-        "method":{
-            get(){
-                return method
-            }
-        }
-    })
-    return context
 }

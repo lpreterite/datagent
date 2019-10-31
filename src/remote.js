@@ -1,4 +1,4 @@
-export default function remote(origin){
+function Remote(origin){
     const sync = (options)=>{
         return origin(options);
     }
@@ -24,3 +24,9 @@ export default function remote(origin){
 
     return Object.freeze(context)
 }
+
+
+const factory = origin => new Remote(origin)
+
+export const constructor = Remote
+export default factory
