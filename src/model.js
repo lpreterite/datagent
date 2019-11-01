@@ -58,6 +58,7 @@ function Model(options){
              * 
              * method方法执行传入的第二个参数opts需要提供model自带的一些参数如：contact, url, getURL, emulateIdKey
              * 提供model自带的参数的目的在于不提供this调取内部变量和函数，已传入的方式提供
+             * @ignore
              * **/
             const options = { contact, url:_url, getURL, emulateIdKey, isNew }
             const ctx = queue.context({ scope: context, method: methodName, args, options })
