@@ -39,7 +39,9 @@ describe('Model Test', function () {
             contact,
             methods: {
                 ban(id, opts) {
-                    return this.save({ id, disabled: 1 }, opts);
+                    const { origin } = {...opts}
+                    // return this.save({ id, disabled: 1 }, opts);
+                    return this.contact.remote(origin).patch(this.getURL(id), {id, disabled: 1})
                 },
                 errorTest() {
                     throw new Error('just a bug');
@@ -205,12 +207,12 @@ describe('Model Test', function () {
         it('支持自定义方法', async function () {
             mock
                 .base
-                .onPut(hosts.base + '/users/1', { id: 1, disabled: 1 })
+                .onPatch(hosts.base + '/users/1', { id: 1, disabled: 1 })
                 .reply(200, { code: 200, data: { id: 1, name: 'John Smith', disabled: 1 }, msg: '' });
 
             let err, result;
             [err, result] = await awaitTo(model.ban(1))
-            assert.propertyVal(result, 'disabled', 1);
+            assert.propertyVal(result.data.data, 'disabled', 1);
             mock.base.reset();
         })
         it('Model类方法钩子应当生效', async function () {
