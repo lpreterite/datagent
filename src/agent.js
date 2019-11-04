@@ -13,7 +13,7 @@
  * import axios from "axios"
  * import datagent from "datagent"
  * 
- * const contact = datagent.contact({ base: axios.create({ baseURL: "http://localhost:8081/api"  }) })
+ * const contact = datagent.contact({ base: axios.create({ baseURL: "http://localhost:8081"  }) })
  * const userModel = datagent.model({ name: 'user', contact })
  * const roleModel = datagent.model({ name: 'role', contact })
  * const agent = datagent.agent([userModel, roleModel])

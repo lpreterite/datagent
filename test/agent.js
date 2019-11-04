@@ -1,7 +1,7 @@
 import datagent from '../src/';
 const { awaitTo } = datagent.utils
 
-describe('Model Test', function () {
+describe('Agent Test', function () {
     let mock, hosts, contact;
     describe('on()', function () {
         before(function() {
