@@ -3,7 +3,7 @@ import remote from "./remote"
 function Contact(remotes={}){
     let _default = null
     Object.keys(remotes).forEach(remoteName=>{
-        remotes[remoteName]=remote(remotes[remoteName])
+        remotes[remoteName]=new remote(remotes[remoteName])
     })
     _default = Object.values(remotes).shift()
 
