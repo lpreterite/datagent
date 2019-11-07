@@ -1,4 +1,4 @@
-* [快速开始](1.0/README.md)
+* [学习](1.0/README.md)
 
 * [API](1.0/API.md)
 

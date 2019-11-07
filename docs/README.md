@@ -10,19 +10,95 @@
 
 ## 安装
 
+```sh
+npm install -S datagent
+//or
+yarn add datagent
+```
+
+目前版本为`2.0`，如需安装`1.0`版本可使用以下方式：
+
+```sh
+npm install -S datagent@1.1.3
+// or
+yarn add datagent@@1.1.3
+```
+
 ## 介绍
 
 ### 什么是datagent.js
 
 <!-- [描述datagent是什么？解决了什么问题？比如，定义数据字段能提供易读性，提供钩子对数据统一处理等] -->
 
+datagent是由`data`与`agent`组合而成的词，意思为数据代理。后端返回的数据有时候是结构上的不同，有时候是字段类型上的不同，前端无法拿起就用需要各种处理。解决方法本很简单，就是每次获得数据后做一遍处理。在日渐增多的系统下，这种处理可能出现在各种地方，维护起来非常吃力。datagent的出现是为了解决上面这种情况而诞生，datagent关注的是如何分层你的代码，提高易读性和可维护性。如果你有一套自己的管理方案完全可以不使用datagent来管理你的代码。
+
 ### 开始
 
 <!-- [提供代码及可交互的例子] -->
 
-### 管理服务(serve)
+使用datagent无法马上开箱即用，它需你的适度的了解。了解什么是远端、链接管理器、数据模型、数据对象、数据对象代理等概念。不用着急阅读完这篇文档用不着多少分钟，接下来会逐步说明上面提及的概念。
+
+### 管理你的服务
 
 <!-- [介绍如何使用链接来管理远端，列出一般使用场景例子] -->
+
+服务，一般指的是后端服务，前端展示的数据内容大多来自后端服务。在一些项目，后端服务并不只有一个，当需要对接多个的时候代码上都会稍稍有点混乱。下面使用datagent的链接管理器来管理多个服务：
+
+```js
+// #api
+import axios from "axios"
+import datagent from "datagent"
+export default datagent.contact({
+    "local": axios.create({ baseURL: "http://localhost" }),
+    "baidu": axios.create({ baseURL: "http://baidu.com" })
+})
+```
+
+在你需要请求数据时，只需要加载上面的文件进行后续操作：
+
+```js
+// #user.detail.vue
+import api from "./api"
+
+export default {
+    async mounted(){
+        const res = await api.get(`/user/1`)
+        if(res.status > 201) throw new Error("http error")
+        this.detail = res.data
+    },
+    data: {
+        detail: {}
+    }
+}
+```
+
+### 数据定义
+
+数据是软件系统中最主要的内容，有时候在不同模块中描述同一样事物的数据结构是一样的，编码过程中能统一定义这种数据，在维护时就更能从代码中看出这份数据包含哪些内容了。
+
+```js
+// #user.schema.js
+import datagent from "datagent"
+export default datagent.schema({
+    id: { type: Number, default: null },
+    username: { type: String, default: "" },
+    role_id: { type: Number, default: null },
+    permission: { type: Array, default: [] }
+})
+```
+
+上面是用户数据的数据定义例子，在你UI层需要使用默认值时可使用以下代码：
+
+```js
+// #user.detail.vue
+import userSchema from "./user.schema"
+
+export default {
+    data: {
+        detail: userSchema.serialize()
+    }
+}
+```
 
 ### 处理数据
 
@@ -37,6 +113,10 @@
 ### 远端与`axios`
 
 <!-- [为何使用axios？却又包装一遍？举个继承远端后重写方法支持其他http库的例子] -->
+
+### 自定义字段类型
+
+<!-- [数据类型是可定义的，默认是Function类型就可以了，附上合理的例子进行说明] -->
 
 ### 数据流动过程
 
