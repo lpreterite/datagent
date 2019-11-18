@@ -32,11 +32,13 @@ yarn add datagent@@1.1.3
 
 datagent是由`data`与`agent`组合而成的词，意思为数据代理。后端返回的数据有时候是结构上的不同，有时候是字段类型上的不同，前端无法拿起就用需要各种处理。解决方法本很简单，就是每次获得数据后做一遍处理。在日渐增多的系统下，这种处理可能出现在各种地方，维护起来非常吃力。datagent的出现是为了解决上面这种情况而诞生，datagent关注的是如何分层你的代码，提高易读性和可维护性。如果你有一套自己的管理方案完全可以不使用datagent来管理你的代码。
 
+#### 为什么要用？
+
 ### 开始
 
 <!-- [提供代码及可交互的例子] -->
 
-使用datagent无法马上开箱即用，它需你的适度的了解。了解什么是远端、链接管理器、数据模型、数据对象、数据对象代理等概念。不用着急阅读完这篇文档用不着多少分钟，接下来会逐步说明上面提及的概念。
+使用datagent无法马上开箱即用，它需你的适度的了解。了解如何合理地使用，了解什么是远端、链接管理器、数据模型、数据对象、数据对象代理等概念。不用着急，阅读完这篇文档用不着多少分钟，接下来会逐步讲解如何使用。
 
 ### 管理你的服务
 
@@ -145,30 +147,7 @@ import userSchema from "./user.schema"
 export default {
     async mounted(){
         const userData = await userModel.find({id:1})
-        /**
-         * respond data:
-         * {
-         *    id: "1",
-         *    username: "packy",
-         *    role_id: "1",
-         *    permission: [],
-         *    updated_at: "2019/11/08 11:45:30",
-         *    created_at: "2018/01/08 01:32:11",
-         * }
-         **/
         this.detail = userData
-        console.log(userData)
-        /**
-         * user data:
-         * {
-         *    id: 1,
-         *    username: "packy",
-         *    role_id: 1,
-         *    permission: [],
-         *    updated_at: "Fri Nov 08 2019 11:45:30 GMT+0800", //typeof Date
-         *    created_at: "Mon Jan 08 2018 01:32:11 GMT+0800", //typeof Date
-         * }
-         **/
     },
     data: {
         detail: userSchema.serialize()
@@ -176,9 +155,66 @@ export default {
 }
 ```
 
+`respond`回来的数据:
+
+```json
+{
+   id: "1",
+   username: "packy",
+   role_id: "1",
+   permission: [],
+   updated_at: "2019/11/08 11:45:30",
+   created_at: "2018/01/08 01:32:11",
+}
+```
+
+页面`detail`获得的数据:
+
+```json
+{
+   id: 1,
+   username: "packy",
+   role_id: 1,
+   permission: [],
+   updated_at: "Fri Nov 08 2019 11:45:30 GMT+0800", //typeof Date
+   created_at: "Mon Jan 08 2018 01:32:11 GMT+0800", //typeof Date
+}
+```
+
 ### 统一调用
 
 <!-- [某些项目存在非常多的数据对象需要管理，页面请求数据是存在状态的（加载中、成功、失败），管理多个数据对象请求再反应至页面状态是一件麻烦事，这里接受统一处理的办法。] -->
+
+在目前常见的UI页面设计中，UI状态离不开加载态。管理UI状态是一件麻烦事，如要做到按加载的数据来管理UI相应位置的状态便需要在每次请求统一处理。datagent也提供的工具帮助你解决这种问题：
+
+```js
+// #user.detail.vue
+import datagent from "datagent"
+import userModel from "./user.model"
+import userSchema from "./user.schema"
+const models = datagent.agent([userModel])
+
+export default {
+    beforeCreate(){
+        datagent.on('error', err=>{
+            alert(err.message)
+            console.error(err)
+        })
+        datagent.on('before', ctx=>this.loading[ctx.model_name]=true)
+        datagent.on('after', (err, result, ctx)=>this.loading[ctx.model_name]=false)
+    },
+    async mounted(){
+        const userData = await models.find(userModel.name, {id:1})
+        this.detail = userData
+    },
+    data: {
+        detail: userSchema.serialize(),
+        loading: {
+            [userModel.name]: false
+        }
+    }
+}
+```
 
 ## 深入了解
 
@@ -186,26 +222,40 @@ export default {
 
 <!-- [为何使用axios？却又包装一遍？举个继承远端后重写方法支持其他http库的例子] -->
 
+[陆续补上，敬请期待]
+
 ### 自定义字段类型
 
 <!-- [数据类型是可定义的，默认是Function类型就可以了，附上合理的例子进行说明] -->
+
+[陆续补上，敬请期待]
 
 ### 数据流动过程
 
 <!-- [描述数据在服务端至使用的过程，中间经过datagent哪些环节进行了怎样的处理，举个例子并补上过程图] -->
 
+[陆续补上，敬请期待]
+
 ### 方法与钩子
 
 <!-- [讲解数据对象的方法执行过程，钩子是在什么情况下介入，如何决定执行顺序的，等等] -->
+
+[陆续补上，敬请期待]
 
 ### 自定义钩子
 
 <!-- [介绍制作钩子的规范，传入可自定义，返回一个接收和返回执行方法的上下文的函数，上下文包含哪些参数，在修改的过程中需要注意的细节，哪些是允许的，哪些是不推荐的] -->
 
+[陆续补上，敬请期待]
+
 ## 迁移
 
-### 从datagent@1.x迁移
+### 从1.x迁移
+
+[陆续补上，敬请期待]
 
 #### FAQ
 
 <!-- [核心概念没有变化；新增了agent统一管理数据对象；部分定义换叫法了，比如`schema`改叫数据模型，`model`改叫数据对象；数据模型中方法的钩子移除before和after概念，变成可定义执行顺序；] -->
+
+[陆续补上，敬请期待]
