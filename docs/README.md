@@ -1,8 +1,9 @@
 # datagent
 
 [![npm version](https://img.shields.io/npm/v/datagent.svg)](https://www.npmjs.com/package/datagent)
-[![build status](https://travis-ci.org/lpreterite/datagent.svg?branch=master)](https://travis-ci.org/lpreterite/datagent)
 [![NPM downloads](http://img.shields.io/npm/dm/datagent.svg)](https://www.npmjs.com/package/datagent)
+[![build status](https://travis-ci.org/lpreterite/datagent.svg?branch=master)](https://travis-ci.org/lpreterite/datagent)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flpreterite%2Fdatagent.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Flpreterite%2Fdatagent?ref=badge_shield)
 
 `datagent`是一个用于前端请求的模块化管理工具，提供数据格式化、多服务源切换、语义化数据定义等功能。在React,Vue,Angular等现代JavaScript框架下，UI显示均基于数据进行驱动，从服务端获得的数据并不能完全符合UI所需的结构。格式化数据、转义数据不可避免而代码往往写在任何地方又不易于维护。面对这种情况可使用`datagent`统一格式化从服务端获得的数据，并提供统一的请求服务的方式，让你更方便同步UI状态。
 
@@ -228,7 +229,59 @@ export default {
 
 <!-- [数据类型是可定义的，默认是Function类型就可以了，附上合理的例子进行说明] -->
 
-[陆续补上，敬请期待]
+数据模型的字段类型除了支持系统的`Array`,`Number`,`String`等类型外，还支持自定义的类型。
+
+接下来让我们看看例子：
+
+```js
+//# Yuan.type.js
+export function Yuan(val){
+    return (parseInt(val) / 100).toFixed(2)
+}
+```
+
+经过沟通知道后端服务返回的商品价格是以分为单位的，前端显示的时候需要对其进行转换，这里我们先自定义字段类型Yuan（元）。
+
+```js
+//# good.schema.js
+import datagent from "datagent"
+import Yuan from "./Yuan.type"
+export default datagent.schema({
+    id: { type: Number, default: null },
+    good_name: { type: String, default: "" },
+    good_type: { type: String, default: "" },
+    price: { type: Yuan, default: 0 },
+    updated_at: { type: Date, default: null },
+    created_at: { type: Date, default: null }
+})
+```
+
+然后在商品的模型中将价格的字段类型改为`Yuan`。
+
+```js
+import goodSchema from "./good.schema"
+console.log(goodSchema.format({
+    good_name: "《人月神话》",
+    good_type: "book",
+    price: "48000",
+    updated_at: "Tue Nov 19 2019 14:11:12 GMT+0800",
+    created_at: "Tue Nov 19 2019 14:11:12 GMT+0800"
+}))
+```
+
+下面就是经过数据模型的方法转换后的数据：
+
+```json
+{
+    good_name: "《人月神话》",
+    good_type: "book",
+    price: "48.00",
+    updated_at: "Tue Nov 19 2019 14:11:12 GMT+0800",
+    created_at: "Tue Nov 19 2019 14:11:12 GMT+0800"
+}
+```
+
+上面例子是将请求数据的价格字段从`分`转变为`元`，用自定义的类型就能满足此类需求。系统提供的类型均是`Function`，所以字段类型只要是`Function`就能支持。
 
 ### 数据流动过程
 
