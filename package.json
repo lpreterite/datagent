@@ -29,29 +29,29 @@
     "url": "https://github.com/packy/datagent/issues"
   },
   "homepage": "https://github.com/packy/datagent#readme",
-  "dependencies": {
+  "peerDependencies":{
+    "axios": "^0.19.0"
+  },
+  "devDependencies": {
     "@babel/cli": "^7.6.4",
     "@babel/core": "^7.6.4",
     "@babel/preset-env": "^7.6.3",
     "@babel/register": "^7.6.2",
     "@istanbuljs/nyc-config-babel": "^2.1.1",
-    "axios": "^0.19.0",
     "axios-mock-adapter": "^1.17.0",
     "babel-plugin-istanbul": "^5.2.0",
-    "chai-as-promised": "^7.1.1",
-    "fecha": "^3.0.3",
-    "rollup-plugin-babel": "^4.3.3",
-    "rollup-plugin-istanbul": "^2.0.1"
-  },
-  "devDependencies": {
     "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
     "cross-env": "^5.2.0",
+    "fecha": "^3.0.3",
     "mocha": "^6.1.1",
     "nyc": "^13.3.0",
     "reify": "^0.18.1",
     "rollup": "~1.9.0",
+    "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-commonjs": "^9.3.4",
     "rollup-plugin-css-only": "^1.0.0",
+    "rollup-plugin-istanbul": "^2.0.1",
     "rollup-plugin-node-resolve": "^4.2.1",
     "rollup-plugin-terser": "^4.0.4",
     "rollup-plugin-vue": "^4.7.2",
