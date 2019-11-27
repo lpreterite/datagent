@@ -1,4 +1,4 @@
-import datagent from '../src/';
+import datagent from '../../src/';
 const { awaitTo } = datagent.utils
 
 describe('Agent Test', function () {

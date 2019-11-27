@@ -2,8 +2,8 @@ import {
     respondData,
     formatFor,
     filterFor
-} from '../src/operations';
-import _schema from '../src/schema';
+} from '../../src/operations';
+import _schema from '../../src/schema';
 
 describe('Hook operations function test', ()=>{
     describe('respondData', ()=>{

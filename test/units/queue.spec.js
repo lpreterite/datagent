@@ -1,4 +1,4 @@
-import * as _queue from "../src/queue";
+import * as _queue from '../../src/queue';
 
 describe('queue Class Test', function() {
   var err, result;

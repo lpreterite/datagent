@@ -9,7 +9,11 @@
             "request": "launch",
             "name": "Mocha-webpack Tests",
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-            "args": [],
+            "args": [
+                "--require",
+                "test/setup.js",
+                "test/**/*.{test,spec}.js"
+            ],
             "sourceMaps": true,
             "env": {
                 "NODE_ENV": "test"

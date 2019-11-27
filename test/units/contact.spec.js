@@ -1,6 +1,6 @@
-import _remote from '../src/remote';
-import _contact from '../src/contact';
-import datagent from '../src/';
+import _remote from '../../src/remote';
+import _contact from '../../src/contact';
+import datagent from '../../src/';
 
 describe('Contact Class Test', () => {
     let contact, remotes;

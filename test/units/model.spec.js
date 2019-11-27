@@ -1,6 +1,6 @@
-import datagent from '../src/';
-import { awaitTo } from '../src/utils/';
-import { formatFor, respondData } from '../src/operations';
+import datagent from '../../src/';
+import { awaitTo } from '../../src/utils/';
+import { formatFor, respondData } from '../../src/operations';
 
 const parseData = ()=> ctx => {
     let result;

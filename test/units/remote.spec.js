@@ -1,4 +1,4 @@
-import _remote from '../src/remote';
+import _remote from '../../src/remote';
 
 const handle = res => {
     let err, result;

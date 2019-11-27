@@ -1,5 +1,5 @@
 import fecha from "fecha";
-import { serialize, format, filter } from "../src/schema";
+import { serialize, format, filter } from '../../src/schema';
 
 class DateFormat {
     static format(format){
