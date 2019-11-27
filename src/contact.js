@@ -1,5 +1,5 @@
 import { existError, isDef, isString } from "./utils/"
-import remote from "./remote"
+import { constructor as Remote } from "./remote"
 /**
  * 链接管理器
  *
@@ -24,10 +24,12 @@ import remote from "./remote"
  * // request 'http://localhost:8081/user'
  * // output respond like: { status: 200, data: {...}, headers: {...} }
  */
-function Contact(remotes={}){
+function Contact(remotes={}, options){
+    options = { RemoteConstructor: Remote, ...options }
+    const { RemoteConstructor } = options
     let _default = null
     Object.keys(remotes).forEach(remoteName=>{
-        remotes[remoteName]=remote(remotes[remoteName])
+        remotes[remoteName]=new RemoteConstructor(remotes[remoteName])
     })
     _default = Object.values(remotes).shift()
 
@@ -87,6 +89,6 @@ function Contact(remotes={}){
 }
 
 
-const factory = remotes => new Contact(remotes)
+const factory = (remotes, options) => new Contact(remotes, options)
 export const constructor = Contact
 export default factory
