@@ -19,12 +19,12 @@ npm install -S datagent
 yarn add datagent
 ```
 
-目前版本为`2.0`，如需安装`1.0`版本可使用以下方式：
+目前正式版本为`1.x`，下面是安装`2.0`版本尝尝鲜。
 
 ```sh
-npm install -S datagent@1.1.3
+npm install -S datagent@next
 // or
-yarn add datagent@@1.1.3
+yarn add datagent@next
 ```
 
 ## 介绍
@@ -219,11 +219,98 @@ export default {
 
 ## 深入了解
 
-### 远端与 axios
+### 远端与axios
 
 <!-- [为何使用axios？却又包装一遍？举个继承远端后重写方法支持其他http库的例子] -->
 
-[陆续补上，敬请期待]
+远端的设计给了datagent能换不同的Http请求工具。datagent默认支持的axios是前端最常用的http请求工具，当你需要改成其他的请求工具，远端这层的抽象就起到了一个非常好的作用。下面例子用浏览器默认支持的`fetch`替换axios：
+
+```js
+// Remote.class.js
+import fetch from "node-fetch"
+import { URLSearchParams } from "url"
+
+class Remote {
+    constructor(options){
+        const { baseURL, withJson=true } = { ...options }
+        this._baseURL = baseURL
+        this._withJson = withJson
+    }
+    sync(options){
+        let { method, data, body, headers } = options
+        const url = this._baseURL + options.url
+        if(this._withJson){
+            headers = !!headers ? headers : {}
+            headers['Content-Type'] = 'application/json'
+            body = JSON.stringify(data)
+        }else{
+            body = data
+        }
+        return fetch(url, { method, body, headers }).then(res=>new Promise((resolve, reject)=>{
+            res.json().then(data=>resolve({
+                status: res.status,
+                statusText: res.statusText,
+                data,
+                headers: res.headers,
+                url: res.url
+            }), reject)
+        }))
+    }
+    get(url, _params={}){
+        const params = new URLSearchParams()
+        Object.keys(_params).forEach(key=>params.append(key, _params[key]))
+        url += `/${params.toString()}`
+        return this.sync({ method: "GET", url })
+    }
+    post(url, data){
+        return this.sync({ method: "POST", url, data })
+    }
+    put(url, data){
+        return this.sync({ method: "PUT", url, data })
+    }
+    patch(url, data){
+        return this.sync({ method: "PATCH", url, data })
+    }
+    delete(url, data){
+        return this.sync({ method: "DELETE", url, data })
+    }
+}
+export default Remote
+```
+
+数据对象中的方法访问服务时是透过链接管理器进行的，所以最终需要在生成链接管理器时把构造器替换掉，这样请求就不是用`axios`而是用`fetch`：
+
+```js
+import datagent from "datagent"
+import CustomRemote from './Remote.class'
+const contact = datagent.contact(
+    //remote的设定
+    {
+        base: { baseURL: 'https://jsonplaceholder.typicode.com' }
+    },
+    //生成时替换为自定义的remote
+    {
+        RemoteConstructor: CustomRemote
+    }
+)
+
+contact.remote().get('/todos/3').then(res=>{
+    console.log(res.data)
+})
+```
+
+输出结果：
+
+```json
+{
+    userId: 1,
+    id: 3,
+    title: "fugiat veniam minus",
+    completed: false
+}
+```
+
+关于Remote的详情可以查看[API文档](./API.md#remote-1)，自定义完整例子参考[仓库测试的例子](../test/examples/custom-remote.test.js)
 
 ### 自定义字段类型
 

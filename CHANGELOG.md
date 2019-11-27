@@ -1,5 +1,17 @@
 # Change Log
 
+## 2.0.0-beta.1
+
+- 增加`agent`类提供统一处理数据对象方法的调用，提供`before`,`after`,`error`事件做额外处理
+- 数据对象(`Model`)移除`field`设置
+- 数据对象(`Model`)的钩子设置支持自定义执行顺序，移除`before`和`after`执行函数列表
+- 数据对象(`Model`)调用方法不再支持动态增加钩子函数
+- `format`,`filter`钩子函数必须设置数据模型(`Schema`)，不再支持默认使用数据对象(`Model`)的`field`设置
+- 构建环境从`webpack`改用`rollup`，项目使用[`sao-esmodule-mold`](https://github.com/lpreterite/sao-esmodule-mold)模板基于[`sao`](https://github.com/saojs/sao)生成
+- 更新所有代码编码方式，移除class改用function方式定义
+- 更新说明文档和API文档，提供可访问地址：https://lpreterite.github.io/datagent/
+- 更新测试内容
+
 ## 1.1.3
 
 - 修复当`id`等于`null`时会作为id加至`POST`请求链接上的问题
