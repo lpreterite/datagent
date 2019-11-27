@@ -13,6 +13,7 @@ const handle = res => {
 describe('Custom Remote Test', function(){
     let contact, remote, post;
     before(function (){
+        this.timeout(3000)
         contact = datagent.contact(
             //remote的设定
             {
