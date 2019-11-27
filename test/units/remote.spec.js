@@ -1,4 +1,4 @@
-import Remote from '../src/classes/Remote.class';
+import _remote from '../../src/remote';
 
 const handle = res => {
     let err, result;
@@ -13,7 +13,7 @@ describe('Remote Class Test', function () {
     let mock, remote;
     let baseURL = 'http://localhost/api';
     before(function () {
-        remote = new Remote({ origin: axios.create({ baseURL }) });
+        remote = _remote(axios.create({ baseURL }));
         // init mock XHR
         mock = new MockAdapter(remote.origin);
     })

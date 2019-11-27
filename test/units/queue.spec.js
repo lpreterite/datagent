@@ -1,6 +1,6 @@
-import Method from "../src/classes/Method.class.js";
+import * as _queue from '../../src/queue';
 
-describe('Method Class Test', function() {
+describe('queue Class Test', function() {
   var err, result;
   var ctx = {};
   var data = [];
@@ -17,7 +17,7 @@ describe('Method Class Test', function() {
     });
   }
 
-  describe('Method.generate()', function() {
+  describe('queue.generate()', function() {
     it('应当输出内容顺序为[1,2,3]的数组', async function() {
       const operations = [
         async function (ctx) {
@@ -40,7 +40,7 @@ describe('Method Class Test', function() {
         },
       ];
 
-      result = await Method.generate(operations)(data, ctx);
+      result = await _queue.generate(operations)(data, ctx);
 
       return assert.includeOrderedMembers(result, [1,2,3]);
     });

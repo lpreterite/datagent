@@ -1,293 +1,465 @@
-# 使用文档
+# datagent
 
-- [x] 快速手上
-- [ ] 基础
-    - [x] 介绍
-    - [x] 远端、链接、数据模型
-    - [x] 数据模型
-    - [x] 定义字段
-    - [x] 定义方法
-    - [ ] 设置钩子
-- [ ] 进阶
-    - [ ] 使用链接
-        - [ ] 多个远端服务
-        - [ ] 默认远端服务
-    - [ ] 模型字段
-        - [ ] 自定义类型
-        - [ ] 默认值
-        - [ ] 配合方法钩子使用
-    - [ ] 模型方法
-        - [ ] 切换远端服务
-        - [ ] 自定义方法
-        - [ ] 自定义方法钩子
-    - [ ] 方法钩子
-        - [ ] 设置钩子
-        - [ ] 制作钩子
+[![npm version](https://img.shields.io/npm/v/datagent.svg)](https://www.npmjs.com/package/datagent)
+[![NPM downloads](http://img.shields.io/npm/dm/datagent.svg)](https://www.npmjs.com/package/datagent)
+[![build status](https://travis-ci.org/lpreterite/datagent.svg?branch=master)](https://travis-ci.org/lpreterite/datagent)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flpreterite%2Fdatagent.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Flpreterite%2Fdatagent?ref=badge_shield)
 
-## 快速手上
+`datagent`是一个用于前端请求的模块化管理工具，提供数据格式化、多服务源切换、语义化数据定义等功能。在 React,Vue,Angular 等现代 JavaScript 框架下，UI 显示均基于数据进行驱动，从服务端获得的数据并不能完全符合 UI 所需的结构。格式化数据、转义数据不可避免而代码往往写在任何地方又不易于维护。面对这种情况可使用`datagent`统一格式化从服务端获得的数据，并提供统一的请求服务的方式，让你更方便同步 UI 状态。
 
-### 安装
+![datagent-run](./assets/images/datagent-run.png)
+
+> 你可以马上尝试在`codepen`上的[例子](https://codepen.io/packy1980/pen/OEpNWW/)。
+
+## 安装
 
 ```sh
-npm install datagent
+npm install -S datagent
+//or
+yarn add datagent
 ```
 
-### 使用
+目前正式版本为`1.x`，下面是安装`2.0`版本尝尝鲜。
 
-```js
-// 引入
-import axios from "axios"
-import Datagent from "datagent"
-
-// 创建链接
-const contact = Datagent.Contact({
-    base: axios.create({ baseURL: '/api' })
-})
-
-// 定义模型
-const UserModel = Datagent.Model({ name: 'user' })
-
-// 创建模型
-model = new UserModel({ contact })
-
-model.fetch({ disabled: 0 }).then(users=>{
-    // [GET] /api/user?disabled=0
-    // => { status: 200, data: [] }
-    console.log(users)
-})
-
-model.find(1).then(user=>{
-    // [GET] /api/user/1
-    // => { status: 200, data: { id:1, name:"Tony", disabled: 1 } }
-    console.log(user)
-})
-
-model.save({ name:"Ben", disabled: 0 }).then(res=>{
-    // [POST] /api/user | { name:"Ben", disabled: 0 }
-    // => { status: 200, data: { id:2, name:"Ben", disabled: 0 } }
-    console.log(res)
-})
-
-model.save({ id:1, name:"Tony", disabled: 1 }).then(res=>{
-    // [PUT] /api/user/1 | { id:1, name:"Tony", disabled: 1 }
-    // => { status: 200, data: { id:1, name:"Tony", disabled: 1 } }
-    console.log(res)
-})
-
-// 发送带id的DELETE请求
-model.destroy(2).then(res=>{
-    // [DELETE] /api/user/2
-    // => { status: 200, data: { id:2, name:"Ben", disabled: 0 } }
-    console.log(res)
-})
+```sh
+npm install -S datagent@next
+// or
+yarn add datagent@next
 ```
 
 ## 介绍
 
-### Datagent是什么？
+### 什么是 datagent.js
 
-`Datagent`是一个用于前端Ajax请求的模块化工具，提供字段定义，方法扩展，切换源等功能。在如React, Vue, Angular等现代前端框架下不同UI层面通信的数据我们称为视图模型(ViewModel)。现在互联网常用于客户端与服务器间通信都是基于RESTful方式设计的持久化服务，这种基于持久化的设计可以借助`Datagent`将通信数据表示为数据模型(DataModel)。数据模型管理着数据字段和通信服务，同时为编排业务代码提供相关方法的钩子进行预处理或后处理。
+<!-- [描述datagent是什么？解决了什么问题？比如，定义数据字段能提供易读性，提供钩子对数据统一处理等] -->
 
-### 远端、链接、数据模型
+datagent 是由`data`与`agent`组合而成的词，意思为数据代理。后端返回的数据有时候是结构上的不同，有时候是字段类型上的不同，前端无法拿起就用需要各种处理。解决方法本很简单，就是每次获得数据后做一遍处理。在日渐增多的系统下，这种处理可能出现在各种地方，维护起来非常吃力。datagent 的出现是为了解决上面这种情况而诞生，datagent 关注的是如何分层你的代码，提高易读性和可维护性。如果你有一套自己的管理方案完全可以不使用 datagent 来管理你的代码。
 
-这三种定义的关系就如标题一样，链接和数据模型都是建立在远端之上。远端可以是一个服务，而链接管理着远端，在数据模型需要操作数据时就必须使用链接取得远端才能完成通信。
+### 开始
 
-- 远端 Remote
-- 链接 Contact
-- 数据模型 DataModel
+<!-- [提供代码及可交互的例子] -->
 
-> 上面是三个是常用类
+使用 datagent 无法马上开箱即用，它需你的适度的了解。了解如何合理地使用，了解什么是远端、链接管理器、数据模型、数据对象、数据对象代理等概念。不用着急，阅读完这篇文档用不着多少分钟，接下来会逐步讲解如何使用。
 
-用`Datagent`快速创建一个包含远端的链接：
+### 管理你的服务
+
+<!-- [介绍如何使用链接来管理远端，列出一般使用场景例子] -->
+
+服务，一般指的是后端服务，前端展示的数据内容大多来自后端服务。在一些项目，后端服务并不只有一个，当需要对接多个的时候代码上都会稍稍有点混乱。下面使用 datagent 的链接管理器来管理多个服务：
 
 ```js
+// #api
 import axios from "axios"
-import Datagent from "datagent"
-
-const contact = Datagent.Contact({
-    base: axios.create({ baseURL: '/api' })
+import datagent from "datagent"
+export default datagent.contact({
+    local: axios.create({ baseURL: "http://localhost" }),
+    baidu: axios.create({ baseURL: "http://baidu.com" })
 })
 ```
 
-数据模型实例化时把链接作为参数传入：
+在你需要请求数据时，只需要加载上面的文件进行后续操作：
 
 ```js
-const UserModel = Datagent.Model({ name: 'user' })
-const $user = new UserModel({ contact })
-```
+// #user.detail.vue
+import api from "./api"
 
-尝试请求数据：
-
-```js
-$user.find(1).then(data=>{
-    // [GET] /api/user
-    // => { status:200, data: { id:1, nickname:'Tony' } }
-    console.log(data);
-})
-```
-
-经过上面的例子相信对`Datagent`的使用有一定的了解。`Datagent`提供的数据模型还有字段、方法、钩子等功能下面再一一细说。如果你想知道得更详细，可以阅读[API参考](API.md)或源代码。
-
-### 数据模型
-
-这里引用Backbonejs关于模型的功能描述：
-
-- 编排数据和业务逻辑
-- 从服务器加载并保存
-- 数据更改时发出事件
-
-“数据更改时发出事件”的功能已不是模型层需要解决的问题，在如React, Vue, Angular等现代前端框架的帮助下，数据层应该更专注数据处理上。下面来看一下`Datagent`的模型层是如何使用的。
-
-在使用数据模型之前，我们可以使用`Dataplumber.Model()`定义一个数据模型抽象：
-
-```js
-import Datagent from "datagent"
-const UserModel = Datagent.Model({ name: 'user' })
-```
-
-接下来创建这个用户类，便能从服务器加载或保存数据：
-
-```js
-const contact = Contact({ base: axios.create({ baseURL: '/api' }) })
-const $user = new UserModel({ contact })
-
-$user.find(1).then(user=>{
-    // [GET] /api/user/1
-    // => { status: 200, data: { id:1, name:"Tony", disabled: 1 } }
-    console.log(user)
-
-    $user.save({...user.data, disabled:0 }).then(res=>{
-        // [PUT] /api/user | { id:1, name:"Tony", disabled: 0 }
-        // => { status: 200, data: { id:1, name:"Tony", disabled: 0 } }
-        console.log(res)
-    })
-})
-```
-
-### 定义字段
-
-为模型定义数据字段能让你在开发项目期间对数据接口一目了然，同时也让接手的同事能更快的了解项目。
-
-```js
-import Datagent from "datagent"
-const UserModel = Datagent.Model({
-    name: 'user',
-    fields: {
-        id: { type: Number, default: null },
-        nickname: { type: String, default: '' },
-        sex: { type: Number, default: 0 },
-        disabled: { type: Number, default: 0 }
-    }
-})
-
-const user = { id: 1, nickname: 'Tony', email:'tony1990@qq.com' }
-const result = UserModel.schema.filter(user)
-console.log(result) // { id: 1, nickname: 'Tony' }
-```
-
-定义字段在获取或保存数据时并没起到实际作用（就目前代码是这样），但是为后续扩展提供了一些处理依据，同时让接口的数据更易读。具体如何起到实际用途可异步至 设置钩子 部分，那里有详细使用说明。
-
-### 定义方法
-
-`Datagent`的模型提供`fetch`, `find`, `save`, `destroy`方法进行数据的获取和编辑功能，但是在实际的开发场景中并不能完全满足需求。所以在定义模型的同时提供定义方法的设置：
-
-```js
-import Datagent from "datagent"
-const UserModel = Datagent.Model({
-    name: 'user',
-    methods: {
-        test(){
-            return 'test string'
-        }
-    }
-})
-
-const $user = new UserModel()
-console.log($user.test()) // test string
-```
-
-以下可能是比较贴合实际使用的情况：
-
-```js
-import Datagent from "datagent"
-const UserModel = Datagent.Model({
-    name: 'user',
-    methods: {
-        login(account){
-            return this.remote().post(this._url + '/login', account)
-        },
-        logout(){
-            return this.remote().get(this._url + '/logout')
-        }
-    }
-})
-
-const $user = new UserModel()
-$user.login({ email: 'tony1990@qq.com', password: '******' }).then(res=>{
-    // [POST] /api/user/login | { email: 'tony1990@qq.com', password: '******' }
-    // => { status: 200 }
-})
-$user.logout().then(res=>{
-    // [GET] /api/user/logout
-    // => { status: 200 }
-})
-```
-
-模型实例提供`remote()`方法获得远端服务，再使用远端服务发送信息至服务器登录，我们能够定义更为贴合使用的方法并结合到模型层。可能同一个模型下为满足不同的业务需求，其请求的数据接口可能来自多个地址或多个源。
-
-### 设置钩子
-
-`Datagent`为模型方法提供调用前后处理钩子设置，在使用时提供请求数据的处理，下面来看一下如何使用：
-
-```js
-import Datagent from "datagent"
-const { respondData, filter } = Datagent.Hooks
-
-const UserModel = Datagent.Model({
-    name: 'user',
-    fields: {
-        id: { type: Number, default: null },
-        nickname: { type: String, default: '' },
-        sex: { type: Number, default: 0 },
-        disabled: { type: Number, default: 0 }
+export default {
+    async mounted() {
+        const res = await api.get(`/user/1`)
+        if (res.status > 201) throw new Error("http error")
+        this.detail = res.data
     },
-    hooks: {
-        fetch: { after: [respondData(), filter(['id'])] }
+    data: {
+        detail: {}
     }
-})
+}
+```
 
-const $user = new UserModel()
-$user.fetch().then(data=>{
-    // [GET] /api/user
-    // => { status:200, data: [{ id:1, nickname:'Tony' }, { id:2, nickname:'Ben' }, { id:3, nickname:'Tim' }...] }
-    console.log(data); // [{ id:1 }, { id:2 }, { id:3 }...]
+### 定义数据字段
+
+数据是软件系统中最主要的内容，有时候在不同模块中描述同一样事物的数据结构是一样的，编码过程中能统一定义这种数据，在维护时就更能从代码中看出这份数据包含哪些内容了。
+
+```js
+// #user.schema.js
+import datagent from "datagent"
+export default datagent.schema({
+    id: { type: Number, default: null },
+    username: { type: String, default: "" },
+    role_id: { type: Number, default: null },
+    permission: { type: Array, default: [] },
+    updated_at: { type: Date, default: null },
+    created_at: { type: Date, default: null }
 })
 ```
 
-`respondData`方法为我们把返回的`resquest.data`抽出来，然后`filter`方法把所有数据对象的字段都过滤只剩下id字段。钩子支持设置`fetch`, `find`, `save`, `destroy`等包括模型定义的方法，让一些业务代码或者额外的处理写在方法调用前，达到减少冗余代码的目的。
+上面是用户数据的数据定义例子，在你 UI 层需要使用默认值时可使用以下代码：
 
-目前`Datagent`提供了以下一些钩子处理的方法：
+```js
+// #user.detail.vue
+import api from "./api"
+import userSchema from "./user.schema"
 
-- `respondData()`用于`after`钩子，把返回数据对象抽出。
-    ```js
-    const UserModel = Datagent.Model({
-        name: 'user',
-        hooks: {
-            find: { after: [respondData()] }
+export default {
+    async mounted() {
+        const res = await api.get(`/user/1`)
+        if (res.status > 201) throw new Error("http error")
+        this.detail = res.data
+    },
+    data: {
+        detail: userSchema.serialize()
+    }
+}
+```
+
+### 数据处理
+
+<!-- [举一个数据需要处理的情况，引申这种情况存在的问题（比如每次发送数据、接收数据都需要处理，需要配置一次通用其他地方），介绍可以使用数据模型管理数据字段及字段格式，使用数据对象操作数据交互，在数据对象的钩子中对获得的/需发送的数据进行统一处理等] -->
+
+在获得后端数据后有时并不能符合 UI 格式，比如获得数据的更新时间数据类型是 String 类型，使用如 iview 的 datapicker 这类组件用户操作后返回的是 Data 类型。
+
+对于这种情况可以使用 datagent 在获得数据后进行转变字段的数据类型，一般设置在数据对象的方法钩子处，进行统一的转换：
+
+```js
+// #user.model.js
+import contact from "./api"
+import userSchema from "./user.schema"
+import datagent from "datagent"
+const { respondData, formatFor } = datagent.hooks
+export default datagent.model({
+    name: "user",
+    contact,
+    hooks: {
+        find: method => [
+            method(), //执行原来的方法，比如当前的方法find
+            respondData(), //从respond提取返回的结果
+            formatFor(userSchema) //格式化指定的内容，默认是返回的结果
+        ]
+    }
+})
+```
+
+经过上面的设置当你用数据对象的方法请求数据后，就会获得格式化完成的数据：
+
+```js
+// #user.detail.vue
+import userModel from "./user.model"
+import userSchema from "./user.schema"
+
+export default {
+    async mounted() {
+        const userData = await userModel.find({ id: 1 })
+        this.detail = userData
+    },
+    data: {
+        detail: userSchema.serialize()
+    }
+}
+```
+
+`respond`回来的数据:
+
+```json
+{
+    "id": "1",
+    "username": "packy",
+    "role_id": "1",
+    "permission": [],
+    "updated_at": "2019/11/08 11:45:30",
+    "created_at": "2018/01/08 01:32:11"
+}
+```
+
+页面`detail`获得的数据:
+
+```json
+{
+    "id": 1,
+    "username": "packy",
+    "role_id": 1,
+    "permission": [],
+    "updated_at": "Fri Nov 08 2019 11:45:30 GMT+0800", //typeof Date
+    "created_at": "Mon Jan 08 2018 01:32:11 GMT+0800" //typeof Date
+}
+```
+
+### 统一调用
+
+<!-- [某些项目存在非常多的数据对象需要管理，页面请求数据是存在状态的（加载中、成功、失败），管理多个数据对象请求再反应至页面状态是一件麻烦事，这里接受统一处理的办法。] -->
+
+在目前常见的 UI 页面设计中，UI 状态离不开加载态。管理 UI 状态是一件麻烦事，如要做到按加载的数据来管理 UI 相应位置的状态便需要在每次请求统一处理。datagent 也提供的工具帮助你解决这种问题：
+
+```js
+// #user.detail.vue
+import datagent from "datagent"
+import userModel from "./user.model"
+import userSchema from "./user.schema"
+const models = datagent.agent([userModel])
+
+export default {
+    beforeCreate() {
+        datagent.on("error", err => {
+            alert(err.message)
+            console.error(err)
+        })
+        datagent.on("before", ctx => (this.loading[ctx.model_name] = true))
+        datagent.on("after", (err, result, ctx) => (this.loading[ctx.model_name] = false))
+    },
+    async mounted() {
+        const userData = await models.find(userModel.name, { id: 1 })
+        this.detail = userData
+    },
+    data: {
+        detail: userSchema.serialize(),
+        loading: {
+            [userModel.name]: false
         }
-    })
-    const $user = new UserModel()
-    $user.find(1).then(data=>{
-        // [GET] /api/user
-        // => { status:200, data: { id:1, nickname:'Tony' } }
-        console.log(data); // { id:1, nickname:'Tony' }...]
-    })
-    ```
-- `format()`
-- `formatFor()`
-- `filter()`
-- `filterFor()`
+    }
+}
+```
 
-钩子方法并不多，需要各位多提供意见及时完善满足更多需求，暂时没能满足你需要的，可以参考以下代码自定义钩子方法。
+## 深入了解
 
-#### 自定义钩子方法
+### 远端与axios
+
+<!-- [为何使用axios？却又包装一遍？举个继承远端后重写方法支持其他http库的例子] -->
+
+远端的设计给了datagent能换不同的Http请求工具。datagent默认支持的axios是前端最常用的http请求工具，当你需要改成其他的请求工具，远端这层的抽象就起到了一个非常好的作用。下面例子用浏览器默认支持的`fetch`替换axios：
+
+```js
+// Remote.class.js
+import fetch from "node-fetch"
+import { URLSearchParams } from "url"
+
+class Remote {
+    constructor(options){
+        const { baseURL, withJson=true } = { ...options }
+        this._baseURL = baseURL
+        this._withJson = withJson
+    }
+    sync(options){
+        let { method, data, body, headers } = options
+        const url = this._baseURL + options.url
+        if(this._withJson){
+            headers = !!headers ? headers : {}
+            headers['Content-Type'] = 'application/json'
+            body = JSON.stringify(data)
+        }else{
+            body = data
+        }
+        return fetch(url, { method, body, headers }).then(res=>new Promise((resolve, reject)=>{
+            res.json().then(data=>resolve({
+                status: res.status,
+                statusText: res.statusText,
+                data,
+                headers: res.headers,
+                url: res.url
+            }), reject)
+        }))
+    }
+    get(url, _params={}){
+        const params = new URLSearchParams()
+        Object.keys(_params).forEach(key=>params.append(key, _params[key]))
+        url += `/${params.toString()}`
+        return this.sync({ method: "GET", url })
+    }
+    post(url, data){
+        return this.sync({ method: "POST", url, data })
+    }
+    put(url, data){
+        return this.sync({ method: "PUT", url, data })
+    }
+    patch(url, data){
+        return this.sync({ method: "PATCH", url, data })
+    }
+    delete(url, data){
+        return this.sync({ method: "DELETE", url, data })
+    }
+}
+export default Remote
+```
+
+数据对象中的方法访问服务时是透过链接管理器进行的，所以最终需要在生成链接管理器时把构造器替换掉，这样请求就不是用`axios`而是用`fetch`：
+
+```js
+import datagent from "datagent"
+import CustomRemote from './Remote.class'
+const contact = datagent.contact(
+    //remote的设定
+    {
+        base: { baseURL: 'https://jsonplaceholder.typicode.com' }
+    },
+    //生成时替换为自定义的remote
+    {
+        RemoteConstructor: CustomRemote
+    }
+)
+
+contact.remote().get('/todos/3').then(res=>{
+    console.log(res.data)
+})
+```
+
+输出结果：
+
+```json
+{
+    userId: 1,
+    id: 3,
+    title: "fugiat veniam minus",
+    completed: false
+}
+```
+
+关于Remote的详情可以查看[API文档](./API.md#remote-1)，自定义完整例子参考[仓库测试的例子](../test/examples/custom-remote.test.js)
+
+### 自定义字段类型
+
+<!-- [数据类型是可定义的，默认是Function类型就可以了，附上合理的例子进行说明] -->
+
+数据模型的字段类型除了支持系统的`Array`,`Number`,`String`等类型外，还支持自定义的类型。
+
+接下来让我们看看例子：
+
+```js
+//# Yuan.type.js
+export function Yuan(val) {
+    return (parseInt(val) / 100).toFixed(2)
+}
+```
+
+经过沟通知道后端服务返回的商品价格是以分为单位的，前端显示的时候需要对其进行转换，这里我们先自定义字段类型 Yuan（元）。
+
+```js
+//# good.schema.js
+import datagent from "datagent"
+import Yuan from "./Yuan.type"
+export default datagent.schema({
+    id: { type: Number, default: null },
+    good_name: { type: String, default: "" },
+    good_type: { type: String, default: "" },
+    price: { type: Yuan, default: 0 },
+    updated_at: { type: Date, default: null },
+    created_at: { type: Date, default: null }
+})
+```
+
+然后在商品的模型中将价格的字段类型改为`Yuan`。
+
+```js
+import goodSchema from "./good.schema"
+console.log(
+    goodSchema.format({
+        good_name: "《人月神话》",
+        good_type: "book",
+        price: "48000",
+        updated_at: "Tue Nov 19 2019 14:11:12 GMT+0800",
+        created_at: "Tue Nov 19 2019 14:11:12 GMT+0800"
+    })
+)
+```
+
+下面就是经过数据模型的方法转换后的数据：
+
+```json
+{
+    "good_name": "《人月神话》",
+    "good_type": "book",
+    "price": "48.00",
+    "updated_at": "Tue Nov 19 2019 14:11:12 GMT+0800",
+    "created_at": "Tue Nov 19 2019 14:11:12 GMT+0800"
+}
+```
+
+上面例子是将请求数据的价格字段从`分`转变为`元`，用自定义的类型就能满足此类需求。系统提供的类型均是`Function`，所以字段类型只要是`Function`就能支持。
+
+### 方法与钩子
+
+<!-- [讲解数据对象的方法执行过程，钩子是在什么情况下介入，如何决定执行顺序的，等等] -->
+
+![method-hooks-data](./assets/images/method-hooks-data.png)
+
+数据对象的方法执行过程，实际是**串行执行多个函数的过程**。拿`fetch()`作为例子，首先执行内部的`fetch()`从服务端获取数据；然后再执行`respondData()`函数从`respond`提取数据出来(data)；最后执行`format()`函数对提取出来的数据进行格式化处理。
+
+```js
+// #user.model.js
+import contact from "./api"
+import userSchema from "./user.schema"
+import datagent from "datagent"
+const { respondData, formatFor } = datagent.hooks
+export default datagent.model({
+    name: "user",
+    contact,
+    hooks: {
+        fetch: method => [
+            // 用怎样的钩子函数，完全可选可控
+            method(),
+            respondData(),
+            formatFor(userSchema)
+        ]
+    }
+})
+```
+
+`fetch`的钩子设置函数中传入的`method`函数实质为`fetch()`方法，这样就能更灵活地控制它与其他钩子函数间的执行顺序了。
+
+### 自定义钩子
+
+<!-- [介绍制作钩子的规范，传入可自定义，返回一个接收和返回执行方法的上下文的函数，上下文包含哪些参数，在修改的过程中需要注意的细节，哪些是允许的，哪些是不推荐的] -->
+
+![queue-input-output-protocol](./assets/images/queue-input-output-protocol.png)
+
+钩子函数之间是基于`Promise`和`执行上下文(Context)`两份协议进行通讯。钩子函数接收上下文作为传入的参数，无论处理情况最终都会抛出`Promise`包裹的上下文内容，传给下一个钩子函数就行后续操作。
+
+`Promise`就不用过多说明，执行上下文包含以下内容：
+
+| 名称   | 类型         | 必须             | 描述                                                   |
+| ------ | ------------ | ---------------- | ------------------------------------------------------ |
+| scope  | `Object`     | 是               | 方法执行的上下文，影响 this 指向                       |
+| args   | `Array<any>` | 是，可以为空数组 | 来自方法的传入参数，在执行方法时决定了存放的参数与数量 |
+| method | `String`     | 是               | 方法名称，一般是原方法的名称                           |
+| result | `any`        | 否               | 默认为 null，用来存放最终抛出的结果                    |
+
+如果需要传递更多信息，直接添加至上下文内就可以了，如：
+
+```js
+export function setUser(user){
+    return ctx => {
+        ...ctx,
+        user
+    }
+}
+```
+
+`respondData`可作为钩子函数的完整参考例子：
+
+![hook-function-input-output.png](./assets/images/hook-function-input-output.png)
+
+```js
+// # datagent/src/operations:35
+export function respondData() {
+    return ctx => {
+        const res = ctx.result
+        if (res.status < 200) {
+            const err = new Error(res.message)
+            err.response = res.response
+            throw err
+        }
+        ctx.result = res.data
+        return Promise.resolve(ctx)
+    }
+}
+```
+
+更多例子可看[datagent/src/operations.js](../src/operations.js)
+
+## 迁移
+
+### 从 1.x 迁移
+
+[陆续补上，敬请期待]
+
+#### FAQ
+
+<!-- [核心概念没有变化；新增了agent统一管理数据对象；部分定义换叫法了，比如`schema`改叫数据模型，`model`改叫数据对象；数据模型中方法的钩子移除before和after概念，变成可定义执行顺序；] -->
+
+[陆续补上，敬请期待]
