@@ -1,11 +1,11 @@
-# datagent
+# Datagent
 
 [![npm version](https://img.shields.io/npm/v/datagent.svg)](https://www.npmjs.com/package/datagent)
 [![NPM downloads](http://img.shields.io/npm/dm/datagent.svg)](https://www.npmjs.com/package/datagent)
 [![build status](https://travis-ci.org/lpreterite/datagent.svg?branch=master)](https://travis-ci.org/lpreterite/datagent)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flpreterite%2Fdatagent.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Flpreterite%2Fdatagent?ref=badge_shield)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flpreterite%2Fdatagent.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Flpreterite%2Fdatagent?ref=badge_shield)
 
-`datagent`是一个用于前端请求的模块化管理工具，提供数据格式化、多服务源切换、语义化数据定义等功能。在 React,Vue,Angular 等现代 JavaScript 框架下，UI 显示均基于数据进行驱动，从服务端获得的数据并不能完全符合 UI 所需的结构。格式化数据、转义数据不可避免而代码往往写在任何地方又不易于维护。面对这种情况可使用`datagent`统一格式化从服务端获得的数据，并提供统一的请求服务的方式，让你更方便同步 UI 状态。
+`Datagent`是一个用于模块化管理前端请求的工具，提供数据格式化、多服务源切换、语义化数据定义等功能。在 React,Vue,Angular 等现代 JavaScript 框架下，UI 显示均以数据驱动为中心，服务端提供的数据不是所有场合都能符合 UI 所需的结构。格式化数据、转义数据的代码往往不可避免的写在UI组件、业务逻辑代码或是页面等各个地方，导致冗余代码、逻辑复杂又难以维护等问题。面对这类情况可使用`Datagent`解决这类问题，不单只能统一调取后端服务和格式化从服务端获得的数据，定义一些处理后还能用于所有场景，让你更方便同步UI状态。
 
 ![datagent-run](./assets/images/datagent-run.png)
 
@@ -27,25 +27,29 @@ npm install -S datagent@next
 yarn add datagent@next
 ```
 
+## License
+
+Datagent是根据[MIT协议](https://github.com/lpreterite/datagent/blob/master/LICENSE)的开源软件
+
 ## 介绍
 
 ### 什么是 datagent.js
 
 <!-- [描述datagent是什么？解决了什么问题？比如，定义数据字段能提供易读性，提供钩子对数据统一处理等] -->
 
-datagent 是由`data`与`agent`组合而成的词，意思为数据代理。后端返回的数据有时候是结构上的不同，有时候是字段类型上的不同，前端无法拿起就用需要各种处理。解决方法本很简单，就是每次获得数据后做一遍处理。在日渐增多的系统下，这种处理可能出现在各种地方，维护起来非常吃力。datagent 的出现是为了解决上面这种情况而诞生，datagent 关注的是如何分层你的代码，提高易读性和可维护性。如果你有一套自己的管理方案完全可以不使用 datagent 来管理你的代码。
+Datagent 是由`data`与`agent`组合而成的词，意思为数据代理。后端返回的数据有时候是结构上的不同，有时候是字段类型上的不同，前端无法拿起就用需要各种处理。解决方法本很简单，就是每次获得数据后做一遍处理。在日渐增多的系统下，这种处理可能出现在各种地方，维护起来非常吃力。Datagent 的出现是为了解决上面这种情况而诞生，Datagent 关注的是如何管理你的代码，为提高易读性和易维护性而助力。如果你没有一套后端服务的方案管理，不妨试试`Datagent`可能有意想不到的惊喜哦！🙈
 
 ### 开始
 
 <!-- [提供代码及可交互的例子] -->
 
-使用 datagent 无法马上开箱即用，它需你的适度的了解。了解如何合理地使用，了解什么是远端、链接管理器、数据模型、数据对象、数据对象代理等概念。不用着急，阅读完这篇文档用不着多少分钟，接下来会逐步讲解如何使用。
+使用 Datagent 无法马上开箱即用，它需你的适度的了解。了解如何合理地使用，了解什么是远端、链接管理器、数据模型、数据对象、数据对象代理等概念。不用着急，阅读完这篇文档用不着多少分钟，接下来会逐步讲解如何使用。
 
 ### 管理你的服务
 
 <!-- [介绍如何使用链接来管理远端，列出一般使用场景例子] -->
 
-服务，一般指的是后端服务，前端展示的数据内容大多来自后端服务。在一些项目，后端服务并不只有一个，当需要对接多个的时候代码上都会稍稍有点混乱。下面使用 datagent 的链接管理器来管理多个服务：
+服务，一般指的是后端服务，前端展示的数据内容大多来自后端服务。在一些项目，后端服务并不只有一个，当需要对接多个的时候代码上都会稍稍有点混乱。下面使用 Datagent 的链接管理器来管理多个服务：
 
 ```js
 // #api
@@ -117,7 +121,7 @@ export default {
 
 在获得后端数据后有时并不能符合 UI 格式，比如获得数据的更新时间数据类型是 String 类型，使用如 iview 的 datapicker 这类组件用户操作后返回的是 Data 类型。
 
-对于这种情况可以使用 datagent 在获得数据后进行转变字段的数据类型，一般设置在数据对象的方法钩子处，进行统一的转换：
+对于这种情况可以使用`Datagent`在获得数据后进行转变字段的数据类型，一般设置在数据对象的方法钩子处，进行统一的转换：
 
 ```js
 // #user.model.js
