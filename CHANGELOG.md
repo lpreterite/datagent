@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.1.4
+
+- 构建工具从webpack改为rollup
+- 为了让webpack优先价值esm模式代码，package.json已移除browser设置。
+
 ## 1.1.3
 
 - 修复当`id`等于`null`时会作为id加至`POST`请求链接上的问题
