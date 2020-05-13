@@ -12,6 +12,11 @@
 - 更新说明文档和API文档，提供可访问地址：https://lpreterite.github.io/datagent/
 - 更新测试内容
 
+## 1.1.4
+
+- 构建工具从webpack改为rollup
+- 为了让webpack优先价值esm模式代码，package.json已移除browser设置。
+
 ## 1.1.3
 
 - 修复当`id`等于`null`时会作为id加至`POST`请求链接上的问题
