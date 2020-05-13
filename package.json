@@ -5,7 +5,6 @@
   "main": "dist/datagent.cjs.js",
   "module": "dist/datagent.esm.js",
   "jsnext:main": "dist/datagent.esm.js",
-  "browser": "dist/datagent.umd.js",
   "scripts": {
     "build": "cross-env BUILD=production rollup -c",
     "watch": "rollup -c -w",

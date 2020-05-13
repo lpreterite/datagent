@@ -5,6 +5,7 @@ import babel from 'rollup-plugin-babel'
 // import istanbul from 'rollup-plugin-istanbul'
 
 import pkg from './package.json'
+const browser = "dist/datagent.umd.js"
 
 const name = "datagent"
 const sourcemap = true
@@ -18,7 +19,7 @@ export default [
 	{
 		input: 'src/index.js',
 		output: [
-            { name, file: pkg.browser, format: 'umd', exports: 'named', sourcemap },
+            { name, file: browser, format: 'umd', exports: 'named', sourcemap },
 			{ name, file: pkg.main, format: 'cjs', exports: 'named', sourcemap },
 			{ name, file: pkg.module, format: 'es', exports: 'named', sourcemap }
 		],
