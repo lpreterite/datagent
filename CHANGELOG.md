@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.0-beta.2
+
+- 为了让webpack优先价值esm模式代码，package.json已移除browser设置。
+
 ## 2.0.0-beta.1
 
 - 增加`agent`类提供统一处理数据对象方法的调用，提供`before`,`after`,`error`事件做额外处理
