@@ -5,7 +5,7 @@
 [![build status](https://travis-ci.org/lpreterite/datagent.svg?branch=master)](https://travis-ci.org/lpreterite/datagent)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Flpreterite%2Fdatagent.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Flpreterite%2Fdatagent?ref=badge_shield)
 
-`Datagent`是一个用于模块化管理前端请求的工具，提供数据格式化、多服务源切换、语义化数据定义等功能。在 React,Vue,Angular 等现代 JavaScript 框架下，UI 显示均以数据驱动为中心，服务端提供的数据不是所有场合都能符合 UI 所需的结构。格式化数据、转义数据的代码往往不可避免的写在UI组件、业务逻辑代码或是页面等各个地方，导致冗余代码、逻辑复杂又难以维护等问题。面对这类情况可使用`Datagent`解决这类问题，不单只能统一调取后端服务和格式化从服务端获得的数据，定义一些处理后还能用于所有场景，让你更方便同步UI状态。
+`Datagent`是一个用于模块化管理前端请求的工具，提供数据格式化、多服务源切换、语义化数据定义等功能。在 React,Vue,Angular 等现代 JavaScript 框架下，UI 显示均以数据驱动为中心，服务端提供的数据不是所有场合都能符合 UI 所需的结构。格式化数据、转义数据的代码往往不可避免的写在UI组件、业务逻辑代码或是页面等各个地方，导致冗余代码、逻辑复杂又难以维护等问题。面对这类情况可使用`Datagent`解决这类问题，不单单能统一调取后端服务和格式化从服务端获得的数据，定义一些处理后还能用于所有场景，让你更方便同步UI状态。
 
 ![datagent-run](./docs/assets/images/datagent-run.png)
 
