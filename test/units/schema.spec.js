@@ -20,15 +20,17 @@ class DateFormat {
 
 describe('Schema Class Test', function(){
     describe('format()', function(){
-        it('没有定义给与默认值', function(){
+        it('数据没有定义字段给与默认值', function(){
             const fieldSet = {id: { type: Number, default: 3 }};
-            const data = format({}, fieldSet);
+            const data = format({ id: undefined }, fieldSet);
             assert.equal(data.id, 3);
         })
-        it('空值均给与默认值', function(){
-            const fieldSet = {id: { type: Number, default: 3 }};
-            const data = format({id: null}, fieldSet);
-            assert.equal(data.id, 3);
+        it('没有设置字段定义时数据字段原样输出', function(){
+            const fieldSet = {
+                name: { type: String, default: "packy" }
+            };
+            const data = format({ id: 0 }, fieldSet);
+            assert.equal(data.id, 0);
         })
         it('数据字段类型应当是设定的类型', function () {
             const fieldSet = { id: { type: String, default: null } };

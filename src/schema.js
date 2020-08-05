@@ -2,7 +2,7 @@ function value(val){
     if(typeof val === 'function') return val()
     return val
 }
-const isNull = val=>!val
+const isDef = val=>typeof val != "undefined"
 
 export function serialize(fieldSet){
     return Object.keys(fieldSet).reduce((result,field)=>({...result, [field]:value(fieldSet[field].default)}), {})
@@ -12,8 +12,8 @@ export function format(data, fieldSet){
     return {
         ..._defaults,
         ...Object.keys(data).reduce((result, field)=>{
-            const fieldVal = isNull(fieldSet[field]) ? data[field] : fieldSet[field].type(data[field])
-            return {...result, [field]:isNull(fieldVal)?_defaults[field]:fieldVal}
+            const fieldVal = isDef(fieldSet[field]) ? fieldSet[field].type(data[field]) : data[field]
+            return {...result, [field] : isDef(data[field]) ? fieldVal : _defaults[field] }
         }, {})
     }
 }
