@@ -9,7 +9,7 @@
     "build": "cross-env BUILD=production rollup -c",
     "watch": "rollup -c -w",
     "pretest": "rollup -c",
-    "test": "cross-env NODE_ENV=test nyc mocha --require test/setup.js test/**/*.{spec}.js",
+    "test": "cross-env NODE_ENV=test nyc mocha --require test/setup.js test/**/*.spec.js",
     "prepublish": "cross-env BUILD=production npm test",
     "build:doc": "documentation build src/** -f md -o docs/API.md"
   },
