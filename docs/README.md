@@ -197,19 +197,19 @@ export default {
 import datagent from "datagent"
 import userModel from "./user.model"
 import userSchema from "./user.schema"
-const models = datagent.agent([userModel])
+const agent = datagent.agent([userModel])
 
 export default {
     beforeCreate() {
-        datagent.on("error", err => {
+        agent.on("error", err => {
             alert(err.message)
             console.error(err)
         })
-        datagent.on("before", ctx => (this.loading[ctx.model_name] = true))
-        datagent.on("after", (err, result, ctx) => (this.loading[ctx.model_name] = false))
+        agent.on("before", ctx => (this.loading[ctx.name] = true))
+        agent.on("after", (err, result, ctx) => (this.loading[ctx.name] = false))
     },
     async mounted() {
-        const userData = await models.find(userModel.name, { id: 1 })
+        const userData = await agent.find(userModel.name, { id: 1 })
         this.detail = userData
     },
     data: {
@@ -406,6 +406,47 @@ export default datagent.model({
 
 `fetch`的钩子设置函数中传入的`method`函数实质为`fetch()`方法，这样就能更灵活地控制它与其他钩子函数间的执行顺序了。
 
+### 自定义方法
+
+日常100%会遇到需要在`model`内容增加新的方法来实现新的交互，下面就是给`user`增加启用/禁用功能。
+
+```js
+// #user.model.js
+import contact from "./api"
+import userSchema from "./user.schema"
+import datagent from "datagent"
+const { respondData, formatFor } = datagent.hooks
+export default datagent.model({
+    name: "user",
+    contact,
+    methods: {
+        // 自定义方法，向服务端发送`[PATCH]`请求，禁用用户
+        disabled(data, opts, ctx){
+          // 最全的处理方法（推荐）
+          const { origin } = {...opts}
+          const { contact, url, getURL, emulateIdKey, isNew } = ctx.options
+          const { id } = data
+          const _url = getURL(id, url, emulateIdKey)
+          return contact.remote(origin).patch(_url, {...data, disabled: true})
+        },
+        enabled(data, opts){
+          //简单的处理方法
+          const { origin } = {...opts}
+          const { id } = data
+          return this.contact.remote(origin).patch(this.getURL(id), {id, disabled: 1})
+        }
+    },
+    hooks: {
+        fetch: method => [
+            // 用怎样的钩子函数，完全可选可控
+            method(),
+            respondData(),
+            formatFor(userSchema)
+        ]
+    }
+})
+```
+
 ### 自定义钩子
 
 <!-- [介绍制作钩子的规范，传入可自定义，返回一个接收和返回执行方法的上下文的函数，上下文包含哪些参数，在修改的过程中需要注意的细节，哪些是允许的，哪些是不推荐的] -->
@@ -467,3 +508,12 @@ export function respondData() {
 <!-- [核心概念没有变化；新增了agent统一管理数据对象；部分定义换叫法了，比如`schema`改叫数据模型，`model`改叫数据对象；数据模型中方法的钩子移除before和after概念，变成可定义执行顺序；] -->
 
 [陆续补上，敬请期待]
+
+<!--
+修改建议：
+
+- [ ] 建议加上自定义方法的说明
+- [x] 统一调用的代码例子中，agent代理命名为models，而下面使用时却用datagent来监控，这里明显写错了，建议修改。
+- [x] Model.model_name 需要改为 Model.name
+
+-->

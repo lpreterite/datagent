@@ -55,23 +55,23 @@
         -   [Parameters][51]
         -   [Examples][52]
 -   [axios][53]
--   [Remote][54]
-    -   [Parameters][55]
-    -   [Properties][56]
-    -   [Examples][57]
-    -   [sync][58]
-        -   [Parameters][59]
-    -   [get][60]
-        -   [Parameters][61]
-    -   [post][62]
-        -   [Parameters][63]
-    -   [put][64]
-        -   [Parameters][65]
-    -   [patch][66]
-        -   [Parameters][67]
-    -   [delete][68]
-        -   [Parameters][69]
--   [axios.config][70]
+-   [axios.config][54]
+-   [Remote][55]
+    -   [Parameters][56]
+    -   [Properties][57]
+    -   [Examples][58]
+    -   [sync][59]
+        -   [Parameters][60]
+    -   [get][61]
+        -   [Parameters][62]
+    -   [post][63]
+        -   [Parameters][64]
+    -   [put][65]
+        -   [Parameters][66]
+    -   [patch][67]
+        -   [Parameters][68]
+    -   [delete][69]
+        -   [Parameters][70]
 -   [Schema][71]
     -   [Parameters][72]
     -   [Properties][73]
@@ -237,6 +237,7 @@ Type: [Error][88]
 ### Parameters
 
 -   `remotes` **any**  (optional, default `{}`)
+-   `options`  
 
 ### Examples
 
@@ -341,7 +342,7 @@ const userModel = datagent.model({
       const { origin } = {...opts}
       const { contact, url, getURL, emulateIdKey, isNew } = ctx.options
       const { id } = data
-      const _url = getURL(url, id, emulateIdKey)
+      const _url = getURL(id, url, emulateIdKey)
       return contact.remote(origin).patch(_url, {...data, disabled: true})
     },
     enabled(data, opts){
@@ -550,9 +551,17 @@ Returns **any**
 
 ## axios
 
--   **See: [https://www.npmjs.com/package/axios][93]**
+-   **See: [https://www.npmjs.com/package/axios][93]
+    **
 
 Promise based HTTP client for the browser and node.js
+
+## axios.config
+
+-   **See: [https://www.npmjs.com/package/axios#axios-api][94]
+    **
+
+Requests can be made by passing the relevant config to axios.
 
 ## Remote
 
@@ -560,11 +569,11 @@ Promise based HTTP client for the browser and node.js
 
 ### Parameters
 
--   `origin` **[axios][94]** 服务源头，一般指`axios`
+-   `origin` **[axios][95]** 服务源头，一般指`axios`
 
 ### Properties
 
--   `origin` **[axios][94]** 服务源头，一般指`axios`
+-   `origin` **[axios][95]** 服务源头，一般指`axios`
 
 ### Examples
 
@@ -584,7 +593,7 @@ remote.get('/user', { q: "pa" }).then(res=>console.log(res))
 
 #### Parameters
 
--   `options` **[axios.config][95]** 
+-   `options` **[axios.config][96]** 
 
 Returns **[Promise][86]** 
 
@@ -642,12 +651,6 @@ Returns **[Promise][86]**
 -   `data` **any** 请求参数
 
 Returns **[Promise][86]** 
-
-## axios.config
-
--   **See: [https://www.npmjs.com/package/axios#axios-api][96]**
-
-Requests can be made by passing the relevant config to axios.
 
 ## Schema
 
@@ -834,39 +837,39 @@ Returns **[Object][84]** 过滤后数据
 
 [53]: #axios
 
-[54]: #remote-1
+[54]: #axiosconfig
 
-[55]: #parameters-18
+[55]: #remote-1
 
-[56]: #properties-4
+[56]: #parameters-18
 
-[57]: #examples-7
+[57]: #properties-4
 
-[58]: #sync
+[58]: #examples-7
 
-[59]: #parameters-19
+[59]: #sync
 
-[60]: #get
+[60]: #parameters-19
 
-[61]: #parameters-20
+[61]: #get
 
-[62]: #post
+[62]: #parameters-20
 
-[63]: #parameters-21
+[63]: #post
 
-[64]: #put
+[64]: #parameters-21
 
-[65]: #parameters-22
+[65]: #put
 
-[66]: #patch
+[66]: #parameters-22
 
-[67]: #parameters-23
+[67]: #patch
 
-[68]: #delete
+[68]: #parameters-23
 
-[69]: #parameters-24
+[69]: #delete
 
-[70]: #axiosconfig
+[70]: #parameters-24
 
 [71]: #schema
 
@@ -914,8 +917,8 @@ Returns **[Object][84]** 过滤后数据
 
 [93]: https://www.npmjs.com/package/axios
 
-[94]: #axios
+[94]: https://www.npmjs.com/package/axios#axios-api
 
-[95]: #axiosconfig
+[95]: #axios
 
-[96]: https://www.npmjs.com/package/axios#axios-api
+[96]: #axiosconfig

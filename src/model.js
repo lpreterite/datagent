@@ -108,13 +108,13 @@ export const restful = {
  *   url: 'users',
  *   contact,
  *   methods: {
- *     // 自定义方法，向服务端发送`[PATCH]`请求，屏蔽用户
+ *     // 自定义方法，向服务端发送`[PATCH]`请求，禁用用户
  *     disabled(data, opts, ctx){
  *       // 最全的处理方法（推荐）
  *       const { origin } = {...opts}
  *       const { contact, url, getURL, emulateIdKey, isNew } = ctx.options
  *       const { id } = data
- *       const _url = getURL(url, id, emulateIdKey)
+ *       const _url = getURL(id, url, emulateIdKey)
  *       return contact.remote(origin).patch(_url, {...data, disabled: true})
  *     },
  *     enabled(data, opts){
