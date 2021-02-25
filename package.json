@@ -1,6 +1,6 @@
 {
   "name": "datagent",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "一个用于模块化管理前端请求的工具",
   "main": "dist/datagent.cjs.js",
   "module": "dist/datagent.esm.js",
