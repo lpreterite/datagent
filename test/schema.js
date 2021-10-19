@@ -25,6 +25,11 @@ describe('Schema Class Test', function(){
             const data = Schema.format({}, format);
             assert.equal(data.id, 3);
         })
+        it('传入数据字段为空对象时应当返回默认值', function(){
+            const format = {id: { type: Number, default: 3 }, parent: { type: Object, default:{} }};
+            const data = Schema.format({ parent:null }, format);
+            assert.equal(JSON.stringify(data.parent), "{}");
+        })
         it('数据字段类型应当是设定的类型', function () {
             const format = { id: { type: String, default: null } };
             const data = Schema.format({ id:1 }, format);
